@@ -9,7 +9,7 @@ Drawin::Drawin( Graphics& key )
 
 
 
-void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) //algorytm Bresenhama
+void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) // Bresenham's algorithm
 {
 	int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
 
@@ -75,7 +75,7 @@ void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) //algorytm Bres
 	}
 }
 
-void Drawin::DrawCircle(int x0, int y0, int r, Color c) //algorytm Bresenhama
+void Drawin::DrawCircle(int x0, int y0, int r, Color c) // Bresenham's algorithm
 {
 	int x = r;
 	int y = 0;

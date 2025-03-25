@@ -24,7 +24,7 @@
 int xStart,xEnd,
 		yStart,yEnd; // start/end coordinates of mouse cursor's click
 
-bool tempClick;
+bool tempClick; // bool if mouse is clicked
 
 int mousePos; // id of square at mouse's position
 
