@@ -21,6 +21,7 @@ public:
 	static const int BoardStartY = Graphics::FrameWidth;
 	static const int FrameCountX = (Graphics::ScreenWidth-2*Graphics::FrameWidth) / (FrameLength + BetweenFrameMarginLength)+1;
 	static const int FrameCountY = (Graphics::ScreenHeight-2*Graphics::FrameWidth) / (FrameLength + BetweenFrameMarginLength)+1;
+
 	bool IsCursorOnBoard(int cursorX, int cursorY);
 
 	int MoveCalc( int*** lvl, int startX, int startY, int dir, int prog=0 ); //dir: 1-N, 2-S, 3-E, 4-W
