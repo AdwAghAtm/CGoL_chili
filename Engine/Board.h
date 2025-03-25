@@ -15,10 +15,10 @@ public:
 
 	// dane pol na planszy
 
-	static const int FrameLength = 128;
-	static const int BetweenFrameMarginLength = 2;
-	static const int BoardStartX = 5;
-	static const int BoardStartY = 5;
+	static const int FrameLength = 4;
+	static const int BetweenFrameMarginLength = 1;
+	static const int BoardStartX = 2;
+	static const int BoardStartY = 2;
 	static const int FrameCountX = (Graphics::ScreenWidth-2*5) / (FrameLength + BetweenFrameMarginLength)+1;
 	static const int FrameCountY = (Graphics::ScreenHeight-2*5) / (FrameLength + BetweenFrameMarginLength)+1;
 	bool IsCursorOnBoard(int cursorX, int cursorY);
