@@ -33,6 +33,7 @@ public:
 	Game( const Game& ) = delete;
 	Game& operator=( const Game& ) = delete;
 	void Go();
+	void Pre();
 private:
 	void ComposeFrame();
 	void UpdateModel();
@@ -45,5 +46,6 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
+	Board brd;
 	Drawin drw;
 };

@@ -75,4 +75,5 @@ private:
 public:
 	static constexpr int ScreenWidth = 1300;
 	static constexpr int ScreenHeight = 800;
+	static constexpr int FrameWidth = 4;
 };

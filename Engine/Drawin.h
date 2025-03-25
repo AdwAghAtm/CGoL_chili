@@ -20,8 +20,7 @@ public:
 	void DrawCircle( int x0, int y0, int r, Color c );
 
 	void DrawSquare( int cord, Color c );
-
-	void DrawLevel( int*** lvl, Color c1, Color c2, Color c3, Color c4, Color c5, Color c6, Color c7, Color c8, Color c9, Color b, Color red, Color bg );
+	void DrawSquare( int cord_x, int cord_y, Color c );
 
 	void DrawNet( Color c );
 
@@ -29,10 +28,6 @@ public:
 private:
 
 
-
-
 	Graphics& gfx2;
-
-
 
 };

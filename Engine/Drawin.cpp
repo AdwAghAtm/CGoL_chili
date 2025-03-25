@@ -103,13 +103,11 @@ void Drawin::DrawCircle(int x0, int y0, int r, Color c) //algorytm Bresenhama
 void Drawin::DrawSquare( int cord, Color c )
 {	
 	int tempx,tempy;
-	//kordynaty lewego gornego rogu
+	//top left coordinates
 	tempx = ( cord % (Board::FrameCountX+2) )*( Board::FrameLength + Board::BetweenFrameMarginLength ) 
 		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartX;
 	tempy = ( cord / (Board::FrameCountX+2) )*( Board::FrameLength + Board::BetweenFrameMarginLength ) 
 		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartY;
-
-	Color tempc = Colors::Orange;
 
 	for( int i = 0; i < Board::FrameLength; i++ )
 		for( int j = 0; j < Board::FrameLength; j++ )
@@ -117,53 +115,30 @@ void Drawin::DrawSquare( int cord, Color c )
 			if( tempx + i > 0 && tempx + i < Graphics::ScreenWidth && tempy + j > 0 && tempy + j < Graphics::ScreenHeight )
 			{
 				gfx2.PutPixel( tempx + i, tempy + j, c );
-
-				if( c.GetR() == tempc.GetR() && c.GetG() == tempc.GetG() && c.GetB() == tempc.GetB() )
-				{ 
-					if( (j + i)%(Board::FrameLength/4) == Board::FrameLength%(Board::FrameLength/4) ||
-						(j + i)%(Board::FrameLength/4) == Board::FrameLength%(Board::FrameLength/4) +1 ||
-						(j + i)%(Board::FrameLength/4) == Board::FrameLength%(Board::FrameLength/4) + 2 )
-
-						if( i > 5 && i < Board::FrameLength - 5 && 
-							j > 5 && j < Board::FrameLength - 5 )
-							if( i > 17 || j > 17 ) //nawet nie pytaj
-								gfx2.PutPixel( tempx + i, tempy + j, Colors::DarkGray2 );
-				}
-
 			}
 		}
-
-
 }
 
 
+void Drawin::DrawSquare( int cord_x, int cord_y, Color c )
+{	
+	int tempx,tempy;
+	//top left coordinates
+	tempx = cord_x * ( Board::FrameLength + Board::BetweenFrameMarginLength )
+		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartX;
+	tempy = cord_y * ( Board::FrameLength + Board::BetweenFrameMarginLength )
+		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartY;
 
-
-void Drawin::DrawLevel( int*** lvl, Color c1, Color c2, Color c3, Color c4, Color c5, Color c6, Color c7, Color c8, Color c9, Color b, Color red, Color bg )
-{
-	for( int i = 0; i < (Board::FrameCountX+2); i++)
-		for( int j = 0; j < (Board::FrameCountY+2); j++)
+	for( int i = 0; i < Board::FrameLength; i++ )
+		for( int j = 0; j < Board::FrameLength; j++ )
 		{
-
-			switch( lvl[i][j][2] )
+			if( tempx + i > 0 && tempx + i < Graphics::ScreenWidth && tempy + j > 0 && tempy + j < Graphics::ScreenHeight )
 			{
-			case -1: DrawSquare( lvl[i][j][1], b); break;
-			case 1:  DrawSquare( lvl[i][j][1], b); break;
-			case 2: DrawSquare( lvl[i][j][1], c2); break;
-			case 3: DrawSquare( lvl[i][j][1], c3); break;
-			case 4: DrawSquare( lvl[i][j][1], c4); break;
-			case 5: DrawSquare( lvl[i][j][1], c5); break;
-			case 6: DrawSquare( lvl[i][j][1], c6); break;
-			case 7: DrawSquare( lvl[i][j][1], c7); break;
-			case 8: DrawSquare( lvl[i][j][1], c8); break;
-			case 9: DrawSquare( lvl[i][j][1], c9); break;
-			case 99: DrawSquare( lvl[i][j][1], red); break;
-			case 0: DrawSquare( lvl[i][j][1], bg); break;
-			case -2: DrawSquare( lvl[i][j][1], bg); break;
-			default:DrawSquare( lvl[i][j][1], c1); break;
+				gfx2.PutPixel( tempx + i, tempy + j, c );
 			}
 		}
 }
+
 
 void Drawin::DrawNet( Color c )
 {
