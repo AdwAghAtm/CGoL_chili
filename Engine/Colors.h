@@ -119,4 +119,5 @@ namespace Colors
 	static constexpr Color Cyan = MakeRGB( 75u,203u,252u );
 	static constexpr Color Magenta = MakeRGB( 164u,123u,219u );
 	static constexpr Color Orange = MakeRGB( 255u,154u,21u );
+	static constexpr Color CoalChan = MakeRGB( 213u, 153u, 155u);
 }

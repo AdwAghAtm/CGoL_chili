@@ -89,5 +89,13 @@ void Game::ComposeFrame()
 	drw.DrawNet( Colors::DarkGray2 );
 	drw.DrawCircle( 250, 250, 20, Colors::White );
 	drw.DrawCircle(250, 250, 10, Colors::Red);
+	drw.DrawSquare(200, 100, Colors::CoalChan);
+	for (int i = 0; i < 20; i++)
+	{
+		for (int j = 0; j < 20; j++)
+		{
+			if(j<=i)drw.DrawSquare(200+i, 100+j, Colors::CoalChan);
+		}
+	}
 
 }
