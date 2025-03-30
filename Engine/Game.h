@@ -31,9 +31,11 @@ class Game
 public:
 	Game( class MainWindow& wnd );
 	Game( const Game& ) = delete;
+	~Game();
 	Game& operator=( const Game& ) = delete;
 	void Go();
 	void Pre();
+
 
 private:
 	void ComposeFrame();
