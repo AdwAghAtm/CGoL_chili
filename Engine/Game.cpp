@@ -27,6 +27,58 @@ int xStart,xEnd,
 bool tempClick; // bool if mouse is clicked
 
 int mousePos; // id of square at mouse's position
+int*** board; // 3D array of board
+
+void free_data(int ***data, size_t xlen, size_t ylen)
+{
+	size_t i, j;
+
+	for (i=0; i < xlen; ++i) {
+		if (data[i] != NULL) {
+			for (j=0; j < ylen; ++j)
+				free(data[i][j]);
+			free(data[i]);
+		}
+	}
+	free(data);
+}
+
+int ***alloc_data(size_t xlen, size_t ylen)
+{
+	int ***p;
+	size_t i, j;
+
+	if( (p = (int***)malloc( xlen * sizeof *p ) ) == NULL) 
+	{
+		perror("malloc 1");
+		return NULL;
+	}
+
+	for (i=0; i < xlen; ++i)
+		p[i] = NULL;
+
+	for (i=0; i < xlen; ++i)
+		if ((p[i] = (int**)malloc(ylen * sizeof *p[i])) == NULL) {
+			perror("malloc 2");
+			free_data(p, xlen, ylen);
+			return NULL;
+		}
+
+	for (i=0; i < xlen; ++i)
+		for (j=0; j < ylen; ++j)
+			p[i][j] = NULL;
+
+	for (i=0; i < xlen; ++i)
+		for (j=0; j < ylen; ++j)
+			if ((p[i][j] = (int*)malloc( 5 * sizeof *p[i][j])) == NULL) {
+				perror("malloc 3");
+				free_data(p, xlen, ylen);
+				return NULL;
+			}
+
+	return p;
+}
+
 
 Game::Game( MainWindow& wnd )
 	:
@@ -39,8 +91,24 @@ Game::Game( MainWindow& wnd )
 void Game::Pre()
 {
 	//allocating memory
-}
+	
+	board = alloc_data(Board::FrameCountX + 2, Board::FrameCountY + 2);
+	for (int i = 100; i < 120; i++)
+	{
+		for (int j = 100; j < 150; j++)
+		{
+			
+				if(i<j)board[i][j][0] = 1;
+			
+		}
+	}
 
+}
+Game::~Game()
+{
+	//freeing memory
+	free_data(board, Board::FrameCountX + 2, Board::FrameCountY + 2);
+}
 
 void Game::Go()
 {
@@ -89,12 +157,12 @@ void Game::ComposeFrame()
 	drw.DrawNet( Colors::DarkGray2 );
 	drw.DrawCircle( 250, 250, 20, Colors::White );
 	drw.DrawCircle(250, 250, 10, Colors::Red);
-	drw.DrawSquare(200, 100, Colors::CoalChan);
-	for (int i = 0; i < 20; i++)
+	//drw.DrawSquare(200, 100, Colors::CoalChan);
+	for (int i = 0; i < Board::FrameCountX; i++)
 	{
-		for (int j = 0; j < 20; j++)
+		for (int j = 0; j < Board::FrameCountY; j++)
 		{
-			if(j<=i)drw.DrawSquare(200+i, 100+j, Colors::CoalChan);
+			if(board[i][j][0]==1)drw.DrawSquare(i, j, Colors::CoalChan);
 		}
 	}
 
