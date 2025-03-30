@@ -25,6 +25,7 @@ int xStart,xEnd,
 		yStart,yEnd; // start/end coordinates of mouse cursor's click
 
 bool tempClick; // bool if mouse is clicked
+int tempClickClick = 0;
 
 int mousePos; // id of square at mouse's position
 int*** board; // 3D array of board
@@ -140,12 +141,22 @@ void Game::UpdateModel()
 			mousePos = brd.GetCursorPositionOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY());
 
 		drw.DrawSquare(mousePos, Colors::Lime);
+		//board[mousePos][0][0] = 1;
 		/*drw.DrawCircle( xStart, yStart, 14, Colors::Gray );
 		drw.DrawLine( xStart, yStart, xEnd, yEnd, Colors::Yellow );
 		drw.DrawCircle( xEnd, yEnd, 14, Colors::Gray );*/
 
 	}
+	if (!wnd.mouse.LeftIsPressed() && tempClick)
+	{
+		if (board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] == 0)
+			tempClickClick = 1;
 
+		else
+			tempClickClick = 0;
+
+		board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] = tempClickClick;
+	}
 	
 
 	if( wnd.mouse.IsInWindow() )
