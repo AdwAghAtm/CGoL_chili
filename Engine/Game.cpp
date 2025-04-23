@@ -92,8 +92,15 @@ Game::Game( MainWindow& wnd )
 void Game::Pre()
 {
 	//allocating memory
-	
+	//setting initial board to 0's	
 	board = alloc_data(Board::FrameCountX + 2, Board::FrameCountY + 2);
+	for (int i = 0; i < Board::FrameCountX; i++)
+	{
+		for (int j = 0; j < Board::FrameCountY; j++)
+		{
+			board[i][j][0] = 0;
+		}
+	}
 	for (int i = 100; i < 120; i++)
 	{
 		for (int j = 100; j < 150; j++)
