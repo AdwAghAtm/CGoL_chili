@@ -21,22 +21,59 @@
 #include "MainWindow.h"
 #include "Game.h"
 #include "ChiliException.h"
+#include <windows.h>
+#include <process.h>
+
+struct BoardLoopArg
+{
+	Game *theGame;
+	MainWindow *wnd;
+};
+
+unsigned __stdcall BoardLoop(void* arg) {
+	{
+		// Cast the void* back to the correct struct type
+		BoardLoopArg* myArgs = static_cast<BoardLoopArg*>(arg);
+
+		// Access struct members
+		Game* theGame = myArgs->theGame;
+		MainWindow* wnd = myArgs->wnd;
+
+		while( wnd->ProcessMessage() )
+			{
+				theGame->Go();
+			}
+	};
+
+	return 0;
+}
 
 int WINAPI wWinMain( HINSTANCE hInst,HINSTANCE,LPWSTR pArgs,INT )
 {
+	struct BoardLoopArg arg;
+
 	try
 	{
-		MainWindow wnd( hInst,pArgs );		
+		MainWindow wnd( hInst,pArgs );	
+		arg.wnd = &wnd;
 		try
 		{
 			Game theGame( wnd );
+			arg.theGame = &theGame;
 
 			theGame.Pre();
 
-			while( wnd.ProcessMessage() )
+			// Create the thread and pass the struct as an argument
+			HANDLE thread = (HANDLE)_beginthreadex(nullptr, 0, BoardLoop, &arg, 0, nullptr);
+
+			// Wait for the thread to finish (optional)
+			WaitForSingleObject(thread, INFINITE);
+			CloseHandle(thread);
+
+			/*while( wnd.ProcessMessage() )
 			{
 				theGame.Go();
-			}
+			}*/
 		}
 		catch( const ChiliException& e )
 		{
