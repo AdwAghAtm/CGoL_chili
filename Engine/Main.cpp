@@ -21,22 +21,81 @@
 #include "MainWindow.h"
 #include "Game.h"
 #include "ChiliException.h"
+#include <windows.h>
+#include <process.h>
 
-int WINAPI wWinMain( HINSTANCE hInst,HINSTANCE,LPWSTR pArgs,INT )
+struct BoardLoopArg
 {
-	try
+	Game* theGame;
+	MainWindow* wnd;
+};
+
+unsigned __stdcall BoardLoop(void* arg) {
 	{
-		MainWindow wnd( hInst,pArgs );		
+		// Cast the void* back to the correct struct type
+		BoardLoopArg* myArgs = static_cast<BoardLoopArg*>(arg);
+
+		// Access struct members
+		Game* theGame = myArgs->theGame;
+		MainWindow* wnd = myArgs->wnd;
+
 		try
 		{
-			Game theGame( wnd );
+			while (wnd->ProcessMessage())
+			{
+				theGame->Go();
+			}
+		}
+		catch (const ChiliException& e)
+		{
+			const std::wstring eMsg = e.GetFullMessage() +
+				L"\n\nException caught at Windows message loop.";
+			wnd->ShowMessageBox(e.GetExceptionType(), eMsg, MB_ICONERROR);
+		}
+		catch (const std::exception& e)
+		{
+			// need to convert std::exception what() string from narrow to wide string
+			const std::string whatStr(e.what());
+			const std::wstring eMsg = std::wstring(whatStr.begin(), whatStr.end()) +
+				L"\n\nException caught at Windows message loop.";
+			wnd->ShowMessageBox(L"Unhandled STL Exception", eMsg, MB_ICONERROR);
+		}
+		catch (...)
+		{
+			wnd->ShowMessageBox(L"Unhandled Non-STL Exception",
+				L"\n\nException caught at Windows message loop.", MB_ICONERROR);
+		}
+	};
+
+	return 0;
+}
+
+int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE, LPWSTR pArgs, INT)
+{
+	struct BoardLoopArg arg;
+
+	try
+	{
+		MainWindow wnd(hInst, pArgs);
+		arg.wnd = &wnd;
+		try
+		{
+			Game theGame(wnd);
+			arg.theGame = &theGame;
 
 			theGame.Pre();
 
-			while( wnd.ProcessMessage() )
+			// Create the thread and pass the struct as an argument
+			HANDLE thread = (HANDLE)_beginthreadex(nullptr, 0, BoardLoop, &arg, 0, nullptr);
+
+			// Wait for the thread to finish (optional)
+			WaitForSingleObject(thread, INFINITE);
+			CloseHandle(thread);
+
+			/*while( wnd.ProcessMessage() )
 			{
 				theGame.Go();
-			}
+			}*/
 		}
 		catch( const ChiliException& e )
 		{
