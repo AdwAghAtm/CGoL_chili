@@ -75,6 +75,7 @@ private:
 public:
 	static constexpr int ScreenWidth = 1300;
 	static constexpr int ScreenHeight = 800;
-	static constexpr int FrameWidth = 4;
+	static constexpr int FrameWidth = 30;
+	static constexpr int SquareSize = 35; //how to make it dynamic?
 
 };

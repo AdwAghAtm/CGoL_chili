@@ -101,16 +101,6 @@ void Game::Pre()
 			board[i][j][0] = 0;
 		}
 	}
-	for (int i = 100; i < 120; i++)
-	{
-		for (int j = 100; j < 150; j++)
-		{
-			
-				if(i<j)board[i][j][0] = 1;
-			
-		}
-	}
-
 }
 Game::~Game()
 {
@@ -173,9 +163,6 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 	drw.DrawNet( Colors::DarkGray2 );
-	drw.DrawCircle( 250, 250, 20, Colors::White );
-	drw.DrawCircle(250, 250, 10, Colors::Red);
-	//drw.DrawSquare(200, 100, Colors::CoalChan);
 	for (int i = 0; i < Board::FrameCountX; i++)
 	{
 		for (int j = 0; j < Board::FrameCountY; j++)
@@ -183,5 +170,4 @@ void Game::ComposeFrame()
 			if(board[i][j][0]==1)drw.DrawSquare(i, j, Colors::CoalChan);
 		}
 	}
-
 }

@@ -142,18 +142,18 @@ void Drawin::DrawSquare( int cord_x, int cord_y, Color c )
 
 void Drawin::DrawNet( Color c )
 {
-	for( int j = 0; j < Graphics::ScreenHeight; j++ )
+	for( int j = Board::BoardStartY; j < Board::BoardEndY; j++ )//is it for borad borders? //used to be  j < Graphics::ScreenHeight
 	{	
 
-		for( int i = 0; i < Graphics::ScreenWidth; i++ )
+		for( int i = Board::BoardStartX; i < Board::BoardEndX; i++ ) //used to be i < Graphics::ScreenWidth
 		{
 
 			for( int frame = 0; frame < Board::BetweenFrameMarginLength; frame ++)
-				if( (i - Board::BoardStartX +2 )% (Board::FrameLength + Board::BetweenFrameMarginLength) == frame ) 
+				if( (i - Board::BoardStartX)% (Board::FrameLength + Board::BetweenFrameMarginLength) == frame ) 
 					gfx2.PutPixel( i, j, c );
 
 			for( int frame = 0; frame < Board::BetweenFrameMarginLength; frame ++)
-				if( (j - Board::BoardStartY +2 )% (Board::FrameLength + Board::BetweenFrameMarginLength) == frame ) 
+				if( (j - Board::BoardStartY)% (Board::FrameLength + Board::BetweenFrameMarginLength) == frame ) 
 					gfx2.PutPixel( i, j, c );
 
 
