@@ -92,15 +92,9 @@ Game::Game( MainWindow& wnd )
 void Game::Pre()
 {
 	//allocating memory
-	//setting initial board to 0's	
 	board = alloc_data(Board::FrameCountX + 2, Board::FrameCountY + 2);
-	for (int i = 0; i < Board::FrameCountX; i++)
-	{
-		for (int j = 0; j < Board::FrameCountY; j++)
-		{
-			board[i][j][0] = 0;
-		}
-	}
+	//setting initial board to 0's	 
+	for (int i = 0; i < Board::FrameCountX + 2; i++)	for (int j = 0; j < Board::FrameCountY + 2; j++)	board[i][j][0] = 0;
 }
 Game::~Game()
 {
@@ -163,11 +157,11 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 	drw.DrawNet( Colors::DarkGray2 );
-	for (int i = 0; i < Board::FrameCountX; i++)
+	for (int i = 0; i < Board::FrameCountX + 2; i++)
 	{
-		for (int j = 0; j < Board::FrameCountY; j++)
+		for (int j = 0; j < Board::FrameCountY + 2; j++)
 		{
-			if(board[i][j][0]==1)drw.DrawSquare(i, j, Colors::CoalChan);
+			if (board[i][j][0] == 1)drw.DrawSquare(i, j, Colors::CoalChan);
 		}
 	}
 }

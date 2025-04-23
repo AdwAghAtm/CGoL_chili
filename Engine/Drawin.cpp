@@ -126,7 +126,7 @@ void Drawin::DrawSquare( int cord_x, int cord_y, Color c )
 	//top left coordinates
 	tempx = cord_x * ( Board::FrameLength + Board::BetweenFrameMarginLength )
 		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartX;
-	tempy = cord_y * ( Board::FrameLength + Board::BetweenFrameMarginLength )
+	tempy = cord_y *  (Board::FrameLength + Board::BetweenFrameMarginLength)
 		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartY;
 
 	for( int i = 0; i < Board::FrameLength; i++ )
