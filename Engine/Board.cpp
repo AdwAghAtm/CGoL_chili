@@ -1,6 +1,8 @@
 #include "Board.h"
 #include <iostream>
 
+int Board::FrameLength = 50;
+
 int Board::GetCursorPositionOnBoard( int cursorX, int cursorY )
 //it's already assumed that the cursor is on the board
 {

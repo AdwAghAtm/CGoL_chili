@@ -16,13 +16,16 @@ public:
 
 	// Board info
 
-	static const int FrameLength = Graphics::SquareSize;
+	static int FrameLength; //made it variable so we can change size in future
+		//Graphics::SquareSize;
 	static const int BetweenFrameMarginLength = 1; //net's width
 	static const int BoardStartX = Graphics::FrameWidth;
 	static const int BoardStartY = Graphics::FrameWidth;
-	static const int FrameCountX = (Graphics::ScreenWidth - MENU_WIDTH_PLACEHOLDER - 2 * Graphics::FrameWidth) / (FrameLength + BetweenFrameMarginLength) + 1;
+	static const int FrameCountX = 1000; 
+		//(Graphics::ScreenWidth - MENU_WIDTH_PLACEHOLDER - 2 * Graphics::FrameWidth) / (FrameLength + BetweenFrameMarginLength) + 1;
 		//(Graphics::ScreenWidth * Graphics::FrameWidth + 2) / (FrameLength + BetweenFrameMarginLength) + 1;
-	static const int FrameCountY = (Graphics::ScreenHeight - 2 * Graphics::FrameWidth) / (FrameLength + BetweenFrameMarginLength) + 1;
+	static const int FrameCountY = 1000;
+		//(Graphics::ScreenHeight - 2 * Graphics::FrameWidth) / (FrameLength + BetweenFrameMarginLength) + 1;
 		//(Graphics::ScreenHeight * Graphics::FrameWidth + 2) / (FrameLength + BetweenFrameMarginLength) + 1;
 
 	bool IsCursorOnBoard(int cursorX, int cursorY);
@@ -34,7 +37,8 @@ public:
 
 //private:
 
-	static const int BoardEndX = BoardStartX + (FrameCountX) * FrameLength + BetweenFrameMarginLength * (FrameCountX + 1);
-	static const int BoardEndY = BoardStartY + (FrameCountY) * FrameLength + BetweenFrameMarginLength * (FrameCountY + 1);
-
+	static const int BoardEndX = Graphics::ScreenWidth - Graphics::FrameWidth - MENU_WIDTH_PLACEHOLDER;
+		//BoardStartX + (FrameCountX) * FrameLength + BetweenFrameMarginLength * (FrameCountX + 1);
+	static const int BoardEndY = Graphics::ScreenHeight - Graphics::FrameWidth;
+	//BoardStartY + (FrameCountY) * FrameLength + BetweenFrameMarginLength * (FrameCountY + 1);
 };

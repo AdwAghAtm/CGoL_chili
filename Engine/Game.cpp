@@ -91,6 +91,7 @@ Game::Game( MainWindow& wnd )
 
 void Game::Pre()
 {
+	//int Board::FrameLength = 50;
 	//allocating memory
 	board = alloc_data(Board::FrameCountX + 2, Board::FrameCountY + 2);
 	//setting initial board to 0's	 
@@ -140,12 +141,14 @@ void Game::UpdateModel()
 	}
 	if (!wnd.mouse.LeftIsPressed() && tempClick)
 	{
-		if (board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] == 0)
+		if (board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] == 0) {
 			tempClickClick = 1;
-
-		else
+			Board::FrameLength += 10;
+		}
+		else {
 			tempClickClick = 0;
-
+			Board::FrameLength -= 10;
+		}
 		board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] = tempClickClick;
 	}
 	
