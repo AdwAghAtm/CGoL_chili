@@ -115,6 +115,15 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	if (wnd.kbd.KeyIsPressed(VK_UP)) //resize board with up and down arrows
+	{
+		if (Board::FrameLength < 100)	Board::FrameLength += 2;
+		
+	}
+	else if (wnd.kbd.KeyIsPressed(VK_DOWN))
+	{
+		if (Board::FrameLength > 4)	Board::FrameLength -= 2;
+	}
 
 	if( wnd.mouse.LeftIsPressed() && !tempClick )
 	{
@@ -143,11 +152,9 @@ void Game::UpdateModel()
 	{
 		if (board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] == 0) {
 			tempClickClick = 1;
-			Board::FrameLength += 10;
 		}
 		else {
 			tempClickClick = 0;
-			Board::FrameLength -= 10;
 		}
 		board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] = tempClickClick;
 	}
