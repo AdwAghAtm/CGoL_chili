@@ -40,6 +40,7 @@ public:
 private:
 	void ComposeFrame();
 	void UpdateModel();
+	void NextGeneration();
 	/********************************/
 	/*  User Functions              */
 	/********************************/

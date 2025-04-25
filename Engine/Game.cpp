@@ -159,7 +159,45 @@ void Game::UpdateModel()
 
 	if( wnd.mouse.IsInWindow() )
 		tempClick = wnd.mouse.LeftIsPressed();
+
+	if (wnd.kbd.KeyIsPressed(VK_SPACE))
+		NextGeneration();
+
 }
+
+void Game::NextGeneration()
+{
+	auto newBoard = alloc_data(Board::FrameCountX + 2, Board::FrameCountY + 2);
+
+	for (int x = 1; x < Board::FrameCountX + 1; x++)
+	{
+		for (int y = 1; y < Board::FrameCountY + 1; y++)
+		{
+			int liveNeighbors = 0;
+
+			for (int dx = -1; dx <= 1; dx++)
+				for (int dy = -1; dy <= 1; dy++)
+				{
+					if (dx == 0 && dy == 0) continue;
+					if (board[x + dx][y + dy][0] == 1)
+						liveNeighbors++;
+				}
+
+			if (board[x][y][0] == 1)
+			{
+				newBoard[x][y][0] = (liveNeighbors == 2 || liveNeighbors == 3) ? 1 : 0;
+			}
+			else
+			{
+				newBoard[x][y][0] = (liveNeighbors == 3) ? 1 : 0;
+			}
+		}
+	}
+
+	free_data(board, Board::FrameCountX + 2, Board::FrameCountY + 2);
+	board = newBoard;
+}
+
 
 void Game::ComposeFrame()
 {	
