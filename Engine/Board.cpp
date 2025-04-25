@@ -1,7 +1,10 @@
 #include "Board.h"
 #include <iostream>
 
-int Board::GetCursorPositionOnBoard( int cursorX, int cursorY ) //wczesniej juz zakladamy ze jest w okienku
+int Board::FrameLength = 50;
+
+int Board::GetCursorPositionOnBoard( int cursorX, int cursorY )
+//it's already assumed that the cursor is on the board
 {
 	if( !IsCursorOnBoard( cursorX, cursorY ) ) return -1;
 
@@ -22,8 +25,10 @@ bool Board::IsCursorOnBoard(int cursorX, int cursorY)
 		);
 }
 
-int Board::MoveCalc( int*** lvl, int startX, int startY, int dir, int prog ) //dir: 1-N, 2-S, 3-E, 4-W
-//jak ujemny to znaczy ze ma zniknac x)
+int Board::MoveCalc( int*** lvl, int startX, int startY, int dir, int prog )
+//directions: 1-N, 2-S, 3-E, 4-W
+//if negative then it has to disappear x)
+//not used, leaving it in case its useful
 {
 
 	switch( dir )
@@ -77,7 +82,8 @@ int Board::MoveCalc( int*** lvl, int startX, int startY, int dir, int prog ) //d
 
 }
 
-int Board::DirectionMove( int startX, int startY, int endX, int endY )//dir: 1-N, 2-S, 3-E, 4-W
+int Board::DirectionMove( int startX, int startY, int endX, int endY )
+//directions: 1-N, 2-S, 3-E, 4-W
 {
 	if( abs(startX - endX) > abs(startY - endY))
 	{ 
@@ -91,110 +97,6 @@ int Board::DirectionMove( int startX, int startY, int endX, int endY )//dir: 1-N
 		if( startY < endY ) return 2;	
 	}
 	return 0;
-}
-
-void Board::Move( int*** lvl, int startX, int startY,int goalX, int goalY, int dir, bool iflen, int len )
-{
-	if( !iflen )
-	{
-		switch( dir )
-		{
-		case 1: {
-			if( lvl[startX][startY-1][2] == lvl[startX][startY][2]  )
-				Move( lvl, startX, startY-1,goalX, goalY,dir );
-			else
-			{
-				len = MoveCalc(lvl,startX,startY,dir);
-				Move( lvl, startX, startY,goalX, goalY,dir,true,len );
-			}
-			break;}
-
-		case 2: {
-			if( lvl[startX][startY+1][2] == lvl[startX][startY][2]  )
-				Move( lvl, startX, startY+1,goalX, goalY,dir );
-			else
-			{
-				len = MoveCalc(lvl,startX,startY,dir);
-				Move( lvl, startX, startY,goalX, goalY,dir,true,len );
-			}
-			break;}
-
-		case 3: {
-			if( lvl[startX+1][startY][2] == lvl[startX][startY][2]  )
-				Move( lvl, startX+1, startY,goalX, goalY,dir );
-			else
-			{
-				len = MoveCalc(lvl,startX,startY,dir);
-				Move( lvl, startX, startY,goalX, goalY,dir,true,len );
-			}
-			break;}
-
-		case 4: {
-			if( lvl[startX-1][startY][2] == lvl[startX][startY][2]  )
-				Move( lvl, startX-1, startY,goalX, goalY,dir );
-			else
-			{
-				len = MoveCalc(lvl,startX,startY,dir);
-				Move( lvl, startX, startY,goalX, goalY,dir,true,len );
-			}
-			break;}
-
-		}
-	}
-	else
-	{
-
-		int tempCol = lvl[startX][startY][2];
-
-
-		helpDir(dir,startX,goalX,startY,goalY,len);
-
-		if( len == SECRET_NUMBER && lvl[startX][startY][2] == 99 )
-		{
-			lvl[startX][startY][2] = 0;
-
-		}
-		else if( len && len != SECRET_NUMBER )
-		{
-			lvl[goalX][goalY][2] = tempCol;
-			lvl[startX][startY][2] = 0;
-		}
-		switch( dir )
-		{
-		case 1: {
-			if( lvl[startX][startY+1][2] == tempCol  )
-			{
-
-				Move( lvl, startX, startY+1,goalX, goalY+1,dir,true,len );
-			}
-			break;}
-
-		case 2: {
-			if( lvl[startX][startY-1][2] == tempCol  )
-			{
-				Move( lvl, startX, startY-1,goalX, goalY-1,dir,true,len );
-			}
-			break;}
-
-		case 3: {
-			if( lvl[startX-1][startY][2] == tempCol  )
-			{
-
-				Move( lvl, startX-1, startY,goalX-1, goalY,dir,true,len );
-			}
-			break;}
-
-		case 4: {
-			if( lvl[startX+1][startY][2] == tempCol  )
-			{
-
-				Move( lvl, startX+1, startY,goalX+1, goalY,dir,true,len );
-			}
-			break;}
-
-		}
-
-	}
 }
 
 void Board::helpDir( int dir, int x1,int& x2,int y1,int& y2, int dt )
@@ -226,14 +128,4 @@ void Board::helpDir( int dir, int x1,int& x2,int y1,int& y2, int dt )
 
 	default: break;
 	}
-}
-
-int Board::isRedOn( int*** lvl )
-{
-	for( int i = 0; i < (Board::FrameCountX+2); i++)
-		for( int j = 0; j < (Board::FrameCountY+2); j++)
-			if( lvl[i][j][2] == 99 )
-				return 1;
-
-	return 0;
 }
