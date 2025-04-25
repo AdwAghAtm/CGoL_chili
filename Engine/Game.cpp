@@ -30,6 +30,8 @@ int tempClickClick = 0;
 int mousePos; // id of square at mouse's position
 int*** board; // 3D array of board
 
+Mouse::Event mouseEvent; // neccessary for scrolling
+
 void free_data(int ***data, size_t xlen, size_t ylen)
 {
 	size_t i, j;
@@ -114,12 +116,15 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	if (wnd.kbd.KeyIsPressed(VK_UP)) //resize board with up and down arrows
-	{
+
+	mouseEvent = wnd.mouse.Read();
+
+	if (wnd.kbd.KeyIsPressed(VK_UP) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp ) 
+	{		//resize board with up and down arrows or mouse scrolling
 		if (Board::FrameLength < Board::MaxFrameLength)
 			Board::FrameLength += 2;
 	}
-	else if (wnd.kbd.KeyIsPressed(VK_DOWN))
+	else if (wnd.kbd.KeyIsPressed(VK_DOWN) || mouseEvent.GetType() == Mouse::Event::Type::WheelDown )
 	{
 		if (Board::FrameLength > Board::MinFrameLength)
 			Board::FrameLength -= 2;
