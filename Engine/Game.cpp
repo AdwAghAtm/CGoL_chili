@@ -30,6 +30,8 @@ int tempClickClick = 0;
 int mousePos; // id of square at mouse's position
 int*** board; // 3D array of board
 
+Mouse::Event mouseEvent; // neccessary for scrolling
+
 void free_data(int ***data, size_t xlen, size_t ylen)
 {
 	size_t i, j;
@@ -114,12 +116,15 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	if (wnd.kbd.KeyIsPressed(VK_UP)) //resize board with up and down arrows
-	{
+
+	mouseEvent = wnd.mouse.Read();
+
+	if (wnd.kbd.KeyIsPressed(VK_UP) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp ) 
+	{		//resize board with up and down arrows or mouse scrolling
 		if (Board::FrameLength < Board::MaxFrameLength)
 			Board::FrameLength += 2;
 	}
-	else if (wnd.kbd.KeyIsPressed(VK_DOWN))
+	else if (wnd.kbd.KeyIsPressed(VK_DOWN) || mouseEvent.GetType() == Mouse::Event::Type::WheelDown )
 	{
 		if (Board::FrameLength > Board::MinFrameLength)
 			Board::FrameLength -= 2;
@@ -146,20 +151,61 @@ void Game::UpdateModel()
 		drw.DrawCircle( xEnd, yEnd, 14, Colors::Gray );*/
 	}
 
-	if (!wnd.mouse.LeftIsPressed() && tempClick)
-	{
-		if (board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] == 0) {
-			tempClickClick = 1;
-		}
-		else {
-			tempClickClick = 0;
-		}
-		board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] = tempClickClick;
-	}
+if ( brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+{
+	mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
+
+	int x = mousePos % (Board::FrameCountX + 2);
+	int y = mousePos / (Board::FrameCountX + 2);
+
+	if (wnd.mouse.LeftIsPressed() )
+		board[x][y][0] = 1; // draw
+
+	if (wnd.mouse.RightIsPressed())
+		board[x][y][0] = 0; // erase
+}
 
 	if( wnd.mouse.IsInWindow() )
 		tempClick = wnd.mouse.LeftIsPressed();
+
+	if (wnd.kbd.KeyIsPressed(VK_SPACE))
+		NextGeneration();
+
 }
+
+void Game::NextGeneration()
+{
+	auto newBoard = alloc_data(Board::FrameCountX + 2, Board::FrameCountY + 2);
+
+	for (int x = 1; x < Board::FrameCountX + 1; x++)
+	{
+		for (int y = 1; y < Board::FrameCountY + 1; y++)
+		{
+			int liveNeighbors = 0;
+
+			for (int dx = -1; dx <= 1; dx++)
+				for (int dy = -1; dy <= 1; dy++)
+				{
+					if (dx == 0 && dy == 0) continue;
+					if (board[x + dx][y + dy][0] == 1)
+						liveNeighbors++;
+				}
+
+			if (board[x][y][0] == 1)
+			{
+				newBoard[x][y][0] = (liveNeighbors == 2 || liveNeighbors == 3) ? 1 : 0;
+			}
+			else
+			{
+				newBoard[x][y][0] = (liveNeighbors == 3) ? 1 : 0;
+			}
+		}
+	}
+
+	free_data(board, Board::FrameCountX + 2, Board::FrameCountY + 2);
+	board = newBoard;
+}
+
 
 void Game::ComposeFrame()
 {	
