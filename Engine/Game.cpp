@@ -146,16 +146,19 @@ void Game::UpdateModel()
 		drw.DrawCircle( xEnd, yEnd, 14, Colors::Gray );*/
 	}
 
-	if (!wnd.mouse.LeftIsPressed() && tempClick)
-	{
-		if (board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] == 0) {
-			tempClickClick = 1;
-		}
-		else {
-			tempClickClick = 0;
-		}
-		board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] = tempClickClick;
-	}
+if ( brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+{
+	mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
+
+	int x = mousePos % (Board::FrameCountX + 2);
+	int y = mousePos / (Board::FrameCountX + 2);
+
+	if (wnd.mouse.LeftIsPressed() )
+		board[x][y][0] = 1; // draw
+
+	if (wnd.mouse.RightIsPressed())
+		board[x][y][0] = 0; // erase
+}
 
 	if( wnd.mouse.IsInWindow() )
 		tempClick = wnd.mouse.LeftIsPressed();
