@@ -173,10 +173,10 @@ void Game::ComposeFrame()
 		}
 	}
 	//draw menus and buttons etc
-	drw.DrawMenu(MenuPosition::Top, Colors::DarkGray2);
+	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
 	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
 	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
-	drw.DrawMenu(MenuPosition::Left, Colors::DarkGray2);
+	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
 
 	//draw visuals like frames
 	drw.DrawBoardFrame(Colors::DarkGray);
