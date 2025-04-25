@@ -139,6 +139,40 @@ void Drawin::DrawSquare( int cord_x, int cord_y, Color c )
 		}
 }
 
+void Drawin::DrawRectangle(int x0, int y0, int x1, int y1, Color c) {
+	for (int i = x0; i <= x1; i++) {
+		for (int j = y0; j <= y1; j++) {
+			gfx2.PutPixel(i, j, c);
+		}
+	}
+}
+void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX, int endY, int value, int minValue, int maxValue, Color c)
+{
+	//calculate slider relative position 
+	if (maxValue <= minValue)	return;
+	float proportion = float(value - minValue) / float(maxValue - minValue); //error handling to avoid division by zero
+	int sliderCorner, sliderSize;
+
+	switch (position)
+	{
+	case MenuPosition::Top:
+		sliderSize = endY - startY;
+
+		//Calculate slider absolute position horizontally
+		sliderCorner = startX + int(proportion * (endX - startX - sliderSize));
+		DrawRectangle(sliderCorner, startY, sliderCorner + sliderSize, startY + sliderSize, c);
+		break;
+
+	case MenuPosition::Left:
+		sliderSize = endX - startX;
+
+		// calculate slider absolute position vertically
+		sliderCorner = endY - sliderSize - int(proportion * (endY - startY - sliderSize));
+		DrawRectangle(startX, sliderCorner, startX + sliderSize, sliderCorner + sliderSize, c);
+		break;
+	}
+}
+
 
 void Drawin::DrawNet( Color c )
 {
@@ -187,13 +221,21 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
 		endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom;
 		break;
 	}
-
-	for (int y = startY; y < endY; y++)
+	DrawRectangle(startX, startY, endX, endY, backgroundColor);
+	switch (position)
 	{
-		for (int x = startX; x < endX; x++)
-		{
-			gfx2.PutPixel(x, y, backgroundColor);
-		}
+	case MenuPosition::Top:
+		//draw slider here
+		
+		break;
+	case MenuPosition::Bottom:
+		break;
+	case MenuPosition::Left:
+		//draw slider here
+		DrawSlider(MenuPosition::Left, startX, startY, endX, endY, Board::FrameLength, Board::MinFrameLength, Board::MaxFrameLength, Colors::Red);
+		break;
+	case MenuPosition::Right:
+		break;
 	}
 }
 
