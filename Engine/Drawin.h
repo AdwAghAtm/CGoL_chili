@@ -23,6 +23,8 @@ public:
 	void DrawSquare( int cord_x, int cord_y, Color c );
 
 	void DrawNet( Color c );
+	void DrawBoardFrame(Color c);
+	void DrawWindowFrame(Color c);
 
 
 private:

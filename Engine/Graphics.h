@@ -75,7 +75,10 @@ private:
 public:
 	static constexpr int ScreenWidth = 1300;
 	static constexpr int ScreenHeight = 800;
-	static constexpr int FrameWidth = 100;
-	static constexpr int SquareSize = 3; //how to make it dynamic?
-
+	static constexpr int BoardFrameWidth = 20;
+	static constexpr int WindowFrameWidth = 5;
+	static constexpr int MenuWidthLeft = 0; //menus with brushes, colors, buttons and sliders
+	static constexpr int MenuWidthRight = 150;
+	static constexpr int MenuHeightTop = 0;
+	static constexpr int MenuHeightBottom = 100;
 };

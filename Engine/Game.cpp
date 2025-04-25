@@ -91,7 +91,6 @@ Game::Game( MainWindow& wnd )
 
 void Game::Pre()
 {
-	//int Board::FrameLength = 50;
 	//allocating memory
 	board = alloc_data(Board::FrameCountX + 2, Board::FrameCountY + 2);
 	//setting initial board to 0's	 
@@ -117,12 +116,13 @@ void Game::UpdateModel()
 {
 	if (wnd.kbd.KeyIsPressed(VK_UP)) //resize board with up and down arrows
 	{
-		if (Board::FrameLength < 100)	Board::FrameLength += 2;
-		
+		if (Board::FrameLength < 100)
+			Board::FrameLength += 2;
 	}
 	else if (wnd.kbd.KeyIsPressed(VK_DOWN))
 	{
-		if (Board::FrameLength > 4)	Board::FrameLength -= 2;
+		if (Board::FrameLength > 4)
+			Board::FrameLength -= 2;
 	}
 
 	if( wnd.mouse.LeftIsPressed() && !tempClick )
@@ -130,8 +130,6 @@ void Game::UpdateModel()
 		xStart = wnd.mouse.GetPosX();
 		yStart = wnd.mouse.GetPosY();
 	}
-
-
 
 	if( tempClick  && brd.IsCursorOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY() )  ) 
 	{
@@ -146,8 +144,8 @@ void Game::UpdateModel()
 		/*drw.DrawCircle( xStart, yStart, 14, Colors::Gray );
 		drw.DrawLine( xStart, yStart, xEnd, yEnd, Colors::Yellow );
 		drw.DrawCircle( xEnd, yEnd, 14, Colors::Gray );*/
-
 	}
+
 	if (!wnd.mouse.LeftIsPressed() && tempClick)
 	{
 		if (board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] == 0) {
@@ -158,7 +156,6 @@ void Game::UpdateModel()
 		}
 		board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] = tempClickClick;
 	}
-	
 
 	if( wnd.mouse.IsInWindow() )
 		tempClick = wnd.mouse.LeftIsPressed();
@@ -174,4 +171,7 @@ void Game::ComposeFrame()
 			if (board[i][j][0] == 1)drw.DrawSquare(i, j, Colors::CoalChan);
 		}
 	}
+	drw.DrawBoardFrame(Colors::DarkGray);
+	drw.DrawWindowFrame(Colors::Gray);
+
 }

@@ -144,10 +144,8 @@ void Drawin::DrawNet( Color c )
 {
 	for( int j = Board::BoardStartY; j < Board::BoardEndY; j++ )//is it for borad borders? //used to be  j < Graphics::ScreenHeight
 	{	
-
 		for( int i = Board::BoardStartX; i < Board::BoardEndX; i++ ) //used to be i < Graphics::ScreenWidth
 		{
-
 			for( int frame = 0; frame < Board::BetweenFrameMarginLength; frame ++)
 				if( (i - Board::BoardStartX)% (Board::FrameLength + Board::BetweenFrameMarginLength) == frame ) 
 					gfx2.PutPixel( i, j, c );
@@ -155,8 +153,81 @@ void Drawin::DrawNet( Color c )
 			for( int frame = 0; frame < Board::BetweenFrameMarginLength; frame ++)
 				if( (j - Board::BoardStartY)% (Board::FrameLength + Board::BetweenFrameMarginLength) == frame ) 
 					gfx2.PutPixel( i, j, c );
+		}
+	}
+}
 
+void Drawin::DrawBoardFrame(Color c)
+{
+	//Top
+	for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardStartY; y++)
+	{
+		for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardEndX + Graphics::BoardFrameWidth; x++)
+		{
+			gfx2.PutPixel(x, y, c);
+		}
+	}
+	//Bottom
+	for (int y = Board::BoardEndY; y < Board::BoardEndY + Graphics::BoardFrameWidth; y++)
+	{
+		for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardEndX + Graphics::BoardFrameWidth; x++)
+		{
+			gfx2.PutPixel(x, y, c);
+		}
+	}
+	//Left
+	for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardStartX; x++)
+	{
+		for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardEndY + Graphics::BoardFrameWidth; y++)
+		{
+			gfx2.PutPixel(x, y, c);
+		}
+	}
+	//Right
+	for (int x = Board::BoardEndX; x < Board::BoardEndX + Graphics::BoardFrameWidth; x++)
+	{
+		for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardEndY + Graphics::BoardFrameWidth; y++)
+		{
+			gfx2.PutPixel(x, y, c);
+		}
+	}
+}
 
+void Drawin::DrawWindowFrame(Color c)
+{
+	// Górna ramka
+	for (int y = 0; y < Graphics::WindowFrameWidth; y++)
+	{
+		for (int x = 0; x < Graphics::ScreenWidth; x++)
+		{
+			gfx2.PutPixel(x, y, c);
+		}
+	}
+
+	// Dolna ramka
+	for (int y = Graphics::ScreenHeight - Graphics::WindowFrameWidth; y < Graphics::ScreenHeight; y++)
+	{
+		for (int x = 0; x < Graphics::ScreenWidth; x++)
+		{
+			gfx2.PutPixel(x, y, c);
+		}
+	}
+
+	// Lewa ramka
+	for (int x = 0; x < Graphics::WindowFrameWidth; x++)
+	{
+		for (int y = 0; y < Graphics::ScreenHeight; y++)
+		{
+			gfx2.PutPixel(x, y, c);
+		}
+	}
+
+	// Prawa ramka
+	for (int x = Graphics::ScreenWidth - Graphics::WindowFrameWidth; x < Graphics::ScreenWidth; x++)
+	{
+		for (int y = 0; y < Graphics::ScreenHeight; y++)
+		{
+			gfx2.PutPixel(x, y, c);
 		}
 	}
 }
