@@ -25,6 +25,7 @@ int xStart,xEnd,
 		yStart,yEnd; // start/end coordinates of mouse cursor's click
 
 bool tempClick; // bool if mouse is clicked
+int tempClickClick = 0;
 
 int mousePos; // id of square at mouse's position
 int*** board; // 3D array of board
@@ -91,18 +92,9 @@ Game::Game( MainWindow& wnd )
 void Game::Pre()
 {
 	//allocating memory
-	
 	board = alloc_data(Board::FrameCountX + 2, Board::FrameCountY + 2);
-	for (int i = 100; i < 120; i++)
-	{
-		for (int j = 100; j < 150; j++)
-		{
-			
-				if(i<j)board[i][j][0] = 1;
-			
-		}
-	}
-
+	//setting initial board to 0's	 
+	for (int i = 0; i < Board::FrameCountX + 2; i++)	for (int j = 0; j < Board::FrameCountY + 2; j++)	board[i][j][0] = 0;
 }
 Game::~Game()
 {
@@ -122,14 +114,22 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	if (wnd.kbd.KeyIsPressed(VK_UP)) //resize board with up and down arrows
+	{
+		if (Board::FrameLength < Board::MaxFrameLength)
+			Board::FrameLength += 2;
+	}
+	else if (wnd.kbd.KeyIsPressed(VK_DOWN))
+	{
+		if (Board::FrameLength > Board::MinFrameLength)
+			Board::FrameLength -= 2;
+	}
 
 	if( wnd.mouse.LeftIsPressed() && !tempClick )
 	{
 		xStart = wnd.mouse.GetPosX();
 		yStart = wnd.mouse.GetPosY();
 	}
-
-
 
 	if( tempClick  && brd.IsCursorOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY() )  ) 
 	{
@@ -140,30 +140,45 @@ void Game::UpdateModel()
 			mousePos = brd.GetCursorPositionOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY());
 
 		drw.DrawSquare(mousePos, Colors::Lime);
+		//board[mousePos][0][0] = 1;
 		/*drw.DrawCircle( xStart, yStart, 14, Colors::Gray );
 		drw.DrawLine( xStart, yStart, xEnd, yEnd, Colors::Yellow );
 		drw.DrawCircle( xEnd, yEnd, 14, Colors::Gray );*/
-
 	}
 
-	
+	if (!wnd.mouse.LeftIsPressed() && tempClick)
+	{
+		if (board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] == 0) {
+			tempClickClick = 1;
+		}
+		else {
+			tempClickClick = 0;
+		}
+		board[mousePos % (Board::FrameCountX + 2)][mousePos / (Board::FrameCountX + 2)][0] = tempClickClick;
+	}
 
 	if( wnd.mouse.IsInWindow() )
 		tempClick = wnd.mouse.LeftIsPressed();
 }
 
 void Game::ComposeFrame()
-{
+{	
+	//draw board, net and squares
 	drw.DrawNet( Colors::DarkGray2 );
-	drw.DrawCircle( 250, 250, 20, Colors::White );
-	drw.DrawCircle(250, 250, 10, Colors::Red);
-	//drw.DrawSquare(200, 100, Colors::CoalChan);
-	for (int i = 0; i < Board::FrameCountX; i++)
+	for (int i = 0; i < Board::FrameCountX + 2; i++)
 	{
-		for (int j = 0; j < Board::FrameCountY; j++)
+		for (int j = 0; j < Board::FrameCountY + 2; j++)
 		{
-			if(board[i][j][0]==1)drw.DrawSquare(i, j, Colors::CoalChan);
+			if (board[i][j][0] == 1)drw.DrawSquare(i, j, Colors::CoalChan);
 		}
 	}
+	//draw menus and buttons etc
+	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
+	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
+	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
+	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
 
+	//draw visuals like frames
+	drw.DrawBoardFrame(Colors::DarkGray);
+	drw.DrawWindowFrame(Colors::Gray);
 }
