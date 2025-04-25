@@ -44,5 +44,5 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 	drw.DrawCircle( 250, 250, 20, Colors::White );
-	drw.DrawCircle(250, 250, 10, Colors::Blue);
+	drw.DrawCircle(250, 250, 10, Colors::Red);
 }
