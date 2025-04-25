@@ -162,7 +162,8 @@ void Game::UpdateModel()
 }
 
 void Game::ComposeFrame()
-{
+{	
+	//draw board, net and squares
 	drw.DrawNet( Colors::DarkGray2 );
 	for (int i = 0; i < Board::FrameCountX + 2; i++)
 	{
@@ -171,7 +172,13 @@ void Game::ComposeFrame()
 			if (board[i][j][0] == 1)drw.DrawSquare(i, j, Colors::CoalChan);
 		}
 	}
+	//draw menus and buttons etc
+	drw.DrawMenu(MenuPosition::Top, Colors::DarkGray2);
+	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
+	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
+	drw.DrawMenu(MenuPosition::Left, Colors::DarkGray2);
+
+	//draw visuals like frames
 	drw.DrawBoardFrame(Colors::DarkGray);
 	drw.DrawWindowFrame(Colors::Gray);
-
 }

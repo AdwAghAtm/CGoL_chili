@@ -18,8 +18,8 @@ public:
 	// Board info
 	static int FrameLength; //made it variable so we can change size
 	static const int BetweenFrameMarginLength = 1; //net's width
-	static const int BoardStartX = Graphics::BoardFrameWidth + Graphics::MenuWidthLeft + Graphics::WindowFrameWidth;
-	static const int BoardStartY = Graphics::BoardFrameWidth + Graphics::MenuHeightTop + Graphics::WindowFrameWidth;
+	static const int BoardStartX = Graphics::BoardFrameWidth + Graphics::MenuThicknessLeft + Graphics::WindowFrameWidth;
+	static const int BoardStartY = Graphics::BoardFrameWidth + Graphics::MenuThicknessTop + Graphics::WindowFrameWidth;
 	static const int FrameCountX = 1000; //frame count is no longer calculated based on screen size bc board size is resizable
 	static const int FrameCountY = 1000; //but it used to be like below
 		//(Graphics::ScreenWidth * Graphics::FrameWidth + 2) / (FrameLength + BetweenFrameMarginLength) + 1;
@@ -32,8 +32,8 @@ public:
 	void helpDir( int dir, int x1,int& x2,int y1,int& y2, int dt );
 
 	//private: //why private?
-	static const int BoardEndX = Graphics::ScreenWidth - Graphics::BoardFrameWidth - Graphics::MenuWidthRight - Graphics::WindowFrameWidth;
+	static const int BoardEndX = Graphics::ScreenWidth - Graphics::BoardFrameWidth - Graphics::MenuThicknessRight - Graphics::WindowFrameWidth;
 		//BoardStartX + (FrameCountX) * FrameLength + BetweenFrameMarginLength * (FrameCountX + 1);
-	static const int BoardEndY = Graphics::ScreenHeight - Graphics::BoardFrameWidth - Graphics::MenuHeightBottom - Graphics::WindowFrameWidth;
+	static const int BoardEndY = Graphics::ScreenHeight - Graphics::BoardFrameWidth - Graphics::MenuThicknessBottom - Graphics::WindowFrameWidth;
 		//BoardStartY + (FrameCountY) * FrameLength + BetweenFrameMarginLength * (FrameCountY + 1);
 };

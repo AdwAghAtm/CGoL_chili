@@ -77,8 +77,8 @@ public:
 	static constexpr int ScreenHeight = 800;
 	static constexpr int BoardFrameWidth = 20;
 	static constexpr int WindowFrameWidth = 5;
-	static constexpr int MenuWidthLeft = 0; //menus with brushes, colors, buttons and sliders
-	static constexpr int MenuWidthRight = 150;
-	static constexpr int MenuHeightTop = 0;
-	static constexpr int MenuHeightBottom = 100;
+	static constexpr int MenuThicknessLeft = 0; //menus with brushes, colors, buttons and sliders
+	static constexpr int MenuThicknessRight = 150;
+	static constexpr int MenuThicknessTop = 0;
+	static constexpr int MenuThicknessBottom = 100;
 };

@@ -6,6 +6,14 @@
 #include "MainWindow.h"
 #include "Board.h"
 
+enum class MenuPosition
+{
+	Top,
+	Bottom,
+	Left,
+	Right
+};
+
 class Drawin
 {
 public:
@@ -23,6 +31,7 @@ public:
 	void DrawSquare( int cord_x, int cord_y, Color c );
 
 	void DrawNet( Color c );
+	void DrawMenu(MenuPosition position, Color backgroundColor);
 	void DrawBoardFrame(Color c);
 	void DrawWindowFrame(Color c);
 

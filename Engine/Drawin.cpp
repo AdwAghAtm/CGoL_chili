@@ -157,9 +157,49 @@ void Drawin::DrawNet( Color c )
 	}
 }
 
+void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
+{
+	int startX, startY, endX, endY;
+	switch (position)
+	{
+	case MenuPosition::Top:
+		startX = Graphics::WindowFrameWidth;
+		startY = Graphics::WindowFrameWidth;
+		endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight;
+		endY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop;
+		break;
+	case MenuPosition::Bottom:
+		startX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft;
+		startY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom;
+		endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth;
+		endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth;
+		break;
+	case MenuPosition::Left:
+		startX = Graphics::WindowFrameWidth;
+		startY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop;
+		endX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft;
+		endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth;
+		break;
+	case MenuPosition::Right:
+		startX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight;
+		startY = Graphics::WindowFrameWidth;
+		endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth;
+		endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom;
+		break;
+	}
+
+	for (int y = startY; y < endY; y++)
+	{
+		for (int x = startX; x < endX; x++)
+		{
+			gfx2.PutPixel(x, y, backgroundColor);
+		}
+	}
+}
+
 void Drawin::DrawBoardFrame(Color c)
 {
-	//Top
+	//Draws the frame around the board: top bottom left right rectangles respectively
 	for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardStartY; y++)
 	{
 		for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardEndX + Graphics::BoardFrameWidth; x++)
@@ -167,7 +207,6 @@ void Drawin::DrawBoardFrame(Color c)
 			gfx2.PutPixel(x, y, c);
 		}
 	}
-	//Bottom
 	for (int y = Board::BoardEndY; y < Board::BoardEndY + Graphics::BoardFrameWidth; y++)
 	{
 		for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardEndX + Graphics::BoardFrameWidth; x++)
@@ -175,7 +214,6 @@ void Drawin::DrawBoardFrame(Color c)
 			gfx2.PutPixel(x, y, c);
 		}
 	}
-	//Left
 	for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardStartX; x++)
 	{
 		for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardEndY + Graphics::BoardFrameWidth; y++)
@@ -183,7 +221,6 @@ void Drawin::DrawBoardFrame(Color c)
 			gfx2.PutPixel(x, y, c);
 		}
 	}
-	//Right
 	for (int x = Board::BoardEndX; x < Board::BoardEndX + Graphics::BoardFrameWidth; x++)
 	{
 		for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardEndY + Graphics::BoardFrameWidth; y++)
@@ -195,7 +232,7 @@ void Drawin::DrawBoardFrame(Color c)
 
 void Drawin::DrawWindowFrame(Color c)
 {
-	// Górna ramka
+	//Draws the frame around the window: top bottom left right rectangles respectively
 	for (int y = 0; y < Graphics::WindowFrameWidth; y++)
 	{
 		for (int x = 0; x < Graphics::ScreenWidth; x++)
@@ -203,8 +240,6 @@ void Drawin::DrawWindowFrame(Color c)
 			gfx2.PutPixel(x, y, c);
 		}
 	}
-
-	// Dolna ramka
 	for (int y = Graphics::ScreenHeight - Graphics::WindowFrameWidth; y < Graphics::ScreenHeight; y++)
 	{
 		for (int x = 0; x < Graphics::ScreenWidth; x++)
@@ -212,8 +247,6 @@ void Drawin::DrawWindowFrame(Color c)
 			gfx2.PutPixel(x, y, c);
 		}
 	}
-
-	// Lewa ramka
 	for (int x = 0; x < Graphics::WindowFrameWidth; x++)
 	{
 		for (int y = 0; y < Graphics::ScreenHeight; y++)
@@ -221,8 +254,6 @@ void Drawin::DrawWindowFrame(Color c)
 			gfx2.PutPixel(x, y, c);
 		}
 	}
-
-	// Prawa ramka
 	for (int x = Graphics::ScreenWidth - Graphics::WindowFrameWidth; x < Graphics::ScreenWidth; x++)
 	{
 		for (int y = 0; y < Graphics::ScreenHeight; y++)
