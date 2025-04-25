@@ -116,12 +116,12 @@ void Game::UpdateModel()
 {
 	if (wnd.kbd.KeyIsPressed(VK_UP)) //resize board with up and down arrows
 	{
-		if (Board::FrameLength < 100)
+		if (Board::FrameLength < Board::MaxFrameLength)
 			Board::FrameLength += 2;
 	}
 	else if (wnd.kbd.KeyIsPressed(VK_DOWN))
 	{
-		if (Board::FrameLength > 4)
+		if (Board::FrameLength > Board::MinFrameLength)
 			Board::FrameLength -= 2;
 	}
 

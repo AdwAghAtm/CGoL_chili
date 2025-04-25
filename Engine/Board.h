@@ -16,6 +16,8 @@ public:
 	int GetCursorPositionOnBoard( int cursorX, int cursorY) ;
 
 	// Board info
+	static const int MinFrameLength = 4;
+	static const int MaxFrameLength = 100;
 	static int FrameLength; //made it variable so we can change size
 	static const int BetweenFrameMarginLength = 1; //net's width
 	static const int BoardStartX = Graphics::BoardFrameWidth + Graphics::MenuThicknessLeft + Graphics::WindowFrameWidth;
