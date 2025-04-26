@@ -1,6 +1,6 @@
-/****************************************************************************************** 
- *	Chili DirectX Framework Version 16.07.20											  *	
- *	Game.h																				  *
+/******************************************************************************************
+ *	Chili DirectX Framework Version 16.07.20											  *
+ *	Display.h																				  *
  *	Copyright 2016 PlanetChili.net <http://www.planetchili.net>							  *
  *																						  *
  *	This file is part of The Chili DirectX Framework.									  *
@@ -25,31 +25,31 @@
 #include "Graphics.h"
 #include "Board.h"
 #include "Drawin.h"
-#include "Display.h"
 
-class Game
+class Display
 {
 public:
-	Game( class MainWindow& wnd );
-	Game( const Game& ) = delete;
-	~Game();
-	Game& operator=( const Game& ) = delete;
-	void Go();
-	void Pre();
+	Display(class MainWindow& wnd);
+	Display(const Display&) = delete;
+	~Display();
+	Display& operator=(const Display&) = delete;
 
 
-private:
-	void UpdateModel();
-	void NextGeneration();
+
+//private:
+	void ComposeFrame(int*** board);
+	//void UpdateModel();
+	//void NextGeneration();
 	/********************************/
 	/*  User Functions              */
 	/********************************/
 
 private:
 	MainWindow& wnd;
+	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
 	/********************************/
 	Board brd;
-	Display dspl;
+	Drawin drw;
 };

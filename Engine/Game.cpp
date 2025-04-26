@@ -85,9 +85,9 @@ int ***alloc_data(size_t xlen, size_t ylen)
 
 Game::Game( MainWindow& wnd )
 	:
-	wnd( wnd ),
-	gfx( wnd ),
-	drw( gfx )
+	dspl( wnd ),
+	wnd( wnd )
+
 {
 }
 
@@ -106,12 +106,12 @@ Game::~Game()
 
 void Game::Go()
 {
-	gfx.BeginFrame();	
+	//gfx.BeginFrame();	
 
-	ComposeFrame();
+	dspl.ComposeFrame(board);
 	UpdateModel();
 
-	gfx.EndFrame();
+	//gfx.EndFrame();
 }
 
 void Game::UpdateModel()
@@ -144,7 +144,9 @@ void Game::UpdateModel()
 		if(	brd.GetCursorPositionOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY() ) > -1 )
 			mousePos = brd.GetCursorPositionOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY());
 
-		drw.DrawSquare(mousePos, Colors::Lime);
+		//tu drw.DrawSquare(mousePos, Colors::Lime);
+		// 
+		// 
 		//board[mousePos][0][0] = 1;
 		/*drw.DrawCircle( xStart, yStart, 14, Colors::Gray );
 		drw.DrawLine( xStart, yStart, xEnd, yEnd, Colors::Yellow );
@@ -204,27 +206,4 @@ void Game::NextGeneration()
 
 	free_data(board, Board::FrameCountX + 2, Board::FrameCountY + 2);
 	board = newBoard;
-}
-
-
-void Game::ComposeFrame()
-{	
-	//draw board, net and squares
-	drw.DrawNet( Colors::DarkGray2 );
-	for (int i = 0; i < Board::FrameCountX + 2; i++)
-	{
-		for (int j = 0; j < Board::FrameCountY + 2; j++)
-		{
-			if (board[i][j][0] == 1)drw.DrawSquare(i, j, Colors::CoalChan);
-		}
-	}
-	//draw menus and buttons etc
-	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
-	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
-	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
-	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
-
-	//draw visuals like frames
-	drw.DrawBoardFrame(Colors::DarkGray);
-	drw.DrawWindowFrame(Colors::Gray);
 }

@@ -28,11 +28,6 @@ public:
 
 	bool IsCursorOnBoard(int cursorX, int cursorY);
 
-	int MoveCalc( int*** lvl, int startX, int startY, int dir, int prog=0 ); //dir: 1-N, 2-S, 3-E, 4-W
-	int DirectionMove( int startX, int startY, int endX, int endY );
-
-	void helpDir( int dir, int x1,int& x2,int y1,int& y2, int dt );
-
 	//private: //why private?
 	static const int BoardEndX = Graphics::ScreenWidth - Graphics::BoardFrameWidth - Graphics::MenuThicknessRight - Graphics::WindowFrameWidth;
 		//BoardStartX + (FrameCountX) * FrameLength + BetweenFrameMarginLength * (FrameCountX + 1);

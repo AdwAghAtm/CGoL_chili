@@ -1,6 +1,6 @@
-/****************************************************************************************** 
- *	Chili DirectX Framework Version 16.07.20											  *	
- *	Game.h																				  *
+/******************************************************************************************
+ *	Chili DirectX Framework Version 16.07.20											  *
+ *	Display.cpp																			  *
  *	Copyright 2016 PlanetChili.net <http://www.planetchili.net>							  *
  *																						  *
  *	This file is part of The Chili DirectX Framework.									  *
@@ -18,38 +18,48 @@
  *	You should have received a copy of the GNU General Public License					  *
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
-#pragma once
-
-#include "Keyboard.h"
-#include "Mouse.h"
-#include "Graphics.h"
-#include "Board.h"
-#include "Drawin.h"
+#include "MainWindow.h"
 #include "Display.h"
 
-class Game
+
+
+Display::Display(MainWindow& wnd)
+	:
+	wnd(wnd),
+	gfx(wnd),
+	drw(gfx)
+
 {
-public:
-	Game( class MainWindow& wnd );
-	Game( const Game& ) = delete;
-	~Game();
-	Game& operator=( const Game& ) = delete;
-	void Go();
-	void Pre();
+}
+
+Display::~Display()
+{
+	//freeing memory
+	//free_data(board, Board::FrameCountX + 2, Board::FrameCountY + 2);
+}
 
 
-private:
-	void UpdateModel();
-	void NextGeneration();
-	/********************************/
-	/*  User Functions              */
-	/********************************/
+void Display::ComposeFrame(int*** board)
+{
+	gfx.BeginFrame();
+	//draw board, net and squares
+	drw.DrawNet(Colors::DarkGray2);
+	for (int i = 0; i < Board::FrameCountX + 2; i++)
+	{
+		for (int j = 0; j < Board::FrameCountY + 2; j++)
+		{
+			if (board[i][j][0] == 1)drw.DrawSquare(i, j, Colors::CoalChan);
+		}
+	}
+	//draw menus and buttons etc
+	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
+	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
+	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
+	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
 
-private:
-	MainWindow& wnd;
-	/********************************/
-	/*  User Variables              */
-	/********************************/
-	Board brd;
-	Display dspl;
-};
+	//draw visuals like frames
+	drw.DrawBoardFrame(Colors::DarkGray);
+	drw.DrawWindowFrame(Colors::Gray);
+
+	gfx.EndFrame();
+}
