@@ -48,6 +48,7 @@ void Display::ComposeFrame(int*** board)
 	{
 		for (int j = 0; j < Board::FrameCountY + 2; j++)
 		{
+			//here square are drawn even if not visible
 			if (board[i][j][0] == 1)drw.DrawSquare(i, j, Colors::CoalChan);
 		}
 	}
