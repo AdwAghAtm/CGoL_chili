@@ -130,7 +130,7 @@ void Game::UpdateModel()
 		{
 			runGame = !runGame;
 		}
-		tempRunGame = true;
+		tempRunGame = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
 	}
 	else
 	{
