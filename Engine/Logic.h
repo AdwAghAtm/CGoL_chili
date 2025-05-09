@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Board.h"
+#include "Cell.h"
 
 class Logic
 {
@@ -13,20 +14,15 @@ public:
     // Board state management
     void InitializeBoard();
     void ClearBoard();
-    void SetCell(int x, int y, int value);
-    int GetCell(int x, int y) const;
+    void SetCell(int x, int y, bool value);
+    bool GetCell(int x, int y) const;
     void NextGeneration();
-    const int* const* const* GetBoard() const { return board; }
-    //The change from const int*** to const int* const* const* means:
-    //The innermost const prevents modifying the integer values
-    //The middle const prevents modifying the pointers to integers
-    //The outer const prevents modifying the pointers to pointers
-    
+    const Cell* const* GetBoard() const { return board; }
+
     // Memory management
-    static int*** AllocateBoard(int xSize, int ySize);
-    static void FreeBoard(int*** board, int xSize, int ySize);
+    static Cell** AllocateBoard(int xSize, int ySize);
+    static void FreeBoard(Cell** board, int xSize);
 
 private:
-    int*** board;
-    static const int CELL_STATES = 5; // Number of states per cell
+    Cell** board;
 }; 

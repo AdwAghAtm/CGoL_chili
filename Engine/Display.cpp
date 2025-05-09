@@ -39,17 +39,17 @@ Display::~Display()
 }
 
 
-void Display::ComposeFrame(const int* const* const* board)
+void Display::ComposeFrame(const Cell* const* board)
 {
 	gfx.BeginFrame();
 	//draw board, net and squares
 	drw.DrawNet(Colors::DarkGray2);
-	for (int i = 0; i < Board::FrameCountX + 2; i++)
+	for (int i = 0; i < Board::FrameCountX; i++)
 	{
-		for (int j = 0; j < Board::FrameCountY + 2; j++)
+		for (int j = 0; j < Board::FrameCountY; j++)
 		{
 			//here square are drawn even if not visible
-			if (board[i][j][0] == 1)
+			if (board[i][j].isAlive)
 			{
 				drw.DrawSquare(i, j, Colors::CoalChan);
 			}
