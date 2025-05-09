@@ -176,18 +176,26 @@ void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX,
 
 void Drawin::DrawNet( Color c )
 {
-	for( int j = Board::BoardStartY; j < Board::BoardEndY; j++ )//is it for borad borders? //used to be  j < Graphics::ScreenHeight
-	{	
-		for( int i = Board::BoardStartX; i < Board::BoardEndX; i++ ) //used to be i < Graphics::ScreenWidth
-		{
-			for( int frame = 0; frame < Board::BetweenFrameMarginLength; frame ++)
-				if( (i - Board::BoardStartX)% (Board::FrameLength + Board::BetweenFrameMarginLength) == frame ) 
-					gfx2.PutPixel( i, j, c );
+	//for( int j = Board::BoardStartY; j < Board::BoardEndY; j++ )//is it for borad borders? //used to be  j < Graphics::ScreenHeight
+	//{	
+	//	for( int i = Board::BoardStartX; i < Board::BoardEndX; i++ ) //used to be i < Graphics::ScreenWidth
+	//	{
+	//		for( int frame = 0; frame < Board::BetweenFrameMarginLength; frame ++)
+	//			if( (i - Board::BoardStartX)% (Board::FrameLength + Board::BetweenFrameMarginLength) == frame ) 
+	//				gfx2.PutPixel( i, j, c );
 
-			for( int frame = 0; frame < Board::BetweenFrameMarginLength; frame ++)
-				if( (j - Board::BoardStartY)% (Board::FrameLength + Board::BetweenFrameMarginLength) == frame ) 
-					gfx2.PutPixel( i, j, c );
-		}
+	//		for( int frame = 0; frame < Board::BetweenFrameMarginLength; frame ++)
+	//			if( (j - Board::BoardStartY)% (Board::FrameLength + Board::BetweenFrameMarginLength) == frame ) 
+	//				gfx2.PutPixel( i, j, c );
+	//	}
+	//}
+	for (int  i = Board::BoardStartX-1;  i < Board::BoardEndX;  i += Board::FrameLength + 1)
+	{
+		Drawin::DrawLine(i, Board::BoardStartY, i, Board::BoardEndY, c);
+	}
+	for (int i = Board::BoardStartY-1; i < Board::BoardEndY; i += Board::FrameLength + 1)
+	{
+		Drawin::DrawLine( Board::BoardStartX, i , Board::BoardEndX, i , c);
 	}
 }
 
