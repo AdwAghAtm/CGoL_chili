@@ -26,6 +26,8 @@ int xStart,xEnd,
 
 bool tempClick; // bool if mouse is clicked
 int tempClickClick = 0;
+bool runGame = false;
+bool tempRunGame = false;
 
 int mousePos; // id of square at mouse's position
 int*** board; // 3D array of board
@@ -110,6 +112,7 @@ void Game::Go()
 
 	dspl.ComposeFrame(board);
 	UpdateModel();
+	
 
 	//gfx.EndFrame();
 }
@@ -118,6 +121,8 @@ void Game::UpdateModel()
 {
 
 	mouseEvent = wnd.mouse.Read();
+
+	
 
 	if (wnd.kbd.KeyIsPressed(VK_UP) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp ) 
 	{		//resize board with up and down arrows or mouse scrolling
@@ -169,9 +174,22 @@ if ( brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
 
 	if( wnd.mouse.IsInWindow() )
 		tempClick = wnd.mouse.LeftIsPressed();
-
+	
+	//toggle game running (must hold spacebar for longer than 0.0000001ms to toggle)
 	if (wnd.kbd.KeyIsPressed(VK_SPACE))
-		NextGeneration();
+	{
+		if (!tempRunGame)
+		{
+			runGame = !runGame;
+		}
+		tempRunGame = true;
+	}
+	else
+	{
+		tempRunGame = false;
+	}
+	if (runGame)NextGeneration();
+	
 
 }
 
