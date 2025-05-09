@@ -39,7 +39,7 @@ Display::~Display()
 }
 
 
-void Display::ComposeFrame(int*** board)
+void Display::ComposeFrame(const int* const* const* board)
 {
 	gfx.BeginFrame();
 	//draw board, net and squares
@@ -49,7 +49,10 @@ void Display::ComposeFrame(int*** board)
 		for (int j = 0; j < Board::FrameCountY + 2; j++)
 		{
 			//here square are drawn even if not visible
-			if (board[i][j][0] == 1)drw.DrawSquare(i, j, Colors::CoalChan);
+			if (board[i][j][0] == 1)
+			{
+				drw.DrawSquare(i, j, Colors::CoalChan);
+			}
 		}
 	}
 	//draw menus and buttons etc

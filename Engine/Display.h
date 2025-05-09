@@ -25,6 +25,7 @@
 #include "Graphics.h"
 #include "Board.h"
 #include "Drawin.h"
+#include "Logic.h"
 
 class Display
 {
@@ -34,10 +35,9 @@ public:
 	~Display();
 	Display& operator=(const Display&) = delete;
 
-
+	void ComposeFrame(const int* const* const* board);
 
 //private:
-	void ComposeFrame(int*** board);
 	//void UpdateModel();
 	//void NextGeneration();
 	/********************************/
