@@ -112,6 +112,7 @@ void Game::Go()
 
 	dspl.ComposeFrame(board);
 	UpdateModel();
+	if (runGame)NextGeneration();
 	
 
 	//gfx.EndFrame();
@@ -122,7 +123,19 @@ void Game::UpdateModel()
 
 	mouseEvent = wnd.mouse.Read();
 
-	
+	//toggle game running (must hold spacebar for longer than 0.0000001ms to pause)
+	if (wnd.kbd.KeyIsPressed(VK_SPACE))
+	{
+		if (!tempRunGame)
+		{
+			runGame = !runGame;
+		}
+		tempRunGame = true;
+	}
+	else
+	{
+		tempRunGame = false;
+	}
 
 	if (wnd.kbd.KeyIsPressed(VK_UP) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp ) 
 	{		//resize board with up and down arrows or mouse scrolling
@@ -173,23 +186,7 @@ if ( brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
 }
 
 	if( wnd.mouse.IsInWindow() )
-		tempClick = wnd.mouse.LeftIsPressed();
-	
-	//toggle game running (must hold spacebar for longer than 0.0000001ms to toggle)
-	if (wnd.kbd.KeyIsPressed(VK_SPACE))
-	{
-		if (!tempRunGame)
-		{
-			runGame = !runGame;
-		}
-		tempRunGame = true;
-	}
-	else
-	{
-		tempRunGame = false;
-	}
-	if (runGame)NextGeneration();
-	
+		tempClick = wnd.mouse.LeftIsPressed();	
 
 }
 
