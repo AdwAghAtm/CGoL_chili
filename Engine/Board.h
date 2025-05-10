@@ -18,15 +18,13 @@ public:
 	static unsigned int BetweenFrameMarginLength; //net's width
 	static int BoardStartX;// = Graphics::BoardFrameWidth + Graphics::MenuThicknessLeft + Graphics::WindowFrameWidth;
 	static int BoardStartY;// = Graphics::BoardFrameWidth + Graphics::MenuThicknessTop + Graphics::WindowFrameWidth;
-	static const int FrameCountX = 1000; //frame count is no longer calculated based on screen size bc board size is resizable
-	static const int FrameCountY = 1000; //but it used to be like below
+	static int BoardEndX;
+	static int BoardEndY;
+	static int OffsetX;
+	static int OffsetY;
+	static const int FrameCountX = 15; //frame count is no longer calculated based on screen size bc board size is resizable
+	static const int FrameCountY = 15; //but it used to be like below
 		//(Graphics::ScreenWidth * Graphics::FrameWidth + 2) / (FrameLength + BetweenFrameMarginLength) + 1;
 
 	bool IsCursorOnBoard(int cursorX, int cursorY);
-
-	//private: //why private?
-	static const int BoardEndX = Graphics::ScreenWidth - Graphics::BoardFrameWidth - Graphics::MenuThicknessRight - Graphics::WindowFrameWidth;
-		//BoardStartX + (FrameCountX) * FrameLength + BetweenFrameMarginLength * (FrameCountX + 1);
-	static const int BoardEndY = Graphics::ScreenHeight - Graphics::BoardFrameWidth - Graphics::MenuThicknessBottom - Graphics::WindowFrameWidth;
-		//BoardStartY + (FrameCountY) * FrameLength + BetweenFrameMarginLength * (FrameCountY + 1);
 };

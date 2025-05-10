@@ -124,19 +124,20 @@ void Drawin::DrawSquare( int cord_x, int cord_y, Color c )
 {	
 	int tempx,tempy;
 	//top left coordinates
-	tempx = cord_x * ( Board::FrameLength + Board::BetweenFrameMarginLength )
-		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartX;
-	tempy = cord_y *  (Board::FrameLength + Board::BetweenFrameMarginLength)
-		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartY;
+	tempx = Board::BoardStartX + cord_x * ( Board::FrameLength + Board::BetweenFrameMarginLength )
+		- Board::FrameLength - Board::BetweenFrameMarginLength;
+	tempy = Board::BoardStartY + cord_y *  (Board::FrameLength + Board::BetweenFrameMarginLength)
+		- Board::FrameLength - Board::BetweenFrameMarginLength;
 
-	for( int i = 0; i < Board::FrameLength; i++ )
+	/*for( int i = 0; i < Board::FrameLength; i++ )
 		for( int j = 0; j < Board::FrameLength; j++ )
 		{
 			if( tempx + i > 0 && tempx + i < Graphics::ScreenWidth && tempy + j > 0 && tempy + j < Graphics::ScreenHeight )
 			{
 				gfx2.PutPixel( tempx + i, tempy + j, c );
 			}
-		}
+		}*/
+	DrawRectangle(tempx, tempy, tempx + Board::FrameLength, tempy + Board::FrameLength, c);
 }
 
 void Drawin::DrawRectangle(int x0, int y0, int x1, int y1, Color c) {

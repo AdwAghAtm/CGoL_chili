@@ -29,7 +29,7 @@ void Logic::ClearBoard()
 
 void Logic::SetCell(int x, int y, bool value)
 {
-    assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);
+    assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);//TODO
     board[x][y].isAlive = value;
     if (!value)
     {
@@ -94,7 +94,7 @@ void Logic::NextGeneration()
     }
 
     // Free old board and update to new generation
-    FreeBoard(board, Board::FrameCountX);
+    FreeBoard(board, Board::FrameCountX); //todo nie ususwac co klatke tylko robic drugiego boarda
     board = nextBoard;
 }
 
