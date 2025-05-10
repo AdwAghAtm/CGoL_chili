@@ -26,6 +26,7 @@
 #include "Board.h"
 #include "Drawin.h"
 #include "Display.h"
+#include "Logic.h"
 
 class Game
 {
@@ -52,5 +53,5 @@ private:
 	/********************************/
 	Board brd;
 	Display dspl;
-	
+	Logic logic;
 };

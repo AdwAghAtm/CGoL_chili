@@ -5,16 +5,12 @@
 #include "Graphics.h"
 #include "MainWindow.h"
 
-#define SECRET_NUMBER 20010901
-#define MENU_WIDTH_PLACEHOLDER 150
-#define MENU_HEIGHT_PLACEHOLDER 100
-
 class Board
 {
 public:
 
 	int GetCursorPositionOnBoard( int cursorX, int cursorY) ;
-
+	
 	// Board info
 	static const int MinFrameLength = 4;
 	static const int MaxFrameLength = 100;
