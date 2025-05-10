@@ -151,6 +151,7 @@ void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX,
 	//calculate slider relative position 
 	if (maxValue <= minValue)	return;
 	float proportion = float(value - minValue) / float(maxValue - minValue); //error handling to avoid division by zero
+	Board::BetweenFrameMarginLength = Board::FrameLength / 10;
 	int sliderCorner, sliderSize;
 
 	switch (position)
@@ -177,15 +178,22 @@ void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX,
 void Drawin::DrawNet( Color c )
 {
 	//draw vertical lines
-	for (int  i = Board::BoardStartX-1;  i < Board::BoardEndX;  i += Board::FrameLength + 1)
+	for (int j = 0; j < Board::BetweenFrameMarginLength; j++)
 	{
-		Drawin::DrawLine(i, Board::BoardStartY, i, Board::BoardEndY, c);
+		for (int i = Board::BoardStartX - Board::BetweenFrameMarginLength; i < Board::BoardEndX; i += Board::FrameLength + Board::BetweenFrameMarginLength)
+		{
+			Drawin::DrawLine(i + j, Board::BoardStartY, i + j, Board::BoardEndY, c);
+		}
 	}
 	//draw horizontal lines
-	for (int i = Board::BoardStartY-1; i < Board::BoardEndY; i += Board::FrameLength + 1)
+	for (int j = 0; j < Board::BetweenFrameMarginLength; j++)
 	{
-		Drawin::DrawLine( Board::BoardStartX, i , Board::BoardEndX, i , c);
+		for (int i = Board::BoardStartY - Board::BetweenFrameMarginLength; i < Board::BoardEndY; i += Board::FrameLength + Board::BetweenFrameMarginLength)
+		{
+			Drawin::DrawLine(Board::BoardStartX, i + j, Board::BoardEndX, i + j, c);
+		}
 	}
+	
 }
 
 void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
