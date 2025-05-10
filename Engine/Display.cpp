@@ -51,7 +51,7 @@ void Display::ComposeFrame(const Cell* const* board)
 			//here square are drawn even if not visible
 			if (board[i][j].isAlive)
 			{
-				drw.DrawSquare(i, j, Colors::CoalChan);
+				drw.DrawSquare(i, j, Colors::TransChan);
 			}
 		}
 	}
