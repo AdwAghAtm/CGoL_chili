@@ -117,7 +117,7 @@ void Game::UpdateModel()
 	if (wnd.mouse.IsInWindow())
 		tempClick = wnd.mouse.LeftIsPressed();
 
-	if (wnd.kbd.KeyIsPressed(VK_SPACE))
+	if (runGame)
 		NextGeneration();
 }
 
