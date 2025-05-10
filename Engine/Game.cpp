@@ -141,9 +141,10 @@ void Game::UpdateModel()
 		xEnd = wnd.mouse.GetPosX();
 		yEnd = wnd.mouse.GetPosY();
 
-		if(	brd.GetCursorPositionOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY() ) > -1 )
-			mousePos = brd.GetCursorPositionOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY());
-
+		if (brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()) > -1) {
+			mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
+		}
+			
 		//tu drw.DrawSquare(mousePos, Colors::Lime);
 		// 
 		// 

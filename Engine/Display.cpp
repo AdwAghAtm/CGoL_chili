@@ -49,6 +49,7 @@ void Display::ComposeFrame(int*** board)
 		for (int j = 0; j < Board::FrameCountY + 2; j++)
 		{
 			if (board[i][j][0] == 1)drw.DrawSquare(i, j, Colors::CoalChan);
+			if (board[i][j][0] == -1)drw.DrawSquare(i, j, Colors::Lime);
 		}
 	}
 	//draw menus and buttons etc
