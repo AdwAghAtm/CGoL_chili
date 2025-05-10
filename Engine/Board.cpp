@@ -2,6 +2,8 @@
 #include <iostream>
 
 int Board::FrameLength = 50;
+int Board::BoardStartX = Graphics::BoardFrameWidth + Graphics::MenuThicknessLeft + Graphics::WindowFrameWidth;
+int Board::BoardStartY = Graphics::BoardFrameWidth + Graphics::MenuThicknessTop + Graphics::WindowFrameWidth;
 
 int Board::GetCursorPositionOnBoard( int cursorX, int cursorY )
 //it's already assumed that the cursor is on the board
