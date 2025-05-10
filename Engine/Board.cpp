@@ -1,8 +1,8 @@
 #include "Board.h"
 #include <iostream>
 
-int Board::FrameLength = 50;
-int Board::BetweenFrameMarginLength = Board::FrameLength/10;
+unsigned int Board::FrameLength = 50;
+unsigned int Board::BetweenFrameMarginLength = Board::FrameLength/10;
 int Board::BoardStartX = Graphics::BoardFrameWidth + Graphics::MenuThicknessLeft + Graphics::WindowFrameWidth;
 int Board::BoardStartY = Graphics::BoardFrameWidth + Graphics::MenuThicknessTop + Graphics::WindowFrameWidth;
 
