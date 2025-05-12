@@ -17,12 +17,14 @@ public:
     void SetCell(int x, int y, bool value);
     bool GetCell(int x, int y) const;
     void NextGeneration();
-    const Cell* const* GetBoard() const { return board; }
+    const Cell* const* GetBoard() const { return currentBoard; }
 
     // Memory management
     static Cell** AllocateBoard(int xSize, int ySize);
     static void FreeBoard(Cell** board, int xSize);
 
 private:
-    Cell** board;
+    Cell** currentBoard;
+    Cell** nextBoard;
+    bool isCurrentBoardFirst;
 }; 

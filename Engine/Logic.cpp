@@ -2,7 +2,7 @@
 #include <cassert>
 
 Logic::Logic()
-    : board(nullptr)
+    : currentBoard(nullptr), nextBoard(nullptr), isCurrentBoardFirst(true)
 {
     InitializeBoard();
 }
@@ -15,39 +15,42 @@ Logic::~Logic()
 void Logic::InitializeBoard()
 {
     ClearBoard();
-    board = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
+    currentBoard = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
+    nextBoard = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
 }
 
 void Logic::ClearBoard()
 {
-    if (board)
+    if (currentBoard)
     {
-        FreeBoard(board, Board::FrameCountX);
-        board = nullptr;
+        FreeBoard(currentBoard, Board::FrameCountX);
+        currentBoard = nullptr;
+    }
+    if (nextBoard)
+    {
+        FreeBoard(nextBoard, Board::FrameCountX);
+        nextBoard = nullptr;
     }
 }
 
 void Logic::SetCell(int x, int y, bool value)
 {
     assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);
-    board[x][y].isAlive = value;
+    currentBoard[x][y].isAlive = value;
     if (!value)
     {
-        board[x][y].age = 0;
+        currentBoard[x][y].age = 0;
     }
 }
 
 bool Logic::GetCell(int x, int y) const
 {
     assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);
-    return board[x][y].isAlive;
+    return currentBoard[x][y].isAlive;
 }
 
 void Logic::NextGeneration()
 {
-    // Create a temporary board to store the next generation
-    Cell** nextBoard = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
-
     // Calculate next generation
     for (int x = 0; x < Board::FrameCountX; x++)
     {
@@ -65,7 +68,7 @@ void Logic::NextGeneration()
                     int nx = (x + dx + Board::FrameCountX) % Board::FrameCountX;
                     int ny = (y + dy + Board::FrameCountY) % Board::FrameCountY;
 
-                    if (board[nx][ny].isAlive)
+                    if (currentBoard[nx][ny].isAlive)
                     {
                         neighbors++;
                     }
@@ -73,13 +76,13 @@ void Logic::NextGeneration()
             }
 
             // Apply Conway's Game of Life rules
-            bool isAlive = board[x][y].isAlive;
+            bool isAlive = currentBoard[x][y].isAlive;
             if (isAlive)
             {
                 nextBoard[x][y].isAlive = (neighbors == 2 || neighbors == 3);
                 if (nextBoard[x][y].isAlive)
                 {
-                    nextBoard[x][y].age = board[x][y].age + 1;
+                    nextBoard[x][y].age = currentBoard[x][y].age + 1;
                 }
             }
             else
@@ -93,9 +96,8 @@ void Logic::NextGeneration()
         }
     }
 
-    // Free old board and update to new generation
-    FreeBoard(board, Board::FrameCountX);
-    board = nextBoard;
+    // Swap boards
+    std::swap(currentBoard, nextBoard);
 }
 
 Cell** Logic::AllocateBoard(int xSize, int ySize)
