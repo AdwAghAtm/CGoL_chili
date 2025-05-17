@@ -28,6 +28,9 @@ bool tempClick; // bool if mouse is clicked
 int tempClickClick = 0;
 bool runGame = false;
 bool tempRunGame = false;
+bool isPanning = false;
+int lastMouseX = 0;
+int lastMouseY = 0;
 
 int mousePos; // id of square at mouse's position
 
@@ -38,6 +41,8 @@ Game::Game(MainWindow& wnd)
 	dspl(wnd),
 	wnd(wnd)
 {
+	// Initialize the board view (centers the board)
+	brd.InitializeView();
 }
 
 void Game::Pre()
@@ -74,48 +79,114 @@ void Game::UpdateModel()
 		tempRunGame = false;
 	}
 
-	if (wnd.kbd.KeyIsPressed(VK_UP) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp ) 
-	{		//resize board with up and down arrows or mouse scrolling
+	// Handle zooming with mouse wheel or arrow keys
+	if ((wnd.kbd.KeyIsPressed(VK_OEM_PLUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp) && 
+		!wnd.kbd.KeyIsPressed(VK_SHIFT)) 
+	{
 		if (Board::FrameLength < Board::MaxFrameLength)
+		{
 			Board::FrameLength += 2;
+			// Recenter or adjust board position after zoom
+			brd.UpdateBoardBoundaries();
+		}
 	}
-	else if (wnd.kbd.KeyIsPressed(VK_DOWN) || mouseEvent.GetType() == Mouse::Event::Type::WheelDown)
+	else if ((wnd.kbd.KeyIsPressed(VK_OEM_MINUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelDown) && 
+			 !wnd.kbd.KeyIsPressed(VK_SHIFT))
 	{
 		if (Board::FrameLength > Board::MinFrameLength)
+		{
 			Board::FrameLength -= 2;
+			// Recenter or adjust board position after zoom
+			brd.UpdateBoardBoundaries();
+		}
 	}
 
+	// Handle panning with arrow keys
+	const int panSpeed = 10;
+	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+	{
+		brd.Pan(-panSpeed, 0);
+	}
+	if (wnd.kbd.KeyIsPressed(VK_LEFT))
+	{
+		brd.Pan(panSpeed, 0);
+	}
+	if (wnd.kbd.KeyIsPressed(VK_DOWN))
+	{
+		brd.Pan(0, -panSpeed);
+	}
+	if (wnd.kbd.KeyIsPressed(VK_UP))
+	{
+		brd.Pan(0, panSpeed);
+	}
+
+	// Handle mouse input for panning and cell toggling
 	if (wnd.mouse.LeftIsPressed() && !tempClick)
 	{
+		// Start of left-click
 		xStart = wnd.mouse.GetPosX();
 		yStart = wnd.mouse.GetPosY();
+		lastMouseX = xStart;
+		lastMouseY = yStart;
+		
+		// Decide if we're panning or toggling cells based on modifier keys
+		isPanning = wnd.kbd.KeyIsPressed(VK_SHIFT);
 	}
-
-	if (tempClick && brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	
+	if (wnd.mouse.LeftIsPressed() && isPanning)
 	{
-		xEnd = wnd.mouse.GetPosX();
-		yEnd = wnd.mouse.GetPosY();
-
-		if (brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()) > -1)
-			mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
+		// Handle drag panning
+		int currentX = wnd.mouse.GetPosX();
+		int currentY = wnd.mouse.GetPosY();
+		
+		// Calculate the delta since last update and apply pan
+		int deltaX = currentX - lastMouseX;
+		int deltaY = currentY - lastMouseY;
+		
+		if (deltaX != 0 || deltaY != 0)
+		{
+			brd.Pan(deltaX, deltaY);
+			
+			// Update last position
+			lastMouseX = currentX;
+			lastMouseY = currentY;
+		}
 	}
-
-	if (brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	else if (wnd.mouse.LeftIsPressed() && !isPanning && brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		// Handle cell toggling
+		mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
+		
+		if (mousePos > -1)
+		{
+			int x = mousePos % (Board::FrameCountX + 2);
+			int y = mousePos / (Board::FrameCountX + 2);
+			
+			logic.SetCell(x, y, true); // Draw
+		}
+	}
+	
+	// Handle right-click for erasing cells
+	if (wnd.mouse.RightIsPressed() && brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
 	{
 		mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
-
-		int x = mousePos % (Board::FrameCountX + 2);
-		int y = mousePos / (Board::FrameCountX + 2);
-
-		if (wnd.mouse.LeftIsPressed())
-			logic.SetCell(x, y, 1); // draw
-
-		if (wnd.mouse.RightIsPressed())
-			logic.SetCell(x, y, 0); // erase
+		
+		if (mousePos > -1)
+		{
+			int x = mousePos % (Board::FrameCountX + 2);
+			int y = mousePos / (Board::FrameCountX + 2);
+			
+			logic.SetCell(x, y, false); // Erase
+		}
 	}
-
-	if (wnd.mouse.IsInWindow())
-		tempClick = wnd.mouse.LeftIsPressed();
+	
+	// Reset flags when mouse is released
+	if (!wnd.mouse.LeftIsPressed())
+	{
+		isPanning = false;
+	}
+	
+	tempClick = wnd.mouse.LeftIsPressed();
 
 	if (runGame)
 		NextGeneration();

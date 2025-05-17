@@ -7,10 +7,30 @@ Drawin::Drawin( Graphics& key )
 {
 }
 
+// Helper function to check if coordinates are within screen bounds
+bool Drawin::IsWithinScreenBounds(int x, int y) const
+{
+	return (x >= 0 && x < Graphics::ScreenWidth && y >= 0 && y < Graphics::ScreenHeight);
+}
 
+// Safe version of PutPixel that checks boundaries
+void Drawin::SafePutPixel(int x, int y, Color c)
+{
+	if (IsWithinScreenBounds(x, y))
+	{
+		gfx2.PutPixel(x, y, c);
+	}
+}
 
 void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) // Bresenham's algorithm
 {
+	// Clip the line to the screen boundaries
+	// This is a simple implementation - more advanced clipping algorithms exist
+	if (x0 < 0 && x1 < 0) return; // Line is completely off-screen left
+	if (y0 < 0 && y1 < 0) return; // Line is completely off-screen top
+	if (x0 >= Graphics::ScreenWidth && x1 >= Graphics::ScreenWidth) return; // Line is completely off-screen right
+	if (y0 >= Graphics::ScreenHeight && y1 >= Graphics::ScreenHeight) return; // Line is completely off-screen bottom
+	
 	int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
 
 	dx = x1 - x0;
@@ -32,7 +52,9 @@ void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) // Bresenham's 
 			y = y1;
 			xe = x0;
 		}
-		gfx2.PutPixel(x, y, c);
+		
+		SafePutPixel(x, y, c);
+		
 		for (i = 0; x<xe; i++) {
 			x = x + 1;
 			if (px<0) {
@@ -45,7 +67,7 @@ void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) // Bresenham's 
 				}
 				px = px + 2 * (dy1 - dx1);
 			}
-			gfx2.PutPixel(x, y, c);
+			SafePutPixel(x, y, c);
 		}
 	} else {
 		if (dy >= 0) {
@@ -57,7 +79,9 @@ void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) // Bresenham's 
 			y = y1;
 			ye = y0;
 		}
-		gfx2.PutPixel(x, y, c);
+		
+		SafePutPixel(x, y, c);
+		
 		for (i = 0; y<ye; i++) {
 			y = y + 1;
 			if (py <= 0) {
@@ -70,26 +94,34 @@ void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) // Bresenham's 
 				}
 				py = py + 2 * (dx1 - dy1);
 			}
-			gfx2.PutPixel(x, y, c);
+			SafePutPixel(x, y, c);
 		}
 	}
 }
 
 void Drawin::DrawCircle(int x0, int y0, int r, Color c) // Bresenham's algorithm
 {
+	// Skip if circle is entirely off screen
+	if (x0 + r < 0 || x0 - r >= Graphics::ScreenWidth || 
+		y0 + r < 0 || y0 - r >= Graphics::ScreenHeight)
+	{
+		return;
+	}
+
 	int x = r;
 	int y = 0;
 	int decision = 4 - 2 * r;
 
 	while (y <= x) {
-		gfx2.PutPixel(x + x0, y + y0, c);
-		gfx2.PutPixel(y + x0, x + y0, c);
-		gfx2.PutPixel(-x + x0, y + y0, c);
-		gfx2.PutPixel(-y + x0, x + y0, c);
-		gfx2.PutPixel(-x + x0, -y + y0, c);
-		gfx2.PutPixel(-y + x0, -x + y0, c);
-		gfx2.PutPixel(x + x0, -y + y0, c);
-		gfx2.PutPixel(y + x0, -x + y0, c);
+		SafePutPixel(x + x0, y + y0, c);
+		SafePutPixel(y + x0, x + y0, c);
+		SafePutPixel(-x + x0, y + y0, c);
+		SafePutPixel(-y + x0, x + y0, c);
+		SafePutPixel(-x + x0, -y + y0, c);
+		SafePutPixel(-y + x0, -x + y0, c);
+		SafePutPixel(x + x0, -y + y0, c);
+		SafePutPixel(y + x0, -x + y0, c);
+		
 		if (decision < 0) {
 			decision += 4 * y + 6;
 		} else {
@@ -109,43 +141,59 @@ void Drawin::DrawSquare( int cord, Color c )
 	tempy = ( cord / (Board::FrameCountX+2) )*( Board::FrameLength + Board::BetweenFrameMarginLength ) 
 		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartY;
 
+	// Clip to screen boundaries
+	if (tempx + Board::FrameLength < 0 || tempx >= Graphics::ScreenWidth ||
+		tempy + Board::FrameLength < 0 || tempy >= Graphics::ScreenHeight)
+	{
+		return; // Square is entirely off-screen
+	}
+
 	for( int i = 0; i < Board::FrameLength; i++ )
 		for( int j = 0; j < Board::FrameLength; j++ )
 		{
-			if( tempx + i > 0 && tempx + i < Graphics::ScreenWidth && tempy + j > 0 && tempy + j < Graphics::ScreenHeight )
-			{
-				gfx2.PutPixel( tempx + i, tempy + j, c );
-			}
+			SafePutPixel( tempx + i, tempy + j, c );
 		}
 }
 
 
 void Drawin::DrawSquare( int cord_x, int cord_y, Color c )
 {	
-	int tempx,tempy;
-	//top left coordinates
-	tempx = cord_x * ( Board::FrameLength + Board::BetweenFrameMarginLength )
-		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartX;
-	tempy = cord_y *  (Board::FrameLength + Board::BetweenFrameMarginLength)
-		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartY;
-
-	for( int i = 0; i < Board::FrameLength; i++ )
-		for( int j = 0; j < Board::FrameLength; j++ )
-		{
-			if( tempx + i > 0 && tempx + i < Graphics::ScreenWidth && tempy + j > 0 && tempy + j < Graphics::ScreenHeight )
-			{
-				gfx2.PutPixel( tempx + i, tempy + j, c );
-			}
-		}
+    // Calculate the absolute pixel position for this cell
+    int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::BetweenFrameMarginLength);
+    int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::BetweenFrameMarginLength);
+    
+    // Check if the square is in the visible area before drawing
+    if (tempx + Board::FrameLength < 0 || 
+        tempx >= Graphics::ScreenWidth || 
+        tempy + Board::FrameLength < 0 || 
+        tempy >= Graphics::ScreenHeight)
+    {
+        return; // Cell is outside the visible area, don't draw it
+    }
+    
+    // Use the optimized rectangle drawing method with clipping
+    DrawRectangle(tempx, tempy, tempx + Board::FrameLength - 1, tempy + Board::FrameLength - 1, c);
 }
 
 void Drawin::DrawRectangle(int x0, int y0, int x1, int y1, Color c) {
+	// Clip rectangle to screen bounds
+	x0 = std::max(0, x0);
+	y0 = std::max(0, y0);
+	x1 = std::min(Graphics::ScreenWidth - 1, x1);
+	y1 = std::min(Graphics::ScreenHeight - 1, y1);
+	
+	// Check if rectangle is still visible after clipping
+	if (x0 > x1 || y0 > y1) {
+		return; // Rectangle is entirely off-screen
+	}
+	
 	for (int i = x0; i <= x1; i++) {
 		for (int j = y0; j <= y1; j++) {
-			gfx2.PutPixel(i, j, c);
+			gfx2.PutPixel(i, j, c); // Direct call is safe here since we clipped the coordinates
 		}
 	}
 }
+
 void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX, int endY, int value, int minValue, int maxValue, Color c)
 {
 	//calculate slider relative position 
@@ -177,23 +225,63 @@ void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX,
 
 void Drawin::DrawNet( Color c )
 {
-	//draw vertical lines
-	for (int j = 0; j < Board::BetweenFrameMarginLength; j++)
-	{
-		for (int i = Board::BoardStartX - Board::BetweenFrameMarginLength; i < Board::BoardEndX; i += Board::FrameLength + Board::BetweenFrameMarginLength)
-		{
-			Drawin::DrawLine(i + j, Board::BoardStartY, i + j, Board::BoardEndY, c);
-		}
-	}
-	//draw horizontal lines
-	for (int j = 0; j < Board::BetweenFrameMarginLength; j++)
-	{
-		for (int i = Board::BoardStartY - Board::BetweenFrameMarginLength; i < Board::BoardEndY; i += Board::FrameLength + Board::BetweenFrameMarginLength)
-		{
-			Drawin::DrawLine(Board::BoardStartX, i + j, Board::BoardEndX, i + j, c);
-		}
-	}
-	
+    // Calculate visible area bounds
+    int visibleStartX = std::max(0, Board::BoardStartX);
+    int visibleStartY = std::max(0, Board::BoardStartY);
+    int visibleEndX = std::min(Graphics::ScreenWidth, Board::BoardEndX);
+    int visibleEndY = std::min(Graphics::ScreenHeight, Board::BoardEndY);
+    
+    // Calculate the first visible grid lines (vertical and horizontal)
+    int firstVisibleCol = (visibleStartX - Board::BoardStartX) / (Board::FrameLength + Board::BetweenFrameMarginLength);
+    int firstVisibleRow = (visibleStartY - Board::BoardStartY) / (Board::FrameLength + Board::BetweenFrameMarginLength);
+    
+    if (firstVisibleCol < 0) firstVisibleCol = 0;
+    if (firstVisibleRow < 0) firstVisibleRow = 0;
+    
+    // Calculate the last visible grid lines
+    int lastVisibleCol = (visibleEndX - Board::BoardStartX) / (Board::FrameLength + Board::BetweenFrameMarginLength) + 1;
+    int lastVisibleRow = (visibleEndY - Board::BoardStartY) / (Board::FrameLength + Board::BetweenFrameMarginLength) + 1;
+    
+    if (lastVisibleCol > Board::FrameCountX) lastVisibleCol = Board::FrameCountX;
+    if (lastVisibleRow > Board::FrameCountY) lastVisibleRow = Board::FrameCountY;
+    
+    // Draw vertical lines
+    for (int col = firstVisibleCol; col <= lastVisibleCol; col++)
+    {
+        int x = Board::BoardStartX + col * (Board::FrameLength + Board::BetweenFrameMarginLength) - Board::BetweenFrameMarginLength;
+        
+        // Skip if outside the visible area
+        if (x < visibleStartX - Board::BetweenFrameMarginLength || x > visibleEndX)
+            continue;
+        
+        for (int i = 0; i < Board::BetweenFrameMarginLength; i++)
+        {
+            int lineX = x + i;
+            if (lineX >= visibleStartX && lineX < visibleEndX)
+            {
+                DrawLine(lineX, visibleStartY, lineX, visibleEndY, c);
+            }
+        }
+    }
+    
+    // Draw horizontal lines
+    for (int row = firstVisibleRow; row <= lastVisibleRow; row++)
+    {
+        int y = Board::BoardStartY + row * (Board::FrameLength + Board::BetweenFrameMarginLength) - Board::BetweenFrameMarginLength;
+        
+        // Skip if outside the visible area
+        if (y < visibleStartY - Board::BetweenFrameMarginLength || y > visibleEndY)
+            continue;
+        
+        for (int i = 0; i < Board::BetweenFrameMarginLength; i++)
+        {
+            int lineY = y + i;
+            if (lineY >= visibleStartY && lineY < visibleEndY)
+            {
+                DrawLine(visibleStartX, lineY, visibleEndX, lineY, c);
+            }
+        }
+    }
 }
 
 void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
@@ -246,66 +334,95 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
 
 void Drawin::DrawBoardFrame(Color c)
 {
-	//Draws the frame around the board: top bottom left right rectangles respectively
-	for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardStartY; y++)
-	{
-		for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardEndX + Graphics::BoardFrameWidth; x++)
-		{
-			gfx2.PutPixel(x, y, c);
+	// Clip the frame coordinates to screen bounds
+	int startX = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
+	int startY = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
+	int endX = std::min(Graphics::ScreenWidth - 1, Board::BoardEndX + Graphics::BoardFrameWidth);
+	int endY = std::min(Graphics::ScreenHeight - 1, Board::BoardEndY + Graphics::BoardFrameWidth);
+	
+	// Top frame
+	if (Board::BoardStartY >= Graphics::BoardFrameWidth) {
+		for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardStartY; y++) {
+			if (y >= 0 && y < Graphics::ScreenHeight) {
+				for (int x = std::max(0, Board::BoardStartX - Graphics::BoardFrameWidth); 
+					 x < std::min(Graphics::ScreenWidth, Board::BoardEndX + Graphics::BoardFrameWidth); x++) {
+					SafePutPixel(x, y, c);
+				}
+			}
 		}
 	}
-	for (int y = Board::BoardEndY; y < Board::BoardEndY + Graphics::BoardFrameWidth; y++)
-	{
-		for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardEndX + Graphics::BoardFrameWidth; x++)
-		{
-			gfx2.PutPixel(x, y, c);
+	
+	// Bottom frame
+	if (Board::BoardEndY < Graphics::ScreenHeight - Graphics::BoardFrameWidth) {
+		for (int y = Board::BoardEndY; y < std::min(Graphics::ScreenHeight, Board::BoardEndY + Graphics::BoardFrameWidth); y++) {
+			for (int x = std::max(0, Board::BoardStartX - Graphics::BoardFrameWidth); 
+				 x < std::min(Graphics::ScreenWidth, Board::BoardEndX + Graphics::BoardFrameWidth); x++) {
+				SafePutPixel(x, y, c);
+			}
 		}
 	}
-	for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardStartX; x++)
-	{
-		for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardEndY + Graphics::BoardFrameWidth; y++)
-		{
-			gfx2.PutPixel(x, y, c);
+	
+	// Left frame
+	if (Board::BoardStartX >= Graphics::BoardFrameWidth) {
+		for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardStartX; x++) {
+			if (x >= 0 && x < Graphics::ScreenWidth) {
+				for (int y = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth); 
+					 y < std::min(Graphics::ScreenHeight, Board::BoardEndY + Graphics::BoardFrameWidth); y++) {
+					SafePutPixel(x, y, c);
+				}
+			}
 		}
 	}
-	for (int x = Board::BoardEndX; x < Board::BoardEndX + Graphics::BoardFrameWidth; x++)
-	{
-		for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardEndY + Graphics::BoardFrameWidth; y++)
-		{
-			gfx2.PutPixel(x, y, c);
+	
+	// Right frame
+	if (Board::BoardEndX < Graphics::ScreenWidth - Graphics::BoardFrameWidth) {
+		for (int x = Board::BoardEndX; x < std::min(Graphics::ScreenWidth, Board::BoardEndX + Graphics::BoardFrameWidth); x++) {
+			for (int y = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth); 
+				 y < std::min(Graphics::ScreenHeight, Board::BoardEndY + Graphics::BoardFrameWidth); y++) {
+				SafePutPixel(x, y, c);
+			}
 		}
 	}
 }
 
 void Drawin::DrawWindowFrame(Color c)
 {
-	//Draws the frame around the window: top bottom left right rectangles respectively
-	for (int y = 0; y < Graphics::WindowFrameWidth; y++)
-	{
-		for (int x = 0; x < Graphics::ScreenWidth; x++)
-		{
-			gfx2.PutPixel(x, y, c);
-		}
-	}
-	for (int y = Graphics::ScreenHeight - Graphics::WindowFrameWidth; y < Graphics::ScreenHeight; y++)
-	{
-		for (int x = 0; x < Graphics::ScreenWidth; x++)
-		{
-			gfx2.PutPixel(x, y, c);
-		}
-	}
-	for (int x = 0; x < Graphics::WindowFrameWidth; x++)
-	{
-		for (int y = 0; y < Graphics::ScreenHeight; y++)
-		{
-			gfx2.PutPixel(x, y, c);
-		}
-	}
-	for (int x = Graphics::ScreenWidth - Graphics::WindowFrameWidth; x < Graphics::ScreenWidth; x++)
-	{
-		for (int y = 0; y < Graphics::ScreenHeight; y++)
-		{
-			gfx2.PutPixel(x, y, c);
-		}
-	}
+    // Clip to screen boundaries - this is almost always within bounds 
+    // but better safe than sorry
+
+    // Top frame
+    for (int y = 0; y < Graphics::WindowFrameWidth && y < Graphics::ScreenHeight; y++)
+    {
+        for (int x = 0; x < Graphics::ScreenWidth; x++)
+        {
+            SafePutPixel(x, y, c);
+        }
+    }
+    
+    // Bottom frame
+    for (int y = std::max(0, Graphics::ScreenHeight - Graphics::WindowFrameWidth); y < Graphics::ScreenHeight; y++)
+    {
+        for (int x = 0; x < Graphics::ScreenWidth; x++)
+        {
+            SafePutPixel(x, y, c);
+        }
+    }
+    
+    // Left frame
+    for (int x = 0; x < Graphics::WindowFrameWidth && x < Graphics::ScreenWidth; x++)
+    {
+        for (int y = 0; y < Graphics::ScreenHeight; y++)
+        {
+            SafePutPixel(x, y, c);
+        }
+    }
+    
+    // Right frame
+    for (int x = std::max(0, Graphics::ScreenWidth - Graphics::WindowFrameWidth); x < Graphics::ScreenWidth; x++)
+    {
+        for (int y = 0; y < Graphics::ScreenHeight; y++)
+        {
+            SafePutPixel(x, y, c);
+        }
+    }
 }
