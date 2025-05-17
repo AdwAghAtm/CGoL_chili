@@ -223,7 +223,7 @@ void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX,
 }
 
 
-void Drawin::DrawNet( Color c )
+void Drawin::DrawNet(Color c)
 {
     // Calculate visible area bounds
     int visibleStartX = std::max(0, Board::BoardStartX);
@@ -231,54 +231,55 @@ void Drawin::DrawNet( Color c )
     int visibleEndX = std::min(Graphics::ScreenWidth, Board::BoardEndX);
     int visibleEndY = std::min(Graphics::ScreenHeight, Board::BoardEndY);
     
-    // Calculate the first visible grid lines (vertical and horizontal)
-    int firstVisibleCol = (visibleStartX - Board::BoardStartX) / (Board::FrameLength + Board::BetweenFrameMarginLength);
-    int firstVisibleRow = (visibleStartY - Board::BoardStartY) / (Board::FrameLength + Board::BetweenFrameMarginLength);
+    // Skip if no part of the board is visible
+    if (visibleStartX >= visibleEndX || visibleStartY >= visibleEndY) {
+        return;
+    }
     
-    if (firstVisibleCol < 0) firstVisibleCol = 0;
-    if (firstVisibleRow < 0) firstVisibleRow = 0;
+    // Calculate cell size and spacing
+    int cellSize = Board::FrameLength;
+    int gridSpacing = cellSize + Board::BetweenFrameMarginLength;
     
-    // Calculate the last visible grid lines
-    int lastVisibleCol = (visibleEndX - Board::BoardStartX) / (Board::FrameLength + Board::BetweenFrameMarginLength) + 1;
-    int lastVisibleRow = (visibleEndY - Board::BoardStartY) / (Board::FrameLength + Board::BetweenFrameMarginLength) + 1;
+    // Calculate the cell grid indices that would contain the visible area
+    int firstColIdx = std::max(0, (visibleStartX - Board::BoardStartX) / gridSpacing);
+    int firstRowIdx = std::max(0, (visibleStartY - Board::BoardStartY) / gridSpacing);
+    int lastColIdx = std::min(Board::FrameCountX, (visibleEndX - Board::BoardStartX) / gridSpacing + 1);
+    int lastRowIdx = std::min(Board::FrameCountY, (visibleEndY - Board::BoardStartY) / gridSpacing + 1);
     
-    if (lastVisibleCol > Board::FrameCountX) lastVisibleCol = Board::FrameCountX;
-    if (lastVisibleRow > Board::FrameCountY) lastVisibleRow = Board::FrameCountY;
-    
-    // Draw vertical lines
-    for (int col = firstVisibleCol; col <= lastVisibleCol; col++)
-    {
-        int x = Board::BoardStartX + col * (Board::FrameLength + Board::BetweenFrameMarginLength) - Board::BetweenFrameMarginLength;
+    // Draw vertical grid lines
+    for (int col = firstColIdx; col <= lastColIdx; col++) {
+        // Line X position in screen space
+        int lineX = Board::BoardStartX + col * gridSpacing - Board::BetweenFrameMarginLength;
         
-        // Skip if outside the visible area
-        if (x < visibleStartX - Board::BetweenFrameMarginLength || x > visibleEndX)
+        // If beyond visible area, skip
+        if (lineX + Board::BetweenFrameMarginLength <= visibleStartX || lineX >= visibleEndX) {
             continue;
+        }
         
-        for (int i = 0; i < Board::BetweenFrameMarginLength; i++)
-        {
-            int lineX = x + i;
-            if (lineX >= visibleStartX && lineX < visibleEndX)
-            {
-                DrawLine(lineX, visibleStartY, lineX, visibleEndY, c);
+        // Draw the grid line (thicker line based on BetweenFrameMarginLength)
+        for (int thickness = 0; thickness < Board::BetweenFrameMarginLength; thickness++) {
+            int x = lineX + thickness;
+            if (x >= 0 && x < Graphics::ScreenWidth) {
+                DrawLine(x, visibleStartY, x, visibleEndY - 1, c);
             }
         }
     }
     
-    // Draw horizontal lines
-    for (int row = firstVisibleRow; row <= lastVisibleRow; row++)
-    {
-        int y = Board::BoardStartY + row * (Board::FrameLength + Board::BetweenFrameMarginLength) - Board::BetweenFrameMarginLength;
+    // Draw horizontal grid lines
+    for (int row = firstRowIdx; row <= lastRowIdx; row++) {
+        // Line Y position in screen space
+        int lineY = Board::BoardStartY + row * gridSpacing - Board::BetweenFrameMarginLength;
         
-        // Skip if outside the visible area
-        if (y < visibleStartY - Board::BetweenFrameMarginLength || y > visibleEndY)
+        // If beyond visible area, skip
+        if (lineY + Board::BetweenFrameMarginLength <= visibleStartY || lineY >= visibleEndY) {
             continue;
+        }
         
-        for (int i = 0; i < Board::BetweenFrameMarginLength; i++)
-        {
-            int lineY = y + i;
-            if (lineY >= visibleStartY && lineY < visibleEndY)
-            {
-                DrawLine(visibleStartX, lineY, visibleEndX, lineY, c);
+        // Draw the grid line (thicker line based on BetweenFrameMarginLength)
+        for (int thickness = 0; thickness < Board::BetweenFrameMarginLength; thickness++) {
+            int y = lineY + thickness;
+            if (y >= 0 && y < Graphics::ScreenHeight) {
+                DrawLine(visibleStartX, y, visibleEndX - 1, y, c);
             }
         }
     }
@@ -286,50 +287,58 @@ void Drawin::DrawNet( Color c )
 
 void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
 {
-	int startX, startY, endX, endY;
-	switch (position)
-	{
-	case MenuPosition::Top:
-		startX = Graphics::WindowFrameWidth;
-		startY = Graphics::WindowFrameWidth;
-		endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight;
-		endY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop;
-		break;
-	case MenuPosition::Bottom:
-		startX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft;
-		startY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom;
-		endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth;
-		endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth;
-		break;
-	case MenuPosition::Left:
-		startX = Graphics::WindowFrameWidth;
-		startY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop;
-		endX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft;
-		endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth;
-		break;
-	case MenuPosition::Right:
-		startX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight;
-		startY = Graphics::WindowFrameWidth;
-		endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth;
-		endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom;
-		break;
-	}
-	DrawRectangle(startX, startY, endX, endY, backgroundColor);
-	switch (position)
-	{
-	case MenuPosition::Top:
-		//draw slider here
-		
-		break;
-	case MenuPosition::Bottom:
-		break;
-	case MenuPosition::Left:
-		//draw slider here
-		DrawSlider(MenuPosition::Left, startX, startY, endX, endY, Board::FrameLength, Board::MinFrameLength, Board::MaxFrameLength, Colors::Red);
-		break;
-	case MenuPosition::Right:
-		break;
-	}
+    // Menu positions and sizes remain fixed regardless of board position or zoom
+    int startX, startY, endX, endY;
+    
+    switch (position)
+    {
+    case MenuPosition::Top:
+        startX = Graphics::WindowFrameWidth;
+        startY = Graphics::WindowFrameWidth;
+        endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight;
+        endY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop;
+        break;
+    case MenuPosition::Bottom:
+        startX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft;
+        startY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom;
+        endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth;
+        endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth;
+        break;
+    case MenuPosition::Left:
+        startX = Graphics::WindowFrameWidth;
+        startY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop;
+        endX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft;
+        endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth;
+        break;
+    case MenuPosition::Right:
+        startX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight;
+        startY = Graphics::WindowFrameWidth;
+        endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth;
+        endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom;
+        break;
+    }
+    
+    // Draw the menu background - direct rectangle draw since these coords should always be valid
+    DrawRectangle(startX, startY, endX - 1, endY - 1, backgroundColor);
+    
+    // Add controls to the menus
+    switch (position)
+    {
+    case MenuPosition::Top:
+        // Draw slider or other controls for top menu if needed
+        break;
+    case MenuPosition::Bottom:
+        // Draw controls for bottom menu if needed
+        break;
+    case MenuPosition::Left:
+        // Draw frame length slider
+        DrawSlider(MenuPosition::Left, startX, startY, endX, endY, Board::FrameLength, 
+                  Board::MinFrameLength, Board::MaxFrameLength, Colors::Red);
+        break;
+    case MenuPosition::Right:
+        // Draw controls for right menu if needed
+        break;
+    }
 }
 
 void Drawin::DrawBoardFrame(Color c)
