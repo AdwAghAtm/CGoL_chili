@@ -42,28 +42,32 @@ Display::~Display()
 void Display::ComposeFrame(const Cell* const* board)
 {
 	gfx.BeginFrame();
-	//draw board, net and squares
+	
+	// 1. First draw the window frame
+	drw.DrawWindowFrame(Colors::Gray);
+	
+	// 2. Draw board with net and squares
 	drw.DrawNet(Colors::DarkGray2);
 	for (int i = 0; i < Board::FrameCountX; i++)
 	{
 		for (int j = 0; j < Board::FrameCountY; j++)
 		{
-			//here square are drawn even if not visible
 			if (board[i][j].isAlive)
 			{
-				drw.DrawSquare(i, j, Colors::CoalChan);
+				drw.DrawSquare(i, j, Colors::TransChan);
 			}
 		}
 	}
-	//draw menus and buttons etc
+	
+	// 3. Draw board frame
+	drw.DrawBoardFrame(Colors::DarkGray);
+	
+	// 4. LAST: Draw menus/sidebars (these should always be on top)
+	// Draw in specific order: left, top, right, bottom to handle corners correctly
+	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
 	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
 	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
 	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
-	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
-
-	//draw visuals like frames
-	drw.DrawBoardFrame(Colors::DarkGray);
-	drw.DrawWindowFrame(Colors::Gray);
-
+	
 	gfx.EndFrame();
 }
