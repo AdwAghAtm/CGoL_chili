@@ -201,13 +201,14 @@ void Game::UpdateModel()
 		lastMouseX = xStart;
 		lastMouseY = yStart;
 		
-		// Decide if we're panning or toggling cells based on modifier keys
-		isPanning = wnd.kbd.KeyIsPressed(VK_SHIFT);
+		// Decide if we're panning or toggling cells - reverse the logic
+		// Now default is panning, shift+click to toggle cells
+		isPanning = !wnd.kbd.KeyIsPressed(VK_SHIFT);
 	}
 	
 	if (wnd.mouse.LeftIsPressed() && isPanning)
 	{
-		// Handle drag panning
+		// Handle drag panning (now the default action)
 		int currentX = wnd.mouse.GetPosX();
 		int currentY = wnd.mouse.GetPosY();
 		
@@ -226,7 +227,7 @@ void Game::UpdateModel()
 	}
 	else if (wnd.mouse.LeftIsPressed() && !isPanning && brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
 	{
-		// Handle cell toggling
+		// Handle cell toggling (now requires shift key)
 		mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
 		
 		if (mousePos > -1)
@@ -238,8 +239,9 @@ void Game::UpdateModel()
 		}
 	}
 	
-	// Handle right-click for erasing cells
-	if (wnd.mouse.RightIsPressed() && brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	// Handle right-click for erasing cells (also now requires shift key)
+	if (wnd.mouse.RightIsPressed() && wnd.kbd.KeyIsPressed(VK_SHIFT) && 
+		brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
 	{
 		mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
 		
@@ -250,6 +252,21 @@ void Game::UpdateModel()
 			
 			logic.SetCell(x, y, false); // Erase
 		}
+	}
+	
+	// Add visual cue for the mouse cursor style - use the custom Windows cursor API
+	if (wnd.kbd.KeyIsPressed(VK_SHIFT) && brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		// Would set cursor to "pen/crosshair" style if we had direct access to the Windows API
+		// For now we can just log that we would change cursor here
+	}
+	else if (wnd.mouse.LeftIsPressed() && isPanning)
+	{
+		// Would set cursor to "grabbing/closed hand" style if we had direct access to the Windows API
+	}
+	else if (brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		// Would set cursor to "grab/open hand" style if we had direct access to the Windows API
 	}
 	
 	// Reset flags when mouse is released

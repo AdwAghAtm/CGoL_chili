@@ -196,30 +196,44 @@ void Drawin::DrawRectangle(int x0, int y0, int x1, int y1, Color c) {
 
 void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX, int endY, int value, int minValue, int maxValue, Color c)
 {
-	//calculate slider relative position 
-	if (maxValue <= minValue)	return;
-	float proportion = float(value - minValue) / float(maxValue - minValue); //error handling to avoid division by zero
-	Board::BetweenFrameMarginLength = Board::FrameLength / 10;
-	int sliderCorner, sliderSize;
+    // Calculate slider relative position 
+    if (maxValue <= minValue) return;
+    
+    // Calculate proportion based on current value
+    float proportion = float(value - minValue) / float(maxValue - minValue);
+    
+    // Fixed slider thickness regardless of board zoom/position
+    const int sliderThickness = 5;
+    int sliderCorner, sliderSize;
 
-	switch (position)
-	{
-	case MenuPosition::Top:
-		sliderSize = endY - startY;
+    switch (position)
+    {
+    case MenuPosition::Top:
+        sliderSize = std::min(endY - startY, sliderThickness);
+        
+        // Calculate slider absolute position horizontally
+        sliderCorner = startX + int(proportion * (endX - startX - sliderSize));
+        
+        // Ensure slider stays within menu bounds
+        sliderCorner = std::max(startX, std::min(sliderCorner, endX - sliderSize));
+        
+        // Draw the slider with direct rectangle drawing to ensure it appears
+        DrawRectangle(sliderCorner, startY, sliderCorner + sliderSize, endY - 1, c);
+        break;
 
-		//Calculate slider absolute position horizontally
-		sliderCorner = startX + int(proportion * (endX - startX - sliderSize));
-		DrawRectangle(sliderCorner, startY, sliderCorner + sliderSize, startY + sliderSize, c);
-		break;
-
-	case MenuPosition::Left:
-		sliderSize = endX - startX;
-
-		// calculate slider absolute position vertically
-		sliderCorner = endY - sliderSize - int(proportion * (endY - startY - sliderSize));
-		DrawRectangle(startX, sliderCorner, startX + sliderSize, sliderCorner + sliderSize, c);
-		break;
-	}
+    case MenuPosition::Left:
+        sliderSize = std::min(endX - startX, sliderThickness);
+        
+        // Calculate slider absolute position vertically (reverse direction for intuitive feel)
+        sliderCorner = startY + int((1.0f - proportion) * (endY - startY - sliderSize));
+        
+        // Ensure slider stays within menu bounds
+        sliderCorner = std::max(startY, std::min(sliderCorner, endY - sliderSize));
+        
+        // Draw the slider with direct rectangle drawing to ensure it appears
+        DrawRectangle(startX, sliderCorner, endX - 1, sliderCorner + sliderSize, c);
+        break;
+    }
 }
 
 
@@ -287,57 +301,99 @@ void Drawin::DrawNet(Color c)
 
 void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
 {
-    // Menu positions and sizes remain fixed regardless of board position or zoom
+    // Menu positions and sizes are fixed constants based on Graphics settings
+    // They are completely independent of Board position or zoom
     int startX, startY, endX, endY;
     
+    // Calculate menu bounds based on screen size and fixed margins
+    // Ensure menus extend fully to screen edges
     switch (position)
     {
     case MenuPosition::Top:
-        startX = Graphics::WindowFrameWidth;
-        startY = Graphics::WindowFrameWidth;
-        endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight;
+        startX = 0;  // Extend to left edge
+        startY = 0;  // Extend to top edge
+        endX = Graphics::ScreenWidth;  // Extend to right edge
         endY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop;
         break;
     case MenuPosition::Bottom:
-        startX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft;
+        startX = 0;  // Extend to left edge
         startY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom;
-        endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth;
-        endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth;
+        endX = Graphics::ScreenWidth;  // Extend to right edge
+        endY = Graphics::ScreenHeight;  // Extend to bottom edge
         break;
     case MenuPosition::Left:
-        startX = Graphics::WindowFrameWidth;
-        startY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop;
+        startX = 0;  // Extend to left edge
+        startY = 0;  // Extend to top edge
         endX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft;
-        endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth;
+        endY = Graphics::ScreenHeight;  // Extend to bottom edge
         break;
     case MenuPosition::Right:
         startX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight;
-        startY = Graphics::WindowFrameWidth;
-        endX = Graphics::ScreenWidth - Graphics::WindowFrameWidth;
-        endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom;
+        startY = 0;  // Extend to top edge
+        endX = Graphics::ScreenWidth;  // Extend to right edge
+        endY = Graphics::ScreenHeight;  // Extend to bottom edge
         break;
     }
     
-    // Draw the menu background - direct rectangle draw since these coords should always be valid
-    DrawRectangle(startX, startY, endX - 1, endY - 1, backgroundColor);
+    // Draw the menu background - use direct pixel drawing for maximum control
+    for (int x = startX; x < endX; x++) {
+        for (int y = startY; y < endY; y++) {
+            gfx2.PutPixel(x, y, backgroundColor);
+        }
+    }
     
     // Add controls to the menus
     switch (position)
     {
     case MenuPosition::Top:
-        // Draw slider or other controls for top menu if needed
+        // Top menu controls (if any)
         break;
     case MenuPosition::Bottom:
-        // Draw controls for bottom menu if needed
+        // Bottom menu controls (if any)
         break;
     case MenuPosition::Left:
-        // Draw frame length slider
-        DrawSlider(MenuPosition::Left, startX, startY, endX, endY, Board::FrameLength, 
-                  Board::MinFrameLength, Board::MaxFrameLength, Colors::Red);
+        // Left menu - draw zoom level slider
+        // Use a fixed width for the slider that doesn't depend on Board variables
+        DrawSlider(MenuPosition::Left, 
+                  startX + 2,           // Add a small margin
+                  startY + 20,          // Position down from top
+                  endX - 2,             // Full width minus margin
+                  endY - 20,            // Leave space at bottom
+                  Board::FrameLength,   // Current value
+                  Board::MinFrameLength, // Minimum value
+                  Board::MaxFrameLength, // Maximum value
+                  Colors::Red);         // Slider color
         break;
     case MenuPosition::Right:
-        // Draw controls for right menu if needed
+        // Right menu controls (if any)
         break;
+    }
+    
+    // Draw a border around the menu for visual clarity
+    Color borderColor = Colors::Gray;
+    
+    // Top border
+    for (int x = startX; x < endX; x++) {
+        gfx2.PutPixel(x, startY, borderColor);
+        gfx2.PutPixel(x, startY + 1, borderColor);
+    }
+    
+    // Bottom border
+    for (int x = startX; x < endX; x++) {
+        gfx2.PutPixel(x, endY - 1, borderColor);
+        gfx2.PutPixel(x, endY - 2, borderColor);
+    }
+    
+    // Left border
+    for (int y = startY; y < endY; y++) {
+        gfx2.PutPixel(startX, y, borderColor);
+        gfx2.PutPixel(startX + 1, y, borderColor);
+    }
+    
+    // Right border
+    for (int y = startY; y < endY; y++) {
+        gfx2.PutPixel(endX - 1, y, borderColor);
+        gfx2.PutPixel(endX - 2, y, borderColor);
     }
 }
 

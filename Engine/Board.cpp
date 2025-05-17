@@ -15,7 +15,15 @@ int Board::ViewportHeight = 0;
 
 Board::Board()
 {
+	// Set up the viewport dimensions first
+	ViewportWidth = Graphics::ScreenWidth - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessLeft - Graphics::MenuThicknessRight - 2 * Graphics::WindowFrameWidth;
+	ViewportHeight = Graphics::ScreenHeight - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessTop - Graphics::MenuThicknessBottom - 2 * Graphics::WindowFrameWidth;
+	
+	// Initialize with centered view
 	InitializeView();
+	
+	// Make sure boundaries are up to date
+	UpdateBoardBoundaries();
 }
 
 void Board::InitializeView()
@@ -65,19 +73,34 @@ void Board::Pan(int deltaX, int deltaY)
 
 void Board::UpdateBoardBoundaries()
 {
-	// Calculate the visible board area
-	BoardStartX = Graphics::BoardFrameWidth + Graphics::MenuThicknessLeft + Graphics::WindowFrameWidth + OffsetX;
-	BoardStartY = Graphics::BoardFrameWidth + Graphics::MenuThicknessTop + Graphics::WindowFrameWidth + OffsetY;
+	// Calculate fixed viewport area that doesn't overlap with menus
+	int fixedViewportStartX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft + Graphics::BoardFrameWidth;
+	int fixedViewportStartY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop + Graphics::BoardFrameWidth;
+	int fixedViewportEndX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight - Graphics::BoardFrameWidth;
+	int fixedViewportEndY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom - Graphics::BoardFrameWidth;
 	
+	// Calculate the visible board area within the viewport
+	BoardStartX = fixedViewportStartX + OffsetX;
+	BoardStartY = fixedViewportStartY + OffsetY;
+	
+	// Calculate board end coordinates
 	BoardEndX = BoardStartX + FrameCountX * (FrameLength + BetweenFrameMarginLength) + BetweenFrameMarginLength;
 	BoardEndY = BoardStartY + FrameCountY * (FrameLength + BetweenFrameMarginLength) + BetweenFrameMarginLength;
 	
-	// Ensure we don't go beyond the screen boundaries
-	if (BoardEndX > Graphics::ScreenWidth - Graphics::BoardFrameWidth - Graphics::MenuThicknessRight - Graphics::WindowFrameWidth)
-		BoardEndX = Graphics::ScreenWidth - Graphics::BoardFrameWidth - Graphics::MenuThicknessRight - Graphics::WindowFrameWidth;
+	// Update viewport size (should be fixed and not change)
+	ViewportWidth = fixedViewportEndX - fixedViewportStartX;
+	ViewportHeight = fixedViewportEndY - fixedViewportStartY;
 	
-	if (BoardEndY > Graphics::ScreenHeight - Graphics::BoardFrameWidth - Graphics::MenuThicknessBottom - Graphics::WindowFrameWidth)
-		BoardEndY = Graphics::ScreenHeight - Graphics::BoardFrameWidth - Graphics::MenuThicknessBottom - Graphics::WindowFrameWidth;
+	// Ensure the board stays within the fixed viewport boundaries
+	if (BoardEndX > fixedViewportEndX)
+		BoardEndX = fixedViewportEndX;
+	
+	if (BoardEndY > fixedViewportEndY)
+		BoardEndY = fixedViewportEndY;
+		
+	// Ensure we recalculate the between frame margin when frame length changes
+	BetweenFrameMarginLength = FrameLength / 10;
+	if (BetweenFrameMarginLength < 1) BetweenFrameMarginLength = 1;
 }
 
 int Board::GetCursorPositionOnBoard(int cursorX, int cursorY)
