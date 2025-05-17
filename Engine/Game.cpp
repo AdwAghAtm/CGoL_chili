@@ -57,7 +57,7 @@ Game::~Game()
 
 void Game::Go()
 {
-	dspl.ComposeFrame(logic.GetBoard());
+	dspl.ComposeFrame(logic.GetCurrentBoard());
 	UpdateModel();
 }
 void Game::UpdateModel()

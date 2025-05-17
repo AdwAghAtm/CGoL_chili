@@ -1,53 +1,77 @@
 #include "Logic.h"
 #include <cassert>
 
+// Conway's Game of Life rules implementation
+bool Logic::ConwayRules(bool isAlive, int neighbors)
+{
+    if (isAlive)
+    {
+        return (neighbors == 2 || neighbors == 3);
+    }
+    else
+    {
+        return (neighbors == 3);
+    }
+}
+
 Logic::Logic()
-    : board(nullptr)
+    : currentBoard(nullptr)
+    , nextBoard(nullptr)
+    , currentRules(ConwayRules)  // Default to Conway's rules
 {
     InitializeBoard();
 }
 
 Logic::~Logic()
 {
-    ClearBoard();
+    ClearBoards();
 }
 
 void Logic::InitializeBoard()
 {
-    ClearBoard();
-    board = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
+    ClearBoards();
+    currentBoard = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
+    nextBoard = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
+    tempBoard = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
 }
 
-void Logic::ClearBoard()
+void Logic::ClearBoards()
 {
-    if (board)
+    if (currentBoard)
     {
-        FreeBoard(board, Board::FrameCountX);
-        board = nullptr;
+        FreeBoard(currentBoard, Board::FrameCountX);
+        currentBoard = nullptr;
+    }
+    if (nextBoard)
+    {
+        FreeBoard(nextBoard, Board::FrameCountX);
+        nextBoard = nullptr;
     }
 }
 
 void Logic::SetCell(int x, int y, bool value)
 {
-    assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);//TODO
-    board[x][y].isAlive = value;
+    assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);
+    currentBoard[x][y].isAlive = value;
     if (!value)
     {
-        board[x][y].age = 0;
+        currentBoard[x][y].age = 0;
     }
 }
 
 bool Logic::GetCell(int x, int y) const
 {
     assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);
-    return board[x][y].isAlive;
+    return currentBoard[x][y].isAlive;
+}
+
+bool Logic::ApplyRules(bool isAlive, int neighbors) const
+{
+    return currentRules(isAlive, neighbors);
 }
 
 void Logic::NextGeneration()
 {
-    // Create a temporary board to store the next generation
-    Cell** nextBoard = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
-
     // Calculate next generation
     for (int x = 0; x < Board::FrameCountX; x++)
     {
@@ -65,37 +89,33 @@ void Logic::NextGeneration()
                     int nx = (x + dx + Board::FrameCountX) % Board::FrameCountX;
                     int ny = (y + dy + Board::FrameCountY) % Board::FrameCountY;
 
-                    if (board[nx][ny].isAlive)
+                    if (currentBoard[nx][ny].isAlive)
                     {
                         neighbors++;
                     }
                 }
             }
 
-            // Apply Conway's Game of Life rules
-            bool isAlive = board[x][y].isAlive;
-            if (isAlive)
+            // Apply rules to determine next state
+            bool isAlive = currentBoard[x][y].isAlive;
+            nextBoard[x][y].isAlive = ApplyRules(isAlive, neighbors);
+            
+            // Update age
+            if (nextBoard[x][y].isAlive)
             {
-                nextBoard[x][y].isAlive = (neighbors == 2 || neighbors == 3);
-                if (nextBoard[x][y].isAlive)
-                {
-                    nextBoard[x][y].age = board[x][y].age + 1;
-                }
+                nextBoard[x][y].age = isAlive ? currentBoard[x][y].age + 1 : 1;
             }
             else
             {
-                nextBoard[x][y].isAlive = (neighbors == 3);
-                if (nextBoard[x][y].isAlive)
-                {
-                    nextBoard[x][y].age = 1;
-                }
+                nextBoard[x][y].age = 0;
             }
         }
     }
 
-    // Free old board and update to new generation
-    FreeBoard(board, Board::FrameCountX); //todo nie ususwac co klatke tylko robic drugiego boarda
-    board = nextBoard;
+    // Swap boards
+    tempBoard = currentBoard;
+    currentBoard = nextBoard;
+    nextBoard = tempBoard;
 }
 
 Cell** Logic::AllocateBoard(int xSize, int ySize)
