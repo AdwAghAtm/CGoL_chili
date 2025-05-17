@@ -17,7 +17,10 @@ public:
     void SetCell(int x, int y, bool value);
     bool GetCell(int x, int y) const;
     void NextGeneration();
-    const Cell* const* GetBoard() const { return currentBoard; }
+    const Cell* const* GetBoard() const { return board; }
+    //The innermost const prevents modifying the Cell values
+    //The middle const prevents modifying the pointers to Cells
+    //The outer const prevents modifying the pointers to pointers
 
     // Memory management
     static Cell** AllocateBoard(int xSize, int ySize);

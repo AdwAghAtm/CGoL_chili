@@ -35,8 +35,8 @@ void Logic::ClearBoard()
 
 void Logic::SetCell(int x, int y, bool value)
 {
-    assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);
-    currentBoard[x][y].isAlive = value;
+    assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);//TODO
+    board[x][y].isAlive = value;
     if (!value)
     {
         currentBoard[x][y].age = 0;
@@ -96,8 +96,9 @@ void Logic::NextGeneration()
         }
     }
 
-    // Swap boards
-    std::swap(currentBoard, nextBoard);
+    // Free old board and update to new generation
+    FreeBoard(board, Board::FrameCountX); //todo nie ususwac co klatke tylko robic drugiego boarda
+    board = nextBoard;
 }
 
 Cell** Logic::AllocateBoard(int xSize, int ySize)

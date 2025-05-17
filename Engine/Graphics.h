@@ -79,7 +79,7 @@ public:
 	static constexpr int WindowFrameWidth = 5;
 	//menus with brushes, colors, buttons and sliders
 	static constexpr int MenuThicknessLeft = 15; 
-	static constexpr int MenuThicknessRight = 250;
+	static constexpr int MenuThicknessRight = 0;
 	static constexpr int MenuThicknessTop = 15;
-	static constexpr int MenuThicknessBottom = 100;
+	static constexpr int MenuThicknessBottom = 0;
 };

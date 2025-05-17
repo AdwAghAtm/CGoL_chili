@@ -42,7 +42,10 @@ public:
 
 private:
 
-
+	// Helper methods for safe drawing
+	bool IsWithinScreenBounds(int x, int y) const;
+	void SafePutPixel(int x, int y, Color c);
+	
 	Graphics& gfx2;
 
 };
