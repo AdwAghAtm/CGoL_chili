@@ -57,6 +57,8 @@ Game::~Game()
 
 void Game::Go()
 {
+	// game mowi boardowi zeby sie zapytal logica o zasady zeby sie sam zupdatowal
+	// game daje displayowi fake mini-boarda do narysowania (taki fetch) ++
 	dspl.ComposeFrame(logic.GetCurrentBoard());
 	UpdateModel();
 }

@@ -13,7 +13,6 @@ public:
 
     // Board state management
     void InitializeBoard();
-    void ClearBoard();
     void SetCell(int x, int y, bool value);
     bool GetCell(int x, int y) const;
     void NextGeneration();
@@ -23,10 +22,12 @@ public:
     //The outer const prevents modifying the pointers to pointers
 
     // Memory management
-    static Cell** AllocateBoard(int xSize, int ySize);
-    static void FreeBoard(Cell** board, int xSize);
+    
+    
 
 private:
+    static Cell** AllocateBoard(int xSize, int ySize);
+    static void FreeBoard(Cell** board, int xSize);
     // Game rules function type
     using RuleFunction = bool(*)(bool isAlive, int neighbors);
     

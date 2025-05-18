@@ -23,8 +23,8 @@ public:
 	static unsigned int BetweenFrameMarginLength; //net's width
 	
 	// Board dimensions in cells
-	static const int FrameCountX = 1000;
-	static const int FrameCountY = 1000;
+	static const int FrameCountX = 650;
+	static const int FrameCountY = 400;
 	
 	// Board position and view
 	static int OffsetX; // Horizontal pan offset

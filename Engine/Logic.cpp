@@ -17,7 +17,7 @@ bool Logic::ConwayRules(bool isAlive, int neighbors)
 Logic::Logic()
     : currentBoard(nullptr)
     , nextBoard(nullptr)
-    , currentRules(ConwayRules)  // Default to Conway's rules
+    , currentRules(ConwayRules)  // Default to Conway's rules lambda albo obiekt std::function albo template
 {
     InitializeBoard();
 }

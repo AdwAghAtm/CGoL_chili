@@ -73,8 +73,8 @@ private:
 	D3D11_MAPPED_SUBRESOURCE							mappedSysBufferTexture;
 	Color*                                              pSysBuffer = nullptr;
 public:
-	static constexpr int ScreenWidth = 1300;
-	static constexpr int ScreenHeight = 800;
+	static int ScreenWidth;// = 1300;
+	static int ScreenHeight;// = 800;
 	static constexpr int BoardFrameWidth = 20;
 	static constexpr int WindowFrameWidth = 5;
 	//menus with brushes, colors, buttons and sliders

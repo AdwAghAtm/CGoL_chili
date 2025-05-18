@@ -34,6 +34,9 @@ namespace FramebufferShaders
 #include "FramebufferVS.shh"
 }
 
+int Graphics::ScreenHeight = 800;
+int Graphics::ScreenWidth = 1300;
+
 #pragma comment( lib,"d3d11.lib" )
 
 #define CHILI_GFX_EXCEPTION( hr,note ) Graphics::Exception( hr,note,_CRT_WIDE(__FILE__),__LINE__ )
@@ -42,7 +45,7 @@ using Microsoft::WRL::ComPtr;
 
 Graphics::Graphics( HWNDKey& key )
 {
-	assert( key.hWnd != nullptr );
+	assert(key.hWnd != nullptr);
 
 	//////////////////////////////////////////////////////
 	// create device and swap chain/get render target view
@@ -111,6 +114,8 @@ Graphics::Graphics( HWNDKey& key )
 
 	// set viewport dimensions
 	D3D11_VIEWPORT vp;
+
+	
 	vp.Width = float( Graphics::ScreenWidth );
 	vp.Height = float( Graphics::ScreenHeight );
 	vp.MinDepth = 0.0f;
