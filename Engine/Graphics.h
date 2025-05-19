@@ -80,6 +80,6 @@ public:
 	//menus with brushes, colors, buttons and sliders
 	static constexpr int MenuThicknessLeft = 15; 
 	static constexpr int MenuThicknessRight = 0;
-	static constexpr int MenuThicknessTop = 150;
+	static constexpr int MenuThicknessTop = 0;
 	static constexpr int MenuThicknessBottom = 0;
 };
