@@ -18,6 +18,7 @@
  *	You should have received a copy of the GNU General Public License					  *
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
+#include <chrono>
 #include "MainWindow.h"
 #include "Game.h"
 
@@ -31,6 +32,7 @@ bool tempRunGame = false;
 bool isPanning = false;
 int lastMouseX = 0;
 int lastMouseY = 0;
+
 
 int mousePos; // id of square at mouse's position
 
@@ -47,7 +49,7 @@ Game::Game(MainWindow& wnd)
 
 void Game::Pre()
 {
-	// Board initialization is now handled by Logic class
+	// Board initialization is now handled by Logic class	
 }
 
 Game::~Game()
@@ -57,13 +59,28 @@ Game::~Game()
 
 void Game::Go()
 {
+
 	// game mowi boardowi zeby sie zapytal logica o zasady zeby sie sam zupdatowal
 	// game daje displayowi fake mini-boarda do narysowania (taki fetch) ++
 	dspl.ComposeFrame(logic.GetCurrentBoard());
 	UpdateModel();
 }
+
+void Game::SetTargetFPS(unsigned int fps) {
+	Game::targetFPS = fps;
+}
+
+std::chrono::milliseconds Game::GetFrameDuration(){
+	return std::chrono::milliseconds(5000 / Game::targetFPS);
+}
+
+
 void Game::UpdateModel()
 {
+	using clock = std::chrono::steady_clock;
+	auto now = clock::now();
+	
+
 	mouseEvent = wnd.mouse.Read();
 
 	//toggle game running (must hold spacebar for longer than 0.0000001ms to pause)
@@ -281,11 +298,17 @@ void Game::UpdateModel()
 	
 	tempClick = wnd.mouse.LeftIsPressed();
 
+
+	auto frameDuration = std::chrono::milliseconds(1000 / targetFPS);
 	// Run the game simulation if active
-	if (runGame)
+	if (now >= nextFrameTime)
 	{
-		NextGeneration();
+		//nested if to keep track on fps even if game paused
+		if (runGame)
+			NextGeneration();
+		nextFrameTime += Game::GetFrameDuration();
 	}
+
 }
 
 void Game::NextGeneration()

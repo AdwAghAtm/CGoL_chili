@@ -68,6 +68,7 @@ void Display::ComposeFrame(const Cell* const* board)
 	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
 	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
 	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
+	//this should always be on top
 	drw.DrawWindowFrame(Colors::Gray);
 	gfx.EndFrame();
 }
