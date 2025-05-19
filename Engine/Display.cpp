@@ -66,7 +66,7 @@ void Display::ComposeFrame(const Cell* const* board)
 	// Draw in specific order: left, top, right, bottom to handle corners correctly
 	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
 	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
-	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
+	drw.DrawMenu(MenuPosition::Right, Colors::CocoaBean);
 	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
 	//this should always be on top
 	drw.DrawWindowFrame(Colors::Gray);
