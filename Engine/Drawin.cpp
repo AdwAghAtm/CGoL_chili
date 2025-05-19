@@ -399,13 +399,11 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
 
 void Drawin::DrawBoardFrame(Color c)
 {
-    //not used in code, to delete
-
 	// Clip the frame coordinates to screen bounds
-	//int startX = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
-	//int startY = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
-    //int endX = std::min(Graphics::ScreenWidth - 1, Board::BoardEndX);// +Graphics::BoardFrameWidth);
-    //int endY = std::min(Graphics::ScreenHeight - 1, Board::BoardEndY);// +Graphics::BoardFrameWidth);
+	int startX = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
+	int startY = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
+    int endX = std::min(Graphics::ScreenWidth - 1, Board::BoardEndX);// +Graphics::BoardFrameWidth);
+    int endY = std::min(Graphics::ScreenHeight - 1, Board::BoardEndY);// +Graphics::BoardFrameWidth);
 	
 	// Top frame
 	if (Board::BoardStartY >= Graphics::MenuThicknessTop + Graphics::WindowFrameWidth){//Graphics::BoardFrameWidth) {
