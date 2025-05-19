@@ -39,6 +39,7 @@ public:
 	void Go();
 	void Pre();
 	void SetTargetFPS(unsigned int fps);
+	static int GetTargetFPS();
 	std::chrono::milliseconds GetFrameDuration();
 	std::chrono::steady_clock::time_point nextFrameTime = std::chrono::steady_clock::now();
 
@@ -57,5 +58,5 @@ private:
 	Board brd;
 	Display dspl;
 	Logic logic;
-	unsigned int targetFPS = 15;
+	unsigned int targetFPS = 30;
 };

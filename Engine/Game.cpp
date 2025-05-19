@@ -70,8 +70,12 @@ void Game::SetTargetFPS(unsigned int fps) {
 	Game::targetFPS = fps;
 }
 
+int Game::GetTargetFPS(){
+	return Game::targetFPS;
+}
+
 std::chrono::milliseconds Game::GetFrameDuration(){
-	return std::chrono::milliseconds(5000 / Game::targetFPS);
+	return std::chrono::milliseconds(1000 / Game::targetFPS);
 }
 
 
@@ -298,6 +302,23 @@ void Game::UpdateModel()
 	
 	tempClick = wnd.mouse.LeftIsPressed();
 
+
+	if ((wnd.kbd.KeyIsPressed(VK_OEM_MINUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelDown) && wnd.kbd.KeyIsPressed(VK_SHIFT) &&
+		brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		if (GetTargetFPS()>1)
+		{
+			SetTargetFPS(GetTargetFPS() - 1);
+		}
+	}
+	if ((wnd.kbd.KeyIsPressed(VK_OEM_PLUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp) && wnd.kbd.KeyIsPressed(VK_SHIFT) &&
+		brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		if (GetTargetFPS() < 120)
+		{
+			SetTargetFPS(GetTargetFPS() + 1);
+		}
+	}
 
 	auto frameDuration = std::chrono::milliseconds(1000 / targetFPS);
 	// Run the game simulation if active

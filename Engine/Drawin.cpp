@@ -1,4 +1,5 @@
 #include "Drawin.h"
+#include "Game.h"
 
 
 Drawin::Drawin( Graphics& key )
@@ -233,6 +234,18 @@ void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX,
         // Draw the slider with direct rectangle drawing to ensure it appears
         DrawRectangle(startX, sliderCorner, endX, sliderCorner + sliderSize, c);
         break;
+    case MenuPosition::Right:
+        sliderSize = std::min(endX - startX, sliderThickness);
+
+        // Calculate slider absolute position vertically (reverse direction for intuitive feel)
+        sliderCorner = startY + int((1.0f - proportion) * (endY - startY - sliderSize));
+
+        // Ensure slider stays within menu bounds
+        sliderCorner = std::max(startY, std::min(sliderCorner, endY - sliderSize));
+
+        // Draw the slider with direct rectangle drawing to ensure it appears
+        DrawRectangle(startX, sliderCorner, endX, sliderCorner + sliderSize, c);
+        break;
     }
 }
 
@@ -365,7 +378,15 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
                   Colors::Red);         // Slider color
         break;
     case MenuPosition::Right:
-        // Right menu controls (if any)
+        DrawSlider(MenuPosition::Right,
+            startX,
+            startY,          // Position down from top
+            endX - 1,             // Full width minus magic number
+            endY,
+            Game::GetTargetFPS(),   // Current value
+            1, // Minimum value
+            120, // Maximum value
+            Colors::Green);         // Slider color
         break;
     }
     
