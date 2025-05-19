@@ -203,7 +203,7 @@ void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX,
     float proportion = float(value - minValue) / float(maxValue - minValue);
     
     // Fixed slider thickness regardless of board zoom/position
-    const int sliderThickness = 5;
+    const int sliderThickness = 15;
     int sliderCorner, sliderSize;
 
     switch (position)
@@ -231,7 +231,7 @@ void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX,
         sliderCorner = std::max(startY, std::min(sliderCorner, endY - sliderSize));
         
         // Draw the slider with direct rectangle drawing to ensure it appears
-        DrawRectangle(startX, sliderCorner, endX - 1, sliderCorner + sliderSize, c);
+        DrawRectangle(startX, sliderCorner, endX, sliderCorner + sliderSize, c);
         break;
     }
 }
@@ -322,10 +322,10 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
         endY = Graphics::ScreenHeight;  // Extend to bottom edge
         break;
     case MenuPosition::Left:
-        startX = 0;  // Extend to left edge
-        startY = 0;  // Extend to top edge
+        startX = Graphics::WindowFrameWidth;  // Extend to left edge
+        startY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop;  // Extend to top edge
         endX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft;
-        endY = Graphics::ScreenHeight;  // Extend to bottom edge
+        endY = Graphics::ScreenHeight - Graphics::WindowFrameWidth;  // Extend to bottom edge
         break;
     case MenuPosition::Right:
         startX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight;
@@ -355,10 +355,10 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
         // Left menu - draw zoom level slider
         // Use a fixed width for the slider that doesn't depend on Board variables
         DrawSlider(MenuPosition::Left, 
-                  startX + 2,           // Add a small margin
-                  startY + 20,          // Position down from top
-                  endX - 2,             // Full width minus margin
-                  endY - 20,            // Leave space at bottom
+                  startX,
+                  startY,          // Position down from top
+                  endX-1,             // Full width minus magic number
+                  endY,
                   Board::FrameLength,   // Current value
                   Board::MinFrameLength, // Minimum value
                   Board::MaxFrameLength, // Maximum value
@@ -369,32 +369,32 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
         break;
     }
     
-    // Draw a border around the menu for visual clarity
-    Color borderColor = Colors::Gray;
-    
-    // Top border
-    for (int x = startX; x < endX; x++) {
-        gfx2.PutPixel(x, startY, borderColor);
-        gfx2.PutPixel(x, startY + 1, borderColor);
-    }
-    
-    // Bottom border
-    for (int x = startX; x < endX; x++) {
-        gfx2.PutPixel(x, endY - 1, borderColor);
-        gfx2.PutPixel(x, endY - 2, borderColor);
-    }
-    
-    // Left border
-    for (int y = startY; y < endY; y++) {
-        gfx2.PutPixel(startX, y, borderColor);
-        gfx2.PutPixel(startX + 1, y, borderColor);
-    }
-    
-    // Right border
-    for (int y = startY; y < endY; y++) {
-        gfx2.PutPixel(endX - 1, y, borderColor);
-        gfx2.PutPixel(endX - 2, y, borderColor);
-    }
+    //// Draw a border around the menu for visual clarity
+    //Color borderColor = Colors::Gray;
+    //
+    //// Top border
+    //for (int x = startX; x < endX; x++) {
+    //    gfx2.PutPixel(x, startY, borderColor);
+    //    gfx2.PutPixel(x, startY + 1, borderColor);
+    //}
+    //
+    //// Bottom border
+    //for (int x = startX; x < endX; x++) {
+    //    gfx2.PutPixel(x, endY - 1, borderColor);
+    //    gfx2.PutPixel(x, endY - 2, borderColor);
+    //}
+    //
+    //// Left border
+    //for (int y = startY; y < endY; y++) {
+    //    gfx2.PutPixel(startX, y, borderColor);
+    //    gfx2.PutPixel(startX + 1, y, borderColor);
+    //}
+    //
+    //// Right border
+    //for (int y = startY; y < endY; y++) {
+    //    gfx2.PutPixel(endX - 1, y, borderColor);
+    //    gfx2.PutPixel(endX - 2, y, borderColor);
+    //}
 }
 
 void Drawin::DrawBoardFrame(Color c)
