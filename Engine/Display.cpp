@@ -48,7 +48,7 @@ void Display::ComposeFrame(const Cell* const* board)
 	
 	// 2. Draw board with net and squares
 	//drw.DrawNet(Colors::DarkGray2);
-	drw.DrawNetAlt(Colors::LightGray);
+	drw.DrawNetAlt(Colors::DarkGray2);
 	for (int i = 0; i < Board::FrameCountX; i++)
 	{
 		for (int j = 0; j < Board::FrameCountY; j++)

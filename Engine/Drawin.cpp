@@ -298,7 +298,7 @@ void Drawin::DrawNetAlt(Color c) {
         }
 
         // Draw the grid line (thicker line based on NetThickness)
-        for (int thickness = 0; thickness < Board::NetThickness; thickness++) {
+        for (int thickness = Board::NetThickness * 3 / 8; thickness < Board::NetThickness * 5 / 8 || thickness == Board::NetThickness * 3 / 8; thickness++) {
             int x = lineX + thickness;
             if (x >= 0 && x < Graphics::ScreenWidth) {
                 //DrawLine(x, visibleStartY, x, visibleEndY - 1, c);
@@ -324,7 +324,7 @@ void Drawin::DrawNetAlt(Color c) {
         }
 
         // Draw the grid line (thicker line based on NetThickness)
-        for (int thickness = 0; thickness < Board::NetThickness; thickness++) {
+        for (int thickness = Board::NetThickness * 3 / 8; thickness < Board::NetThickness * 5 / 8 || thickness == Board::NetThickness * 3 / 8; thickness++) {
             int y = lineY + thickness;
             if (y >= 0 && y < Graphics::ScreenHeight) {
                 //DrawLine(visibleStartX, y, visibleEndX - 1, y, c);
