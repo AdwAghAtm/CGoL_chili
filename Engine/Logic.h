@@ -13,6 +13,7 @@ public:
 
     // Board state management
     void InitializeBoard();
+    void ClearBoard();
     void SetCell(int x, int y, bool value);
     bool GetCell(int x, int y) const;
     void NextGeneration();
