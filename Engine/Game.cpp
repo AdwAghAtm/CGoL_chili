@@ -32,7 +32,7 @@ bool tempRunGame = false;
 bool isPanning = false;
 int lastMouseX = 0;
 int lastMouseY = 0;
-
+unsigned int Game::targetFPS = 10;
 
 int mousePos; // id of square at mouse's position
 
