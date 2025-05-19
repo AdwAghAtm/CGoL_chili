@@ -399,14 +399,16 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
 
 void Drawin::DrawBoardFrame(Color c)
 {
+    //not used in code, to delete
+
 	// Clip the frame coordinates to screen bounds
-	int startX = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
-	int startY = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
-	int endX = std::min(Graphics::ScreenWidth - 1, Board::BoardEndX + Graphics::BoardFrameWidth);
-	int endY = std::min(Graphics::ScreenHeight - 1, Board::BoardEndY + Graphics::BoardFrameWidth);
+	//int startX = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
+	//int startY = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
+    //int endX = std::min(Graphics::ScreenWidth - 1, Board::BoardEndX);// +Graphics::BoardFrameWidth);
+    //int endY = std::min(Graphics::ScreenHeight - 1, Board::BoardEndY);// +Graphics::BoardFrameWidth);
 	
 	// Top frame
-	if (Board::BoardStartY >= Graphics::BoardFrameWidth) {
+	if (Board::BoardStartY >= Graphics::MenuThicknessTop + Graphics::WindowFrameWidth){//Graphics::BoardFrameWidth) {
 		for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardStartY; y++) {
 			if (y >= 0 && y < Graphics::ScreenHeight) {
 				for (int x = std::max(0, Board::BoardStartX - Graphics::BoardFrameWidth); 
@@ -418,7 +420,7 @@ void Drawin::DrawBoardFrame(Color c)
 	}
 	
 	// Bottom frame
-	if (Board::BoardEndY < Graphics::ScreenHeight - Graphics::BoardFrameWidth) {
+	if (Board::BoardEndY <= Graphics::ScreenHeight - Graphics::MenuThicknessBottom - Graphics::WindowFrameWidth) {
 		for (int y = Board::BoardEndY; y < std::min(Graphics::ScreenHeight, Board::BoardEndY + Graphics::BoardFrameWidth); y++) {
 			for (int x = std::max(0, Board::BoardStartX - Graphics::BoardFrameWidth); 
 				 x < std::min(Graphics::ScreenWidth, Board::BoardEndX + Graphics::BoardFrameWidth); x++) {
@@ -428,7 +430,7 @@ void Drawin::DrawBoardFrame(Color c)
 	}
 	
 	// Left frame
-	if (Board::BoardStartX >= Graphics::BoardFrameWidth) {
+	if (Board::BoardStartX >= Graphics::MenuThicknessLeft + Graphics::WindowFrameWidth) {
 		for (int x = Board::BoardStartX - Graphics::BoardFrameWidth; x < Board::BoardStartX; x++) {
 			if (x >= 0 && x < Graphics::ScreenWidth) {
 				for (int y = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth); 

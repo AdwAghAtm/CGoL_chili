@@ -44,7 +44,7 @@ void Display::ComposeFrame(const Cell* const* board)
 	gfx.BeginFrame();
 	
 	// 1. First draw the window frame
-	drw.DrawWindowFrame(Colors::Gray);
+	
 	
 	// 2. Draw board with net and squares
 	drw.DrawNet(Colors::DarkGray2);
@@ -68,6 +68,6 @@ void Display::ComposeFrame(const Cell* const* board)
 	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
 	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
 	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
-	
+	drw.DrawWindowFrame(Colors::Gray);
 	gfx.EndFrame();
 }
