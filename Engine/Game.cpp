@@ -103,7 +103,8 @@ void Game::UpdateModel()
 			
 			// Update zoom level
 			Board::FrameLength += 2;
-			Board::BetweenFrameMarginLength = Board::FrameLength / 10;
+			//its changed in brd.UpdateBoardBoundaries();
+			//Board::BetweenFrameMarginLength = Board::FrameLength / 10;
 			zoomChanged = true;
 			
 			// Calculate new total board size
@@ -138,7 +139,8 @@ void Game::UpdateModel()
 			
 			// Update zoom level
 			Board::FrameLength -= 2;
-			Board::BetweenFrameMarginLength = Board::FrameLength / 10;
+			//its changed in brd.UpdateBoardBoundaries();
+			//Board::BetweenFrameMarginLength = Board::FrameLength / 10;
 			zoomChanged = true;
 			
 			// Calculate new total board size

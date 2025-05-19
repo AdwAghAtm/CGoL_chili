@@ -400,17 +400,16 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
 void Drawin::DrawBoardFrame(Color c)
 {
 	// Clip the frame coordinates to screen bounds
-	int startX = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
-	int startY = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth);
-    int endX = std::min(Graphics::ScreenWidth - 1, Board::BoardEndX);// +Graphics::BoardFrameWidth);
-    int endY = std::min(Graphics::ScreenHeight - 1, Board::BoardEndY);// +Graphics::BoardFrameWidth);
+    int startX = std::max(Graphics::WindowFrameWidth, Board::BoardStartX);// -Graphics::BoardFrameWidth);
+    int startY = std::max(Graphics::WindowFrameWidth, Board::BoardStartY);// -Graphics::BoardFrameWidth);
+    int endX = std::min(Graphics::ScreenWidth, Board::BoardEndX);// +Graphics::BoardFrameWidth);
+    int endY = std::min(Graphics::ScreenHeight, Board::BoardEndY);// +Graphics::BoardFrameWidth);
 	
 	// Top frame
 	if (Board::BoardStartY >= Graphics::MenuThicknessTop + Graphics::WindowFrameWidth){//Graphics::BoardFrameWidth) {
 		for (int y = Board::BoardStartY - Graphics::BoardFrameWidth; y < Board::BoardStartY; y++) {
 			if (y >= 0 && y < Graphics::ScreenHeight) {
-				for (int x = std::max(0, Board::BoardStartX - Graphics::BoardFrameWidth); 
-					 x < std::min(Graphics::ScreenWidth, Board::BoardEndX + Graphics::BoardFrameWidth); x++) {
+				for (int x = startX; x < std::min(Graphics::ScreenWidth, Board::BoardEndX + Graphics::BoardFrameWidth); x++) {
 					SafePutPixel(x, y, c);
 				}
 			}
@@ -418,7 +417,7 @@ void Drawin::DrawBoardFrame(Color c)
 	}
 	
 	// Bottom frame
-	if (Board::BoardEndY <= Graphics::ScreenHeight - Graphics::MenuThicknessBottom - Graphics::WindowFrameWidth) {
+	if (Board::BoardEndY <= endY) {
 		for (int y = Board::BoardEndY; y < std::min(Graphics::ScreenHeight, Board::BoardEndY + Graphics::BoardFrameWidth); y++) {
 			for (int x = std::max(0, Board::BoardStartX - Graphics::BoardFrameWidth); 
 				 x < std::min(Graphics::ScreenWidth, Board::BoardEndX + Graphics::BoardFrameWidth); x++) {
@@ -440,7 +439,7 @@ void Drawin::DrawBoardFrame(Color c)
 	}
 	
 	// Right frame
-	if (Board::BoardEndX < Graphics::ScreenWidth - Graphics::BoardFrameWidth) {
+	if (Board::BoardEndX <= endX) {
 		for (int x = Board::BoardEndX; x < std::min(Graphics::ScreenWidth, Board::BoardEndX + Graphics::BoardFrameWidth); x++) {
 			for (int y = std::max(0, Board::BoardStartY - Graphics::BoardFrameWidth); 
 				 y < std::min(Graphics::ScreenHeight, Board::BoardEndY + Graphics::BoardFrameWidth); y++) {

@@ -73,11 +73,12 @@ void Board::Pan(int deltaX, int deltaY)
 
 void Board::UpdateBoardBoundaries()
 {
+	//not used
 	// Calculate fixed viewport area that doesn't overlap with menus
 	int fixedViewportStartX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft + Graphics::BoardFrameWidth;
 	int fixedViewportStartY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop + Graphics::BoardFrameWidth;
-	int fixedViewportEndX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight - Graphics::BoardFrameWidth;
-	int fixedViewportEndY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom - Graphics::BoardFrameWidth;
+	//int fixedViewportEndX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight - Graphics::BoardFrameWidth;
+	//int fixedViewportEndY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom - Graphics::BoardFrameWidth;
 	
 	// Calculate the visible board area within the viewport
 	BoardStartX = fixedViewportStartX + OffsetX;
@@ -88,17 +89,21 @@ void Board::UpdateBoardBoundaries()
 	BoardEndY = BoardStartY + FrameCountY * (FrameLength + BetweenFrameMarginLength) + BetweenFrameMarginLength;
 	
 	// Update viewport size (should be fixed and not change)
-	ViewportWidth = fixedViewportEndX - fixedViewportStartX;
-	ViewportHeight = fixedViewportEndY - fixedViewportStartY;
+	//ViewportWidth = fixedViewportEndX - fixedViewportStartX;
+	//ViewportHeight = fixedViewportEndY - fixedViewportStartY;
 	
+	//it brokes right/bot borders
 	// Ensure the board stays within the fixed viewport boundaries
-	if (BoardEndX > fixedViewportEndX)
+	/*if (BoardEndX > fixedViewportEndX)
 		BoardEndX = fixedViewportEndX;
 	
 	if (BoardEndY > fixedViewportEndY)
 		BoardEndY = fixedViewportEndY;
-		
+		*/
 	// Ensure we recalculate the between frame margin when frame length changes
+	// 
+	
+	//resize net only here, rest instances are commented
 	BetweenFrameMarginLength = FrameLength / 10;
 	if (BetweenFrameMarginLength < 1) BetweenFrameMarginLength = 1;
 }
