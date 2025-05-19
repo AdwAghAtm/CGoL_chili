@@ -136,10 +136,10 @@ void Drawin::DrawSquare( int cord, Color c )
 {	
 	int tempx,tempy;
 	//top left coordinates
-	tempx = ( cord % (Board::FrameCountX+2) )*( Board::FrameLength + Board::BetweenFrameMarginLength ) 
-		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartX;
-	tempy = ( cord / (Board::FrameCountX+2) )*( Board::FrameLength + Board::BetweenFrameMarginLength ) 
-		- Board::FrameLength - Board::BetweenFrameMarginLength + Board::BoardStartY;
+	tempx = ( cord % (Board::FrameCountX+2) )*( Board::FrameLength + Board::NetThickness ) 
+		- Board::FrameLength - Board::NetThickness + Board::BoardStartX;
+	tempy = ( cord / (Board::FrameCountX+2) )*( Board::FrameLength + Board::NetThickness ) 
+		- Board::FrameLength - Board::NetThickness + Board::BoardStartY;
 
 	// Clip to screen boundaries
 	if (tempx + Board::FrameLength < 0 || tempx >= Graphics::ScreenWidth ||
@@ -159,8 +159,8 @@ void Drawin::DrawSquare( int cord, Color c )
 void Drawin::DrawSquare( int cord_x, int cord_y, Color c )
 {	
     // Calculate the absolute pixel position for this cell
-    int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::BetweenFrameMarginLength);
-    int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::BetweenFrameMarginLength);
+    int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
+    int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
     
     // Check if the square is in the visible area before drawing
     if (tempx + Board::FrameLength < 0 || 
@@ -252,7 +252,7 @@ void Drawin::DrawNet(Color c)
     
     // Calculate cell size and spacing
     int cellSize = Board::FrameLength;
-    int gridSpacing = cellSize + Board::BetweenFrameMarginLength;
+    int gridSpacing = cellSize + Board::NetThickness;
     
     // Calculate the cell grid indices that would contain the visible area
     int firstColIdx = std::max(0, (visibleStartX - Board::BoardStartX) / gridSpacing);
@@ -263,15 +263,15 @@ void Drawin::DrawNet(Color c)
     // Draw vertical grid lines
     for (int col = firstColIdx; col <= lastColIdx; col++) {
         // Line X position in screen space
-        int lineX = Board::BoardStartX + col * gridSpacing - Board::BetweenFrameMarginLength;
+        int lineX = Board::BoardStartX + col * gridSpacing - Board::NetThickness;
         
         // If beyond visible area, skip
-        if (lineX + Board::BetweenFrameMarginLength <= visibleStartX || lineX >= visibleEndX) {
+        if (lineX + Board::NetThickness <= visibleStartX || lineX >= visibleEndX) {
             continue;
         }
         
-        // Draw the grid line (thicker line based on BetweenFrameMarginLength)
-        for (int thickness = 0; thickness < Board::BetweenFrameMarginLength; thickness++) {
+        // Draw the grid line (thicker line based on NetThickness)
+        for (int thickness = 0; thickness < Board::NetThickness; thickness++) {
             int x = lineX + thickness;
             if (x >= 0 && x < Graphics::ScreenWidth) {
                 DrawLine(x, visibleStartY, x, visibleEndY - 1, c);
@@ -282,15 +282,15 @@ void Drawin::DrawNet(Color c)
     // Draw horizontal grid lines
     for (int row = firstRowIdx; row <= lastRowIdx; row++) {
         // Line Y position in screen space
-        int lineY = Board::BoardStartY + row * gridSpacing - Board::BetweenFrameMarginLength;
+        int lineY = Board::BoardStartY + row * gridSpacing - Board::NetThickness;
         
         // If beyond visible area, skip
-        if (lineY + Board::BetweenFrameMarginLength <= visibleStartY || lineY >= visibleEndY) {
+        if (lineY + Board::NetThickness <= visibleStartY || lineY >= visibleEndY) {
             continue;
         }
         
-        // Draw the grid line (thicker line based on BetweenFrameMarginLength)
-        for (int thickness = 0; thickness < Board::BetweenFrameMarginLength; thickness++) {
+        // Draw the grid line (thicker line based on NetThickness)
+        for (int thickness = 0; thickness < Board::NetThickness; thickness++) {
             int y = lineY + thickness;
             if (y >= 0 && y < Graphics::ScreenHeight) {
                 DrawLine(visibleStartX, y, visibleEndX - 1, y, c);

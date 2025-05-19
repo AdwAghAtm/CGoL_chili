@@ -98,18 +98,18 @@ void Game::UpdateModel()
 			int mouseBoardY = mouseY - Board::BoardStartY;
 			
 			// Calculate board coordinates as a fraction of total size
-			float relativeX = (float)mouseBoardX / (Board::FrameCountX * (oldFrameLength + Board::BetweenFrameMarginLength));
-			float relativeY = (float)mouseBoardY / (Board::FrameCountY * (oldFrameLength + Board::BetweenFrameMarginLength));
+			float relativeX = (float)mouseBoardX / (Board::FrameCountX * (oldFrameLength + Board::NetThickness));
+			float relativeY = (float)mouseBoardY / (Board::FrameCountY * (oldFrameLength + Board::NetThickness));
 			
 			// Update zoom level
 			Board::FrameLength += 2;
 			//its changed in brd.UpdateBoardBoundaries();
-			//Board::BetweenFrameMarginLength = Board::FrameLength / 10;
+			//Board::NetThickness = Board::FrameLength / 10;
 			zoomChanged = true;
 			
 			// Calculate new total board size
-			int newBoardWidth = Board::FrameCountX * (Board::FrameLength + Board::BetweenFrameMarginLength);
-			int newBoardHeight = Board::FrameCountY * (Board::FrameLength + Board::BetweenFrameMarginLength);
+			int newBoardWidth = Board::FrameCountX * (Board::FrameLength + Board::NetThickness);
+			int newBoardHeight = Board::FrameCountY * (Board::FrameLength + Board::NetThickness);
 			
 			// Calculate new offsets to keep the mouse point in the same relative position
 			int newOffsetX = mouseX - (int)(relativeX * newBoardWidth);
@@ -134,18 +134,18 @@ void Game::UpdateModel()
 			int mouseBoardY = mouseY - Board::BoardStartY;
 			
 			// Calculate board coordinates as a fraction of total size
-			float relativeX = (float)mouseBoardX / (Board::FrameCountX * (oldFrameLength + Board::BetweenFrameMarginLength));
-			float relativeY = (float)mouseBoardY / (Board::FrameCountY * (oldFrameLength + Board::BetweenFrameMarginLength));
+			float relativeX = (float)mouseBoardX / (Board::FrameCountX * (oldFrameLength + Board::NetThickness));
+			float relativeY = (float)mouseBoardY / (Board::FrameCountY * (oldFrameLength + Board::NetThickness));
 			
 			// Update zoom level
 			Board::FrameLength -= 2;
 			//its changed in brd.UpdateBoardBoundaries();
-			//Board::BetweenFrameMarginLength = Board::FrameLength / 10;
+			//Board::NetThickness = Board::FrameLength / 10;
 			zoomChanged = true;
 			
 			// Calculate new total board size
-			int newBoardWidth = Board::FrameCountX * (Board::FrameLength + Board::BetweenFrameMarginLength);
-			int newBoardHeight = Board::FrameCountY * (Board::FrameLength + Board::BetweenFrameMarginLength);
+			int newBoardWidth = Board::FrameCountX * (Board::FrameLength + Board::NetThickness);
+			int newBoardHeight = Board::FrameCountY * (Board::FrameLength + Board::NetThickness);
 			
 			// Calculate new offsets to keep the mouse point in the same relative position
 			int newOffsetX = mouseX - (int)(relativeX * newBoardWidth);
@@ -163,8 +163,8 @@ void Game::UpdateModel()
 		brd.UpdateBoardBoundaries();
 		
 		// Apply additional bounds checks to ensure board stays visible
-		int boardPixelWidth = Board::FrameCountX * (Board::FrameLength + Board::BetweenFrameMarginLength);
-		int boardPixelHeight = Board::FrameCountY * (Board::FrameLength + Board::BetweenFrameMarginLength);
+		int boardPixelWidth = Board::FrameCountX * (Board::FrameLength + Board::NetThickness);
+		int boardPixelHeight = Board::FrameCountY * (Board::FrameLength + Board::NetThickness);
 		int minOffsetX = Board::ViewportWidth - boardPixelWidth;
 		int minOffsetY = Board::ViewportHeight - boardPixelHeight;
 		

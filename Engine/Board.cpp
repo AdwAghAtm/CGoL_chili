@@ -3,7 +3,7 @@
 
 // Static member initialization
 unsigned int Board::FrameLength = 50;
-unsigned int Board::BetweenFrameMarginLength = Board::FrameLength / 10;
+unsigned int Board::NetThickness = Board::FrameLength / 10;
 int Board::OffsetX = 0;
 int Board::OffsetY = 0;
 int Board::BoardStartX = 0;
@@ -38,8 +38,8 @@ void Board::InitializeView()
 void Board::CenterView()
 {
 	// Calculate board size in pixels
-	int boardPixelWidth = FrameCountX * (FrameLength + BetweenFrameMarginLength) + BetweenFrameMarginLength;
-	int boardPixelHeight = FrameCountY * (FrameLength + BetweenFrameMarginLength) + BetweenFrameMarginLength;
+	int boardPixelWidth = FrameCountX * (FrameLength + NetThickness) + NetThickness;
+	int boardPixelHeight = FrameCountY * (FrameLength + NetThickness) + NetThickness;
 	
 	// Center the board in the viewport
 	OffsetX = -(boardPixelWidth - ViewportWidth) / 2;
@@ -55,8 +55,8 @@ void Board::Pan(int deltaX, int deltaY)
 	OffsetY += deltaY;
 	
 	// Apply bounds checking for offsets if needed
-	int boardPixelWidth = FrameCountX * (FrameLength + BetweenFrameMarginLength) + BetweenFrameMarginLength;
-	int boardPixelHeight = FrameCountY * (FrameLength + BetweenFrameMarginLength) + BetweenFrameMarginLength;
+	int boardPixelWidth = FrameCountX * (FrameLength + NetThickness) + NetThickness;
+	int boardPixelHeight = FrameCountY * (FrameLength + NetThickness) + NetThickness;
 	
 	// Limit panning to keep at least part of the board visible
 	if (OffsetX > 0) OffsetX = 0;
@@ -85,8 +85,8 @@ void Board::UpdateBoardBoundaries()
 	BoardStartY = fixedViewportStartY + OffsetY;
 	
 	// Calculate board end coordinates
-	BoardEndX = BoardStartX + FrameCountX * (FrameLength + BetweenFrameMarginLength) + BetweenFrameMarginLength;
-	BoardEndY = BoardStartY + FrameCountY * (FrameLength + BetweenFrameMarginLength) + BetweenFrameMarginLength;
+	BoardEndX = BoardStartX + FrameCountX * (FrameLength + NetThickness) + NetThickness;
+	BoardEndY = BoardStartY + FrameCountY * (FrameLength + NetThickness) + NetThickness;
 	
 	// Update viewport size (should be fixed and not change)
 	//ViewportWidth = fixedViewportEndX - fixedViewportStartX;
@@ -104,8 +104,8 @@ void Board::UpdateBoardBoundaries()
 	// 
 	
 	//resize net only here, rest instances are commented
-	BetweenFrameMarginLength = FrameLength / 10;
-	if (BetweenFrameMarginLength < 1) BetweenFrameMarginLength = 1;
+	NetThickness = FrameLength / 10;
+	if (NetThickness < 1) NetThickness = 1;
 }
 
 int Board::GetCursorPositionOnBoard(int cursorX, int cursorY)
@@ -114,8 +114,8 @@ int Board::GetCursorPositionOnBoard(int cursorX, int cursorY)
 	if(!IsCursorOnBoard(cursorX, cursorY)) return -1;
 
 	// Calculate cell coordinates from cursor position, accounting for offset
-	int cursorAreaX = ((cursorX - BoardStartX + BetweenFrameMarginLength) / (FrameLength + BetweenFrameMarginLength));
-	int cursorAreaY = ((cursorY - BoardStartY + BetweenFrameMarginLength) / (FrameLength + BetweenFrameMarginLength));
+	int cursorAreaX = ((cursorX - BoardStartX + NetThickness) / (FrameLength + NetThickness));
+	int cursorAreaY = ((cursorY - BoardStartY + NetThickness) / (FrameLength + NetThickness));
 
 	// Check boundaries
 	if (cursorAreaX < 0 || cursorAreaX >= FrameCountX ||

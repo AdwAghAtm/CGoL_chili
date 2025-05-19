@@ -20,7 +20,7 @@ public:
 	static const int MinFrameLength = 4; //must be 2 at least
 	static const int MaxFrameLength = 100;
 	static unsigned int FrameLength; //made it variable so we can change size
-	static unsigned int BetweenFrameMarginLength; //net's width
+	static unsigned int NetThickness; //net's width
 	
 	// Board dimensions in cells
 	static const int FrameCountX = 650;
