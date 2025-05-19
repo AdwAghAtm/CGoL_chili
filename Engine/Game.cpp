@@ -314,7 +314,7 @@ void Game::UpdateModel()
 	if ((wnd.kbd.KeyIsPressed(VK_OEM_PLUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp) && wnd.kbd.KeyIsPressed(VK_SHIFT) &&
 		brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
 	{
-		if (GetTargetFPS() < 120)
+		if (GetTargetFPS() < 30)
 		{
 			SetTargetFPS(GetTargetFPS() + 1);
 		}

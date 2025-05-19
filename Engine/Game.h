@@ -58,5 +58,5 @@ private:
 	Board brd;
 	Display dspl;
 	Logic logic;
-	static unsigned int targetFPS;// = 30;
+	static unsigned int targetFPS;
 };

@@ -385,7 +385,7 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
             endY,
             Game::GetTargetFPS(),   // Current value
             1, // Minimum value
-            120, // Maximum value
+            30, // fps cap
             Colors::Green);         // Slider color
         break;
     }
