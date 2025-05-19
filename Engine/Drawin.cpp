@@ -174,6 +174,19 @@ void Drawin::DrawSquare( int cord_x, int cord_y, Color c )
     
     // Use the optimized rectangle drawing method with clipping
     DrawRectangle(tempx, tempy, tempx + Board::FrameLength - 1, tempy + Board::FrameLength - 1, c);
+    
+    //OPTION FULL SQUARES
+    //DrawRectangle(tempx, tempy, tempx + Board::FrameLength - 1+ Board::NetThickness, tempy + Board::FrameLength - 1+ Board::NetThickness, c);
+    
+    //OPTION BEVELED EDGES
+    //testng funny drawing
+    for (int i = 0; i <= Board::NetThickness/2; i++)
+    {
+        //DrawLine(tempx + i, tempy - i, tempx + Board::FrameLength - i-1, tempy - i, c);//top
+        //DrawLine(tempx + i, tempy + Board::FrameLength + i, tempx + Board::FrameLength - i - 1, tempy + Board::FrameLength + i, c);//bottom
+        //DrawLine(tempx - i, tempy + i, tempx - i, tempy + Board::FrameLength - i, c);//left
+        //DrawLine(tempx + Board::FrameLength+ i, tempy + i, tempx + Board::FrameLength + i, tempy + Board::FrameLeng
+    }
 }
 
 void Drawin::DrawRectangle(int x0, int y0, int x1, int y1, Color c) {
@@ -249,7 +262,83 @@ void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX,
     }
 }
 
+void Drawin::DrawNetAlt(Color c) {
+    //calculate space between nets parts
+    int padding = Board::FrameLength * 0.2;
 
+    // Calculate visible area bounds
+    int visibleStartX = std::max(0, Board::BoardStartX);
+    int visibleStartY = std::max(0, Board::BoardStartY);
+    int visibleEndX = std::min(Graphics::ScreenWidth, Board::BoardEndX);
+    int visibleEndY = std::min(Graphics::ScreenHeight, Board::BoardEndY);
+
+    // Skip if no part of the board is visible
+    if (visibleStartX >= visibleEndX || visibleStartY >= visibleEndY) {
+        return;
+    }
+
+    // Calculate cell size and spacing
+    int cellSize = Board::FrameLength;
+    int gridSpacing = cellSize + Board::NetThickness;
+
+    // Calculate the cell grid indices that would contain the visible area
+    int firstColIdx = std::max(0, (visibleStartX - Board::BoardStartX) / gridSpacing);
+    int firstRowIdx = std::max(0, (visibleStartY - Board::BoardStartY) / gridSpacing);
+    int lastColIdx = std::min(Board::FrameCountX, (visibleEndX - Board::BoardStartX) / gridSpacing + 1);
+    int lastRowIdx = std::min(Board::FrameCountY, (visibleEndY - Board::BoardStartY) / gridSpacing + 1);
+
+    // Draw vertical grid lines
+    for (int col = firstColIdx; col <= lastColIdx; col++) {
+        // Line X position in screen space
+        int lineX = Board::BoardStartX + col * gridSpacing - Board::NetThickness;
+
+        // If beyond visible area, skip
+        if (lineX + Board::NetThickness <= visibleStartX || lineX >= visibleEndX) {
+            continue;
+        }
+
+        // Draw the grid line (thicker line based on NetThickness)
+        for (int thickness = 0; thickness < Board::NetThickness; thickness++) {
+            int x = lineX + thickness;
+            if (x >= 0 && x < Graphics::ScreenWidth) {
+                //DrawLine(x, visibleStartY, x, visibleEndY - 1, c);
+                for (int row = firstRowIdx; row <= lastRowIdx; row++) {
+                    int lineY = Board::BoardStartY + row * gridSpacing - Board::NetThickness;
+                    if (lineY + Board::NetThickness <= visibleStartY || lineY >= visibleEndY) {
+                        continue;
+                    }
+                    DrawLine(x, lineY + Board::NetThickness+padding, x, lineY + cellSize + Board::NetThickness-padding, c);
+                }
+            }
+        }
+    }
+
+    // Draw horizontal grid lines
+    for (int row = firstRowIdx; row <= lastRowIdx; row++) {
+        // Line Y position in screen space
+        int lineY = Board::BoardStartY + row * gridSpacing - Board::NetThickness;
+
+        // If beyond visible area, skip
+        if (lineY + Board::NetThickness <= visibleStartY || lineY >= visibleEndY) {
+            continue;
+        }
+
+        // Draw the grid line (thicker line based on NetThickness)
+        for (int thickness = 0; thickness < Board::NetThickness; thickness++) {
+            int y = lineY + thickness;
+            if (y >= 0 && y < Graphics::ScreenHeight) {
+                //DrawLine(visibleStartX, y, visibleEndX - 1, y, c);
+                for (int col = firstColIdx; col <= lastColIdx; col++) {
+                    int lineX = Board::BoardStartX + col * gridSpacing - Board::NetThickness;
+                    if (lineX + Board::NetThickness <= visibleStartX || lineX >= visibleEndX) {
+                        continue;
+                    }
+                    DrawLine(lineX + Board::NetThickness+padding, y, lineX + cellSize + Board::NetThickness-padding, y, c);
+                }
+            }
+        }
+    }
+}
 void Drawin::DrawNet(Color c)
 {
     // Calculate visible area bounds

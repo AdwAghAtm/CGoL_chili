@@ -31,6 +31,7 @@ public:
 	void DrawSquare( int cord_x, int cord_y, Color c );
 	void DrawRectangle(int x0, int y0, int x1, int y1, Color c);
 	void DrawSlider(MenuPosition position, int startX, int startY, int endX, int endY, int value, int minValue, int maxValue, Color c);
+	void DrawNetAlt(Color c);
 	void DrawNet( Color c );
 	void DrawMenu(MenuPosition position, Color backgroundColor);
 	void DrawBoardFrame(Color c);

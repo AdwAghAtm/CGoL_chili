@@ -3,7 +3,7 @@
 
 // Static member initialization
 unsigned int Board::FrameLength = 50;
-unsigned int Board::NetThickness = Board::FrameLength / 10;
+unsigned int Board::NetThickness = Board::FrameLength / 20;
 int Board::OffsetX = 0;
 int Board::OffsetY = 0;
 int Board::BoardStartX = 0;
@@ -104,7 +104,7 @@ void Board::UpdateBoardBoundaries()
 	// 
 	
 	//resize net only here, rest instances are commented
-	NetThickness = FrameLength / 10;
+	NetThickness = FrameLength / 20;
 	if (NetThickness < 1) NetThickness = 1;
 }
 

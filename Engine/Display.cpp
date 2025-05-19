@@ -47,7 +47,8 @@ void Display::ComposeFrame(const Cell* const* board)
 	
 	
 	// 2. Draw board with net and squares
-	drw.DrawNet(Colors::DarkGray2);
+	//drw.DrawNet(Colors::DarkGray2);
+	drw.DrawNetAlt(Colors::LightGray);
 	for (int i = 0; i < Board::FrameCountX; i++)
 	{
 		for (int j = 0; j < Board::FrameCountY; j++)
@@ -66,7 +67,7 @@ void Display::ComposeFrame(const Cell* const* board)
 	// Draw in specific order: left, top, right, bottom to handle corners correctly
 	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
 	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
-	drw.DrawMenu(MenuPosition::Right, Colors::CocoaBean);
+	drw.DrawMenu(MenuPosition::Right, Colors::DarkGreen);
 	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
 	//this should always be on top
 	drw.DrawWindowFrame(Colors::Gray);
