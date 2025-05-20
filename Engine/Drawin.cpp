@@ -216,7 +216,10 @@ void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cor
     
     //calculate circle criteria
     int x_c, y_c, radius;
-    radius = Board::NetThickness;
+    if (Board::NetThickness < 3)
+        radius = 0;
+    else
+        radius = Board::NetThickness;
 
     //soften inner corners
     if (neighbors[1] && neighbors[5] && !neighbors[2])
@@ -242,6 +245,33 @@ void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cor
         x_c = tempx - radius-1;
         y_c = tempy - radius-1;
         DrawRoundedCorner(CornerPosition::TopLeft, x_c, y_c, Board::NetThickness, c);
+    }
+
+    //soften outer corners
+    //be carefull if background changes
+    if (!neighbors[1] && !neighbors[5])
+    {
+        x_c = tempx + Board::FrameLength - radius - 1;
+        y_c = tempy + radius;
+        DrawRoundedCorner(CornerPosition::BottomLeft, x_c, y_c, Board::NetThickness, Colors::Black);
+    }
+    if (!neighbors[5] && !neighbors[7])
+    {
+        x_c = tempx + Board::FrameLength - radius - 1;
+        y_c = tempy + Board::FrameLength - radius - 1;
+        DrawRoundedCorner(CornerPosition::TopLeft, x_c, y_c, Board::NetThickness, Colors::Black);
+    }
+    if (!neighbors[7] && !neighbors[3])
+    {
+        x_c = tempx + radius;
+        y_c = tempy + Board::FrameLength - radius - 1;
+        DrawRoundedCorner(CornerPosition::TopRight, x_c, y_c, Board::NetThickness, Colors::Black);
+    }
+    if (!neighbors[1] && !neighbors[3])
+    {
+        x_c = tempx + radius;
+        y_c = tempy + radius;
+        DrawRoundedCorner(CornerPosition::BottomRight, x_c, y_c, Board::NetThickness, Colors::Black);
     }
 }
 
