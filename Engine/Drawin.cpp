@@ -219,7 +219,7 @@ void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cor
     if (Board::NetThickness < 3)
         radius = 0;
     else
-        radius = Board::NetThickness;
+        radius = Board::NetThickness-2;
 
     //soften inner corners
     if (neighbors[1] && neighbors[5] && !neighbors[2])

@@ -44,7 +44,10 @@ void Display::ComposeFrame(const Cell* const* board)
 	gfx.BeginFrame();
 
 	//Draw board with net and squares
+	//can decide here what graphics to use: legacy/alt (netAlt + surroundings)
+	//drw.DrawNet(Colors::DarkGray2);
 	drw.DrawNetAlt(Colors::DarkGray2);
+
 	for (int i = 0; i < Board::FrameCountX; i++)
 	{
 		for (int j = 0; j < Board::FrameCountY; j++)
