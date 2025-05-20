@@ -214,7 +214,7 @@ void Drawin::DrawSquare(int cord_x, int cord_y, Color c )
 //    if (neighbors[0])
 //        DrawRectangle(tempx, tempy - Board::NetThickness / 2, tempx + Board::FrameLength - 1, tempy - 1, c);
 //}
-void Drawin::DrawSurroundings(std::array<bool, 4> neighbors, int cord_x, int cord_y, Color c) {
+void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c) {
     //Calculate the absolute pixel position for this cell
     int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
     int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
@@ -227,14 +227,28 @@ void Drawin::DrawSurroundings(std::array<bool, 4> neighbors, int cord_x, int cor
     {
         return; // Cell is outside the visible area, don't draw it
     }
-    if (neighbors[0])//top
+    //draw connections
+    //012
+    //345
+    //678
+    if (neighbors[1])//top
         DrawRectangle(tempx, tempy - Board::NetThickness / 2, tempx + Board::FrameLength-1, tempy - 1, c);
-    if (neighbors[1])//right
+    if (neighbors[5])//right
         DrawRectangle(tempx + Board::FrameLength, tempy, tempx + Board::FrameLength + Board::NetThickness / 2, tempy + Board::FrameLength - 1, c);
-    if (neighbors[2])//bottom
+    if (neighbors[7])//bottom
         DrawRectangle(tempx, tempy + Board::FrameLength, tempx + Board::FrameLength-1, tempy + Board::FrameLength + Board::NetThickness / 2, c);
     if (neighbors[3])//left
         DrawRectangle(tempx - Board::NetThickness / 2, tempy, tempx, tempy + Board::FrameLength - 1, c);
+
+    //draw rectangles inside
+    if (neighbors[1]&&neighbors[2]&&neighbors[5])//top-right corner
+         DrawRectangle(tempx + Board::FrameLength - 1, tempy - Board::NetThickness / 2, tempx + Board::FrameLength + Board::NetThickness / 2, tempy, c);
+    if (neighbors[5] && neighbors[8] && neighbors[7])//bottom-right corner
+        DrawRectangle(tempx + Board::FrameLength - 1, tempy + Board::FrameLength - 1, tempx + Board::FrameLength + Board::NetThickness / 2, tempy + Board::FrameLength + Board::NetThickness / 2, c);
+    if (neighbors[7] && neighbors[6] && neighbors[3])//bottom-left corner
+        DrawRectangle(tempx - Board::NetThickness / 2, tempy + Board::FrameLength - 1,tempx, tempy + Board::FrameLength + Board::NetThickness / 2,  c);
+    if (neighbors[1] && neighbors[0] && neighbors[3])//top-left corner
+        DrawRectangle(tempx - Board::NetThickness / 2, tempy - Board::NetThickness / 2, tempx, tempy,  c);
 }
 
 void Drawin::DrawRectangle(int x0, int y0, int x1, int y1, Color c) {
