@@ -56,6 +56,7 @@ void Display::ComposeFrame(const Cell* const* board)
 			{
 				drw.DrawSquare(i, j, Colors::TransChan);
 				drw.DrawSurroundings(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan);
+				drw.DrawAllRoundedCorners(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan);//dont mix with legacy net
 			}
 		}
 	}
