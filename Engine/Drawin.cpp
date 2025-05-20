@@ -230,7 +230,7 @@ void Drawin::DrawSurroundings(std::array<bool, 4> neighbors, int cord_x, int cor
     if (neighbors[0])//top
         DrawRectangle(tempx, tempy - Board::NetThickness / 2, tempx + Board::FrameLength-1, tempy - 1, c);
     if (neighbors[1])//right
-        DrawRectangle(tempx + Board::FrameLength, tempy, tempx + Board::FrameLength + Board::NetThickness / 2 - 1, tempy + Board::FrameLength - 1, c);
+        DrawRectangle(tempx + Board::FrameLength, tempy, tempx + Board::FrameLength + Board::NetThickness / 2, tempy + Board::FrameLength - 1, c);
     if (neighbors[2])//bottom
         DrawRectangle(tempx, tempy + Board::FrameLength, tempx + Board::FrameLength-1, tempy + Board::FrameLength + Board::NetThickness / 2, c);
     if (neighbors[3])//left
