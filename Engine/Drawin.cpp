@@ -249,6 +249,53 @@ void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cor
         DrawRectangle(tempx - Board::NetThickness / 2, tempy + Board::FrameLength - 1,tempx, tempy + Board::FrameLength + Board::NetThickness / 2,  c);
     if (neighbors[1] && neighbors[0] && neighbors[3])//top-left corner
         DrawRectangle(tempx - Board::NetThickness / 2, tempy - Board::NetThickness / 2, tempx, tempy,  c);
+    
+    //calculate circle criteria
+    int x0, y0, x_c, y_c, radius;
+    radius = Board::NetThickness;
+
+    //soften inner corners
+    if (neighbors[1] && neighbors[5] && !neighbors[2])
+    {
+        x_c = tempx + Board::FrameLength + radius;
+        y_c = tempy - radius-1;
+        DrawRoundedCorner(CornerPosition::TopRight, x_c, y_c, Board::NetThickness, c);
+    }
+    if (neighbors[5] && neighbors[7] && !neighbors[8])
+    {
+        x_c = tempx + Board::FrameLength + radius;
+        y_c = tempy + Board::FrameLength + radius;
+        DrawRoundedCorner(CornerPosition::BottomRight, x_c, y_c, Board::NetThickness, c);
+    }
+    if (neighbors[7] && neighbors[3] && !neighbors[6])
+    {
+        x_c = tempx  - radius-1;
+        y_c = tempy + Board::FrameLength + radius;
+        DrawRoundedCorner(CornerPosition::BottomLeft, x_c, y_c, Board::NetThickness, c);
+    }
+    if (neighbors[1] && neighbors[3] && !neighbors[0])
+    {
+        x_c = tempx - radius-1;
+        y_c = tempy - radius-1;
+        DrawRoundedCorner(CornerPosition::TopLeft, x_c, y_c, Board::NetThickness, c);
+    }
+}
+
+void Drawin::DrawRoundedCorner(CornerPosition position, int centerX, int centerY, int radius, Color c) {
+    for (int y = 0; y <= radius; ++y) {
+        for (int x = 0; x <= radius; ++x) {
+            if ((x * x + y * y) >= (radius * radius)) {
+                if (position == CornerPosition::TopLeft)
+                    SafePutPixel(centerX + x, centerY + y, c); // Bottom-right quadrant
+                if (position == CornerPosition::TopRight)
+                    SafePutPixel(centerX - x, centerY + y, c); // Bottom-left quadrant
+                if (position == CornerPosition::BottomLeft)
+                    SafePutPixel(centerX + x, centerY - y, c); // Top-right quadrant
+                if (position == CornerPosition::BottomRight)
+                    SafePutPixel(centerX - x, centerY - y, c); // Top-left quadrant
+            }
+        }
+    }
 }
 
 void Drawin::DrawRectangle(int x0, int y0, int x1, int y1, Color c) {
