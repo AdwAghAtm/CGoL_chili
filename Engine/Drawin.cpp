@@ -176,44 +176,8 @@ void Drawin::DrawSquare(int cord_x, int cord_y, Color c )
     
     // Use the optimized rectangle drawing method with clipping
     DrawRectangle(tempx, tempy, tempx + Board::FrameLength - 1, tempy + Board::FrameLength - 1, c);
-
-    //OPTION CONNECT EDGES
-    //Logic::GetNeighbors(cord_x, cord_y);
-    
-    //OPTION FULL SQUARES
-    //DrawRectangle(tempx, tempy, tempx + Board::FrameLength - 1+ Board::NetThickness, tempy + Board::FrameLength - 1+ Board::NetThickness, c);
-    
-    //OPTION BEVELED EDGES
-    //testng funny drawing
-    //for (int i = 0; i <= Board::NetThickness/2; i++)
-    //{
-    //    //DrawLine(tempx + i, tempy - i, tempx + Board::FrameLength - i-1, tempy - i, c);//top
-    //    //DrawLine(tempx + i, tempy + Board::FrameLength + i, tempx + Board::FrameLength - i - 1, tempy + Board::FrameLength + i, c);//bottom
-    //    //DrawLine(tempx - i, tempy + i, tempx - i, tempy + Board::FrameLength - i, c);//left
-    //    //DrawLine(tempx + Board::FrameLength+ i, tempy + i, tempx + Board::FrameLength + i, tempy + Board::FrameLeng
-    //}
 }
 
-//void Drawin::DrawSquare(const Cell* const* board, int cord_x, int cord_y, Color c)
-//{
-//    // Calculate the absolute pixel position for this cell
-//    int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
-//    int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
-//
-//    // Check if the square is in the visible area before drawing
-//    if (tempx + Board::FrameLength < 0 ||
-//        tempx >= Graphics::ScreenWidth ||
-//        tempy + Board::FrameLength < 0 ||
-//        tempy >= Graphics::ScreenHeight)
-//    {
-//        return; // Cell is outside the visible area, don't draw it
-//    }
-//    bool* neighbors = Logic::GetNeighbors(board, cord_x, cord_y);
-//    // Use the optimized rectangle drawing method with clipping
-//    DrawRectangle(tempx, tempy, tempx + Board::FrameLength - 1, tempy + Board::FrameLength - 1, c);
-//    if (neighbors[0])
-//        DrawRectangle(tempx, tempy - Board::NetThickness / 2, tempx + Board::FrameLength - 1, tempy - 1, c);
-//}
 void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c) {
     //Calculate the absolute pixel position for this cell
     int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
@@ -251,7 +215,7 @@ void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cor
         DrawRectangle(tempx - Board::NetThickness / 2, tempy - Board::NetThickness / 2, tempx, tempy,  c);
     
     //calculate circle criteria
-    int x0, y0, x_c, y_c, radius;
+    int x_c, y_c, radius;
     radius = Board::NetThickness;
 
     //soften inner corners
