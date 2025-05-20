@@ -16,6 +16,7 @@ public:
     void ClearBoard();
     void SetCell(int x, int y, bool value);
     bool GetCell(int x, int y) const;
+    static std::array<bool, 4> GetNeighbors(const Cell* const* board, int x, int y);
     void NextGeneration();
     const Cell* const* GetCurrentBoard() const { return currentBoard; }
     //The innermost const prevents modifying the Cell values

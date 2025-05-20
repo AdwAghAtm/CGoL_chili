@@ -20,7 +20,7 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Display.h"
-
+#include <array>
 
 
 Display::Display(MainWindow& wnd)
@@ -56,6 +56,7 @@ void Display::ComposeFrame(const Cell* const* board)
 			if (board[i][j].isAlive)
 			{
 				drw.DrawSquare(i, j, Colors::TransChan);
+				drw.DrawSurroundings(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan);
 			}
 		}
 	}

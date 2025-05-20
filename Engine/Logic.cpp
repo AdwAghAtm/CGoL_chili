@@ -1,5 +1,6 @@
 #include "Logic.h"
 #include <cassert>
+#include <array>
 
 // Conway's Game of Life rules implementation
 bool Logic::ConwayRules(bool isAlive, int neighbors)
@@ -63,6 +64,19 @@ bool Logic::GetCell(int x, int y) const
 {
     assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);
     return currentBoard[x][y].isAlive;
+}
+std::array<bool, 4> Logic::GetNeighbors(const Cell* const* board, int x, int y) {
+    assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);
+    std::array<bool, 4> neighbors{ false, false, false, false };
+    if (x!=0&&y!=0&&x!= Board::FrameCountX-1&&y!= Board::FrameCountY-1)
+    {
+        neighbors[0] = board[x][y - 1].isAlive;
+        neighbors[1] = board[x + 1][y].isAlive;
+        neighbors[2] = board[x][y + 1].isAlive;
+        neighbors[3] = board[x - 1][y].isAlive;
+    }
+    
+    return neighbors;
 }
 
 bool Logic::ApplyRules(bool isAlive, int neighbors) const
