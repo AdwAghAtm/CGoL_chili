@@ -25,6 +25,17 @@ void Drawin::SafePutPixel(int x, int y, Color c)
 	}
 }
 
+void Drawin::DrawBackground(Color c)
+{
+	for (int i = 0; i < Graphics::ScreenWidth; i++)
+	{
+		for (int j = 0; j < Graphics::ScreenHeight; j++)
+		{
+			SafePutPixel(i, j, c);
+		}
+	}
+}
+
 void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) // Bresenham's algorithm
 {
 	// Clip the line to the screen boundaries
@@ -214,7 +225,7 @@ void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cor
         DrawRectangle(tempx - Board::NetThickness / 2, tempy - Board::NetThickness / 2, tempx, tempy,  c);
 }
 
-void Drawin::DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c) {
+void Drawin::DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c, Color bg) {
     //Calculate the absolute pixel position for this cell
     int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
     int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
@@ -267,25 +278,25 @@ void Drawin::DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, in
     {
         x_c = tempx + Board::FrameLength - radius - 1;
         y_c = tempy + radius;
-        DrawRoundedCorner(CornerPosition::BottomLeft, x_c, y_c, Board::NetThickness, Colors::Black);
+        DrawRoundedCorner(CornerPosition::BottomLeft, x_c, y_c, Board::NetThickness, bg);
     }
     if (!neighbors[5] && !neighbors[7])
     {
         x_c = tempx + Board::FrameLength - radius - 1;
         y_c = tempy + Board::FrameLength - radius - 1;
-        DrawRoundedCorner(CornerPosition::TopLeft, x_c, y_c, Board::NetThickness, Colors::Black);
+        DrawRoundedCorner(CornerPosition::TopLeft, x_c, y_c, Board::NetThickness, bg);
     }
     if (!neighbors[7] && !neighbors[3])
     {
         x_c = tempx + radius;
         y_c = tempy + Board::FrameLength - radius - 1;
-        DrawRoundedCorner(CornerPosition::TopRight, x_c, y_c, Board::NetThickness, Colors::Black);
+        DrawRoundedCorner(CornerPosition::TopRight, x_c, y_c, Board::NetThickness, bg);
     }
     if (!neighbors[1] && !neighbors[3])
     {
         x_c = tempx + radius;
         y_c = tempy + radius;
-        DrawRoundedCorner(CornerPosition::BottomRight, x_c, y_c, Board::NetThickness, Colors::Black);
+        DrawRoundedCorner(CornerPosition::BottomRight, x_c, y_c, Board::NetThickness, bg);
     }
 }
 

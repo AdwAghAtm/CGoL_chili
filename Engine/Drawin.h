@@ -28,12 +28,13 @@ public:
 	Drawin( const Drawin& ) = delete;
 	Drawin& operator=( const Drawin& ) = delete;
 
+	void DrawBackground(Color c);
 	void DrawLine( int x0, int y0, int x1, int y1, Color c );
 	void DrawCircle( int x0, int y0, int r, Color c );
 	void DrawSquare( int cord, Color c );
 	void DrawSquare( int cord_x, int cord_y, Color c );
 	void DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c);
-	void DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c);
+	void DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c, Color bg);
 	void DrawRoundedCorner(CornerPosition position, int centerX, int centerY, int radius, Color c);
 	void DrawRectangle(int x0, int y0, int x1, int y1, Color c);
 	void DrawSlider(MenuPosition position, int startX, int startY, int endX, int endY, int value, int minValue, int maxValue, Color c);
