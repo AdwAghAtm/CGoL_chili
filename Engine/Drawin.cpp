@@ -158,7 +158,6 @@ void Drawin::DrawSquare( int cord, Color c )
 		}
 }
 
-
 void Drawin::DrawSquare(int cord_x, int cord_y, Color c )
 {	
     // Calculate the absolute pixel position for this cell
@@ -400,8 +399,8 @@ void Drawin::DrawNetAlt(Color c) {
     int gridSpacing = cellSize + Board::NetThickness;
 
     // Calculate the cell grid indices that would contain the visible area
-    int firstColIdx = std::max(0, (visibleStartX - Board::BoardStartX) / gridSpacing);
-    int firstRowIdx = std::max(0, (visibleStartY - Board::BoardStartY) / gridSpacing);
+    int firstColIdx = std::max(0, (visibleStartX - Board::BoardStartX) / gridSpacing - 1);
+    int firstRowIdx = std::max(0, (visibleStartY - Board::BoardStartY) / gridSpacing-1);
     int lastColIdx = std::min(Board::FrameCountX, (visibleEndX - Board::BoardStartX) / gridSpacing + 1);
     int lastRowIdx = std::min(Board::FrameCountY, (visibleEndY - Board::BoardStartY) / gridSpacing + 1);
 
@@ -422,7 +421,7 @@ void Drawin::DrawNetAlt(Color c) {
                 //DrawLine(x, visibleStartY, x, visibleEndY - 1, c);
                 for (int row = firstRowIdx; row <= lastRowIdx; row++) {
                     int lineY = Board::BoardStartY + row * gridSpacing - Board::NetThickness;
-                    if (lineY + Board::NetThickness <= visibleStartY || lineY >= visibleEndY) {
+                    if (lineY + Board::NetThickness < visibleStartY || lineY >= visibleEndY) {
                         continue;
                     }
                     DrawLine(x, lineY + Board::NetThickness+padding, x, lineY + cellSize + Board::NetThickness-padding, c);
@@ -448,7 +447,7 @@ void Drawin::DrawNetAlt(Color c) {
                 //DrawLine(visibleStartX, y, visibleEndX - 1, y, c);
                 for (int col = firstColIdx; col <= lastColIdx; col++) {
                     int lineX = Board::BoardStartX + col * gridSpacing - Board::NetThickness;
-                    if (lineX + Board::NetThickness <= visibleStartX || lineX >= visibleEndX) {
+                    if (lineX + Board::NetThickness < visibleStartX || lineX >= visibleEndX) {
                         continue;
                     }
                     DrawLine(lineX + Board::NetThickness+padding, y, lineX + cellSize + Board::NetThickness-padding, y, c);
@@ -457,6 +456,7 @@ void Drawin::DrawNetAlt(Color c) {
         }
     }
 }
+
 void Drawin::DrawNet(Color c)
 {
     // Calculate visible area bounds
