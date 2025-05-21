@@ -75,7 +75,7 @@ void MainWindow::UpdateScreenSize()
 	extern Graphics* pGfx; // you'll need to make this pointer available
 	if (pGfx)
 	{
-		pGfx->OnResize(Graphics::ScreenWidth, Graphics::ScreenHeight);
+		pGfx->OnResize(newWidth, newHeight);
 	}
 }
 

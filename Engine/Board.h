@@ -15,7 +15,7 @@ public:
 	void UpdateBoardBoundaries();
 	
 	int GetCursorPositionOnBoard(int cursorX, int cursorY);
-	
+
 	// Board info
 	static const int MinFrameLength = 4; //must be 2 at least
 	static const int MaxFrameLength = 100;
