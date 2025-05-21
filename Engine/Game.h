@@ -29,6 +29,9 @@
 #include "Display.h"
 #include "Logic.h"
 
+constexpr int logicWidth = 800;
+constexpr int logicHeight = 600;
+
 class Game
 {
 public:

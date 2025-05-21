@@ -42,7 +42,7 @@ Display::~Display()
 void Display::ComposeFrame(const Cell* const* board)
 {
 	gfx.BeginFrame();
-
+	gfx.UpdateVertexBuffer(Graphics::ScreenWidth, Graphics::ScreenHeight);
 	//Draw board with net and squares
 	//can decide here what graphics to use: legacy/alt (netAlt + surroundings)
 	//drw.DrawNet(Colors::DarkGray2);

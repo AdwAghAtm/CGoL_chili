@@ -34,8 +34,8 @@ namespace FramebufferShaders
 #include "FramebufferVS.shh"
 }
 
-int Graphics::ScreenHeight = 800;
-int Graphics::ScreenWidth = 1300;
+int Graphics::ScreenHeight = 600;
+int Graphics::ScreenWidth = 800;
 
 #pragma comment( lib,"d3d11.lib" )
 
@@ -316,7 +316,7 @@ void Graphics::OnResize(int newWidth, int newHeight)
 	// Update static screen size
 	ScreenWidth = newWidth;
 	ScreenHeight = newHeight;
-
+	
 	// Release old resources
 	pRenderTargetView.Reset();
 	pSysBufferTexture.Reset();
@@ -389,7 +389,66 @@ void Graphics::OnResize(int newWidth, int newHeight)
 
 	// Allocate new sysbuffer
 	pSysBuffer = reinterpret_cast<Color*>(_aligned_malloc(sizeof(Color) * newWidth * newHeight, 16u));
+
+	// Update vertex buffer for new aspect ratio
+	UpdateVertexBuffer(newWidth, newHeight);
 }
+void Graphics::UpdateVertexBuffer(int windowWidth, int windowHeight)
+{
+	// Your fixed internal logic resolution
+	constexpr float logicWidth = 800.0f;
+	constexpr float logicHeight = 600.0f;
+
+	float targetAspect = float(windowWidth) / float(windowHeight);
+	float logicAspect = logicWidth / logicHeight;
+
+	float quadWidth = 1.0f;
+	float quadHeight = 1.0f;
+
+	if (targetAspect > logicAspect)
+	{
+		// Window is wider than logic aspect ratio
+		quadWidth = logicAspect / targetAspect;
+	}
+	else
+	{
+		// Window is taller than logic aspect ratio
+		quadHeight = targetAspect / logicAspect;
+	}
+
+	// Define the new vertices for the fullscreen quad with corrected aspect ratio
+	FSQVertex vertices[] =
+	{
+		{ -quadWidth,  quadHeight, 0.5f, 0.0f, 0.0f },
+		{  quadWidth,  quadHeight, 0.5f, 1.0f, 0.0f },
+		{  quadWidth, -quadHeight, 0.5f, 1.0f, 1.0f },
+		{ -quadWidth,  quadHeight, 0.5f, 0.0f, 0.0f },
+		{  quadWidth, -quadHeight, 0.5f, 1.0f, 1.0f },
+		{ -quadWidth, -quadHeight, 0.5f, 0.0f, 1.0f },
+	};
+
+	// Update the vertex buffer with the new vertices
+
+	// First release the old vertex buffer
+	pVertexBuffer.Reset();
+
+	D3D11_BUFFER_DESC bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(FSQVertex) * 6;
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0u;
+
+	D3D11_SUBRESOURCE_DATA initData = {};
+	initData.pSysMem = vertices;
+
+	HRESULT hr = pDevice->CreateBuffer(&bd, &initData, &pVertexBuffer);
+	if (FAILED(hr))
+	{
+		throw CHILI_GFX_EXCEPTION(hr, L"Updating vertex buffer in UpdateVertexBuffer");
+	}
+}
+
+
 
 void Graphics::PutPixel( int x,int y,Color c )
 {
