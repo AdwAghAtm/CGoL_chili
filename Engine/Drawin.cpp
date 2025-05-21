@@ -230,7 +230,7 @@ void Drawin::DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, in
 
     //calculate circle criteria
     int x_c, y_c, radius;
-    if (Board::NetThickness < 3)
+    if (Board::NetThickness < 2)
         radius = 0;
     else
         radius = Board::NetThickness - 2;
