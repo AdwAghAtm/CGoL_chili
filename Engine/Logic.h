@@ -24,8 +24,6 @@ public:
     //The outer const prevents modifying the pointers to pointers
 
     // Memory management
-    
-    
 
 private:
     static Cell** AllocateBoard(int xSize, int ySize);

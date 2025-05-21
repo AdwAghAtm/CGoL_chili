@@ -125,8 +125,6 @@ void Game::UpdateModel()
 			
 			// Update zoom level
 			Board::FrameLength += 2;
-			//its changed in brd.UpdateBoardBoundaries();
-			//Board::NetThickness = Board::FrameLength / 10;
 			zoomChanged = true;
 			
 			// Calculate new total board size
@@ -161,8 +159,6 @@ void Game::UpdateModel()
 			
 			// Update zoom level
 			Board::FrameLength -= 2;
-			//its changed in brd.UpdateBoardBoundaries();
-			//Board::NetThickness = Board::FrameLength / 10;
 			zoomChanged = true;
 			
 			// Calculate new total board size

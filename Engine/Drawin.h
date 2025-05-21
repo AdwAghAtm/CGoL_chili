@@ -24,16 +24,12 @@ enum class CornerPosition
 class Drawin
 {
 public:
-
-
-	Drawin( class Graphics& key );
-
+	Drawin(class Graphics& key);
 	Drawin( const Drawin& ) = delete;
 	Drawin& operator=( const Drawin& ) = delete;
 
 	void DrawLine( int x0, int y0, int x1, int y1, Color c );
 	void DrawCircle( int x0, int y0, int r, Color c );
-
 	void DrawSquare( int cord, Color c );
 	void DrawSquare( int cord_x, int cord_y, Color c );
 	void DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c);
@@ -47,16 +43,10 @@ public:
 	void DrawBoardFrame(Color c);
 	void DrawWindowFrame(Color c);
 
-	
-	
-
-
 private:
-
 	// Helper methods for safe drawing
 	bool IsWithinScreenBounds(int x, int y) const;
 	void SafePutPixel(int x, int y, Color c);
 	
 	Graphics& gfx2;
-
 };
