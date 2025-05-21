@@ -30,6 +30,7 @@ int WINAPI wWinMain( HINSTANCE hInst,HINSTANCE,LPWSTR pArgs,INT )
 		MainWindow wnd( hInst,pArgs );		
 		try
 		{
+
 			Game theGame( wnd );
 
 			theGame.Pre();

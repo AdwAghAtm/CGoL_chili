@@ -68,9 +68,22 @@ void MainWindow::UpdateScreenSize()
 {
 	RECT wr;
 	GetClientRect(hWnd, &wr);
-	Graphics::ScreenWidth = wr.right - wr.left;
-	Graphics::ScreenHeight = wr.bottom - wr.top;
-	// update the window 
+	int newWidth = wr.right - wr.left;
+	int newHeight = wr.bottom - wr.top;
+
+	// Resize graphics buffers
+	extern Graphics* pGfx; // you'll need to make this pointer available
+	if (pGfx)
+	{
+		pGfx->OnResize(Graphics::ScreenWidth, Graphics::ScreenHeight);
+	}
+}
+
+Graphics* pGfx = nullptr;
+
+void MainWindow::SetGraphics(Graphics* gfx)
+{
+	pGfx = gfx;
 }
 
 MainWindow::~MainWindow()
@@ -149,7 +162,7 @@ LRESULT MainWindow::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam )
 		kbd.ClearState();
 		break;
 	case WM_SIZING:
-		UpdateScreenSize();
+		//UpdateScreenSize();
 		break;
 	case WM_SIZE:
 		UpdateScreenSize();

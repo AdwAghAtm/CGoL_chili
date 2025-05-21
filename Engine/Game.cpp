@@ -45,6 +45,7 @@ Game::Game(MainWindow& wnd)
 {
 	// Initialize the board view (centers the board)
 	brd.InitializeView();
+
 }
 
 void Game::Pre()

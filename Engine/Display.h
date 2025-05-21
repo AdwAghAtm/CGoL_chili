@@ -48,6 +48,7 @@ public:
 private:
 	MainWindow& wnd;
 	Graphics gfx;
+
 	/********************************/
 	/*  User Variables              */
 	/********************************/
