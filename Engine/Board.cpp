@@ -1,18 +1,128 @@
 #include "Board.h"
 #include <iostream>
 
-int Board::FrameLength = 50;
+// Static member initialization
+unsigned int Board::FrameLength = 50;
+unsigned int Board::NetThickness = Board::FrameLength / 5;
+int Board::OffsetX = 0;
+int Board::OffsetY = 0;
+int Board::BoardStartX = 0;
+int Board::BoardStartY = 0;
+int Board::BoardEndX = 0;
+int Board::BoardEndY = 0;
+int Board::ViewportWidth = 0;
+int Board::ViewportHeight = 0;
 
-int Board::GetCursorPositionOnBoard( int cursorX, int cursorY )
-//it's already assumed that the cursor is on the board
+Board::Board()
 {
-	if( !IsCursorOnBoard( cursorX, cursorY ) ) return -1;
+	// Set up the viewport dimensions first
+	ViewportWidth = Graphics::ScreenWidth - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessLeft - Graphics::MenuThicknessRight - 2 * Graphics::WindowFrameWidth;
+	ViewportHeight = Graphics::ScreenHeight - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessTop - Graphics::MenuThicknessBottom - 2 * Graphics::WindowFrameWidth;
+	
+	// Initialize with centered view
+	InitializeView();
+	
+	// Make sure boundaries are up to date
+	UpdateBoardBoundaries();
+}
 
-	int cursorAreaX = ((cursorX + FrameLength - BoardStartX) / (FrameLength + BetweenFrameMarginLength));
-	int cursorAreaY = ((cursorY + FrameLength - BoardStartY) / (FrameLength + BetweenFrameMarginLength));
+void Board::InitializeView()
+{
+	// Calculate viewport dimensions (visible area)
+	ViewportWidth = Graphics::ScreenWidth - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessLeft - Graphics::MenuThicknessRight - 2 * Graphics::WindowFrameWidth;
+	ViewportHeight = Graphics::ScreenHeight - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessTop - Graphics::MenuThicknessBottom - 2 * Graphics::WindowFrameWidth;
+	
+	CenterView();
+}
 
-	return cursorAreaX + cursorAreaY * ( FrameCountX + 2 );
+void Board::CenterView()
+{
+	// Calculate board size in pixels
+	int boardPixelWidth = FrameCountX * (FrameLength + NetThickness) + NetThickness;
+	int boardPixelHeight = FrameCountY * (FrameLength + NetThickness) + NetThickness;
+	
+	// Center the board in the viewport
+	OffsetX = -(boardPixelWidth - ViewportWidth) / 2;
+	OffsetY = -(boardPixelHeight - ViewportHeight) / 2;
+	
+	UpdateBoardBoundaries();
+}
 
+void Board::Pan(int deltaX, int deltaY)
+{
+	// Update offsets
+	OffsetX += deltaX;
+	OffsetY += deltaY;
+	
+	// Apply bounds checking for offsets if needed
+	int boardPixelWidth = FrameCountX * (FrameLength + NetThickness) + NetThickness;
+	int boardPixelHeight = FrameCountY * (FrameLength + NetThickness) + NetThickness;
+	
+	// Limit panning to keep at least part of the board visible
+	if (OffsetX > 0) OffsetX = 0;
+	if (OffsetY > 0) OffsetY = 0;
+	
+	int minOffsetX = ViewportWidth - boardPixelWidth;
+	int minOffsetY = ViewportHeight - boardPixelHeight;
+	
+	if (OffsetX < minOffsetX) OffsetX = minOffsetX;
+	if (OffsetY < minOffsetY) OffsetY = minOffsetY;
+	
+	UpdateBoardBoundaries();
+}
+
+void Board::UpdateBoardBoundaries()
+{
+	//not used
+	// Calculate fixed viewport area that doesn't overlap with menus
+	int fixedViewportStartX = Graphics::WindowFrameWidth + Graphics::MenuThicknessLeft + Graphics::BoardFrameWidth;
+	int fixedViewportStartY = Graphics::WindowFrameWidth + Graphics::MenuThicknessTop + Graphics::BoardFrameWidth;
+	//int fixedViewportEndX = Graphics::ScreenWidth - Graphics::WindowFrameWidth - Graphics::MenuThicknessRight - Graphics::BoardFrameWidth;
+	//int fixedViewportEndY = Graphics::ScreenHeight - Graphics::WindowFrameWidth - Graphics::MenuThicknessBottom - Graphics::BoardFrameWidth;
+	
+	// Calculate the visible board area within the viewport
+	BoardStartX = fixedViewportStartX + OffsetX;
+	BoardStartY = fixedViewportStartY + OffsetY;
+	
+	// Calculate board end coordinates
+	BoardEndX = BoardStartX + FrameCountX * (FrameLength + NetThickness) + NetThickness;
+	BoardEndY = BoardStartY + FrameCountY * (FrameLength + NetThickness) + NetThickness;
+	
+	// Update viewport size (should be fixed and not change)
+	//ViewportWidth = fixedViewportEndX - fixedViewportStartX;
+	//ViewportHeight = fixedViewportEndY - fixedViewportStartY;
+	
+	//it brokes right/bot borders
+	// Ensure the board stays within the fixed viewport boundaries
+	/*if (BoardEndX > fixedViewportEndX)
+		BoardEndX = fixedViewportEndX;
+	
+	if (BoardEndY > fixedViewportEndY)
+		BoardEndY = fixedViewportEndY;
+		*/
+	// Ensure we recalculate the between frame margin when frame length changes
+	// 
+	
+	//resize net only here, rest instances are commented
+	NetThickness = FrameLength / 5;
+	if (NetThickness < 1) NetThickness = 1;
+}
+
+int Board::GetCursorPositionOnBoard(int cursorX, int cursorY)
+{
+	// Check if cursor is on the board
+	if(!IsCursorOnBoard(cursorX, cursorY)) return -1;
+
+	// Calculate cell coordinates from cursor position, accounting for offset
+	int cursorAreaX = ((cursorX - BoardStartX + NetThickness) / (FrameLength + NetThickness));
+	int cursorAreaY = ((cursorY - BoardStartY + NetThickness) / (FrameLength + NetThickness));
+
+	// Check boundaries
+	if (cursorAreaX < 0 || cursorAreaX >= FrameCountX ||
+		cursorAreaY < 0 || cursorAreaY >= FrameCountY)
+		return -1;
+
+	return cursorAreaX + cursorAreaY * (FrameCountX + 2);
 }
 
 bool Board::IsCursorOnBoard(int cursorX, int cursorY) 
@@ -22,110 +132,5 @@ bool Board::IsCursorOnBoard(int cursorX, int cursorY)
 		cursorX < BoardEndX &&
 		cursorY > BoardStartY &&
 		cursorY < BoardEndY
-		);
-}
-
-int Board::MoveCalc( int*** lvl, int startX, int startY, int dir, int prog )
-//directions: 1-N, 2-S, 3-E, 4-W
-//if negative then it has to disappear x)
-//not used, leaving it in case its useful
-{
-
-	switch( dir )
-	{
-	case 1: {
-		if( lvl[startX][startY-1][2] == -2  )
-			return SECRET_NUMBER;
-		else
-			if( lvl[startX][startY-1][2] != 0 || startY-1 < 0 )
-				return prog;
-			else
-				return MoveCalc( lvl,startX,startY-1,dir,prog+1 );
-
-		break;}
-
-	case 2: {
-		if( lvl[startX][startY+1][2] == -2  )
-			return SECRET_NUMBER;
-		else
-			if( lvl[startX][startY+1][2] != 0 || startY+1 >= Board::FrameCountY+2 )
-				return prog;
-			else
-				return MoveCalc( lvl,startX,startY+1,dir,prog+1 );
-
-		break;}
-
-	case 3: {
-		if( lvl[startX+1][startY][2] == -2  )
-			return SECRET_NUMBER;
-		else
-			if( lvl[startX+1][startY][2] != 0 || startX+1 >= Board::FrameCountX+2 )
-				return prog;
-			else
-				return MoveCalc( lvl,startX+1,startY,dir,prog+1 );
-
-		break;}
-
-	case 4: {
-		if( lvl[startX-1][startY][2] == -2  )
-			return SECRET_NUMBER;
-		else
-			if( lvl[startX-1][startY][2] != 0 || startX-1 < 0 )
-				return prog;
-			else
-				return MoveCalc( lvl,startX-1,startY,dir,prog+1 );
-
-		break;}
-
-	default: return 0;
-	}
-
-}
-
-int Board::DirectionMove( int startX, int startY, int endX, int endY )
-//directions: 1-N, 2-S, 3-E, 4-W
-{
-	if( abs(startX - endX) > abs(startY - endY))
-	{ 
-		if( startX < endX ) return 3;
-		if( startX > endX ) return 4;
-		return 0;
-	}
-	else if( abs(startX - endX) < abs(startY - endY) )
-	{
-		if( startY > endY ) return 1;
-		if( startY < endY ) return 2;	
-	}
-	return 0;
-}
-
-void Board::helpDir( int dir, int x1,int& x2,int y1,int& y2, int dt )
-{
-	switch( dir )
-	{
-	case 1: {
-		y2 = y1 - dt;
-		x2 = x1;
-		break;}
-
-	case 2: {
-
-		y2 = y1 + dt;
-		x2 = x1;
-		break;}
-
-	case 3: {
-
-		x2 = x1+dt;
-		y2 = y1;
-		break;}
-
-	case 4: {
-
-		x2 = x1-dt;
-		y2 = y1;
-		break;}
-
-	default: break;
-	}
+	);
 }

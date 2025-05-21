@@ -34,6 +34,9 @@ namespace FramebufferShaders
 #include "FramebufferVS.shh"
 }
 
+int Graphics::ScreenHeight = 800;
+int Graphics::ScreenWidth = 1300;
+
 #pragma comment( lib,"d3d11.lib" )
 
 #define CHILI_GFX_EXCEPTION( hr,note ) Graphics::Exception( hr,note,_CRT_WIDE(__FILE__),__LINE__ )
@@ -42,7 +45,7 @@ using Microsoft::WRL::ComPtr;
 
 Graphics::Graphics( HWNDKey& key )
 {
-	assert( key.hWnd != nullptr );
+	assert(key.hWnd != nullptr);
 
 	//////////////////////////////////////////////////////
 	// create device and swap chain/get render target view
@@ -111,6 +114,8 @@ Graphics::Graphics( HWNDKey& key )
 
 	// set viewport dimensions
 	D3D11_VIEWPORT vp;
+
+	
 	vp.Width = float( Graphics::ScreenWidth );
 	vp.Height = float( Graphics::ScreenHeight );
 	vp.MinDepth = 0.0f;
@@ -307,15 +312,94 @@ void Graphics::BeginFrame()
 	memset( pSysBuffer,0u,sizeof( Color ) * Graphics::ScreenHeight * Graphics::ScreenWidth );
 }
 
-void Graphics::PutPixel( int x,int y,Color c )
+void Graphics::OnResize(int newWidth, int newHeight)
 {
-	assert( x >= 0 );
-	assert( x < int( Graphics::ScreenWidth ) );
-	assert( y >= 0 );
-	assert( y < int( Graphics::ScreenHeight ) );
-	pSysBuffer[Graphics::ScreenWidth * y + x] = c;
+	// Update static screen size
+	ScreenWidth = newWidth;
+	ScreenHeight = newHeight;
+	
+	// Release old resources
+	pRenderTargetView.Reset();
+	pSysBufferTexture.Reset();
+	pSysBufferTextureView.Reset();
+	if (pSysBuffer)
+	{
+		_aligned_free(pSysBuffer);
+		pSysBuffer = nullptr;
+	}
+
+	// Resize swap chain buffers
+	HRESULT hr;
+	if (FAILED(hr = pSwapChain->ResizeBuffers(0, newWidth, newHeight, DXGI_FORMAT_UNKNOWN, 0)))
+	{
+		throw CHILI_GFX_EXCEPTION(hr, L"Resizing swap chain buffers");
+	}
+
+	// Recreate render target view
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pBackBuffer;
+	if (FAILED(hr = pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer)))
+	{
+		throw CHILI_GFX_EXCEPTION(hr, L"Getting resized back buffer");
+	}
+
+	if (FAILED(hr = pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &pRenderTargetView)))
+	{
+		throw CHILI_GFX_EXCEPTION(hr, L"Creating render target view for resized buffer");
+	}
+
+	pImmediateContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
+
+	// Set new viewport
+	D3D11_VIEWPORT vp = {};
+	vp.Width = float(newWidth);
+	vp.Height = float(newHeight);
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0.0f;
+	vp.TopLeftY = 0.0f;
+	pImmediateContext->RSSetViewports(1, &vp);
+
+	// Recreate system buffer texture
+	D3D11_TEXTURE2D_DESC sysTexDesc = {};
+	sysTexDesc.Width = newWidth;
+	sysTexDesc.Height = newHeight;
+	sysTexDesc.MipLevels = 1;
+	sysTexDesc.ArraySize = 1;
+	sysTexDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	sysTexDesc.SampleDesc.Count = 1;
+	sysTexDesc.SampleDesc.Quality = 0;
+	sysTexDesc.Usage = D3D11_USAGE_DYNAMIC;
+	sysTexDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	sysTexDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	sysTexDesc.MiscFlags = 0;
+
+	if (FAILED(hr = pDevice->CreateTexture2D(&sysTexDesc, nullptr, &pSysBufferTexture)))
+	{
+		throw CHILI_GFX_EXCEPTION(hr, L"Creating sysbuffer texture for resized buffer");
+	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = sysTexDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	if (FAILED(hr = pDevice->CreateShaderResourceView(pSysBufferTexture.Get(), &srvDesc, &pSysBufferTextureView)))
+	{
+		throw CHILI_GFX_EXCEPTION(hr, L"Creating view on resized sysBuffer texture");
+	}
+
+	// Allocate new sysbuffer
+	pSysBuffer = reinterpret_cast<Color*>(_aligned_malloc(sizeof(Color) * newWidth * newHeight, 16u));
 }
 
+void Graphics::PutPixel(unsigned int x,unsigned int y,Color c )
+{
+	assert( x >= 0 );
+	assert( x < Graphics::ScreenWidth);
+	assert( y >= 0 );
+	assert( y < Graphics::ScreenHeight );
+	pSysBuffer[Graphics::ScreenWidth * y + x] = c;
+}
 
 //////////////////////////////////////////////////
 //           Graphics Exception

@@ -41,9 +41,9 @@ MainWindow::MainWindow( HINSTANCE hInst,wchar_t * pArgs )
 
 	// create window & get hWnd
 	RECT wr;
-	wr.left = 350;
+	wr.left = 50;
 	wr.right = Graphics::ScreenWidth + wr.left;
-	wr.top = 100;
+	wr.top = 50;
 	wr.bottom = Graphics::ScreenHeight + wr.top;
 	AdjustWindowRect( &wr,WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,FALSE );
 	hWnd = CreateWindow( wndClassName,L"Chili DirectX Framework",
@@ -62,6 +62,28 @@ MainWindow::MainWindow( HINSTANCE hInst,wchar_t * pArgs )
 	// show and update
 	ShowWindow( hWnd,SW_SHOWDEFAULT );
 	UpdateWindow( hWnd );
+}
+
+void MainWindow::UpdateScreenSize()
+{
+	RECT wr;
+	GetClientRect(hWnd, &wr);
+	int newWidth = wr.right - wr.left;
+	int newHeight = wr.bottom - wr.top;
+
+	// Resize graphics buffers
+	extern Graphics* pGfx; // you'll need to make this pointer available
+	if (pGfx)
+	{
+		pGfx->OnResize(newWidth, newHeight);
+	}
+}
+
+Graphics* pGfx = nullptr;
+
+void MainWindow::SetGraphics(Graphics* gfx)
+{
+	pGfx = gfx;
 }
 
 MainWindow::~MainWindow()
@@ -138,6 +160,12 @@ LRESULT MainWindow::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam )
 		break;
 	case WM_KILLFOCUS:
 		kbd.ClearState();
+		break;
+	case WM_SIZING:
+		//UpdateScreenSize();
+		break;
+	case WM_SIZE:
+		UpdateScreenSize();
 		break;
 
 		// ************ KEYBOARD MESSAGES ************ //
