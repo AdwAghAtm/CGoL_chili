@@ -34,8 +34,8 @@ namespace FramebufferShaders
 #include "FramebufferVS.shh"
 }
 
-int Graphics::ScreenHeight = 600;
-int Graphics::ScreenWidth = 800;
+int Graphics::ScreenHeight = 800;
+int Graphics::ScreenWidth = 1300;
 
 #pragma comment( lib,"d3d11.lib" )
 
@@ -392,7 +392,7 @@ void Graphics::OnResize(int newWidth, int newHeight)
 	pSysBuffer = reinterpret_cast<Color*>(_aligned_malloc(sizeof(Color) * newWidth * newHeight, 16u));
 }
 
-void Graphics::PutPixel( int x,int y,Color c )
+void Graphics::PutPixel(unsigned int x,unsigned int y,Color c )
 {
 	assert( x >= 0 );
 	assert( x < Graphics::ScreenWidth);
@@ -400,7 +400,6 @@ void Graphics::PutPixel( int x,int y,Color c )
 	assert( y < Graphics::ScreenHeight );
 	pSysBuffer[Graphics::ScreenWidth * y + x] = c;
 }
-
 
 //////////////////////////////////////////////////
 //           Graphics Exception

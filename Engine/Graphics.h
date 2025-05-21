@@ -58,7 +58,7 @@ public:
 	{
 		PutPixel( x,y,{ unsigned char( r ),unsigned char( g ),unsigned char( b ) } );
 	}
-	void PutPixel( int x,int y,Color c );
+	void PutPixel(unsigned int x,unsigned int y,Color c );
 	~Graphics();
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;
