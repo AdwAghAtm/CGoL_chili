@@ -67,16 +67,34 @@ bool Logic::GetCell(int x, int y) const
 }
 std::array<bool, 9> Logic::GetNeighbors(const Cell* const* board, int x, int y) {
     assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);
-    std::array<bool, 9> neighbors{ false, false, false, false };
-    if (x!=0&&y!=0&&x!= Board::FrameCountX-1&&y!= Board::FrameCountY-1)
+    std::array<bool, 9> neighbors{ false, false, false, false, false, false, false, false, false, };
+
+    unsigned int n = 0;
+    for (int i = -1; i<=1 ; i++)
     {
-        int n = 0;
-        for (int i = -1; i <=1 ; i++)
+        if (y == 0 && i == -1)
         {
-            for (int j = -1; j <= 1; j++) {
-                neighbors[n] = board[x+j][y+i].isAlive;
-                n++;
+            n += 3;
+            continue;
+        }
+        if (y == Board::FrameCountY-1 && i == 1)
+        {
+            n += 3;
+            continue;
+        }
+        for (int j = -1; j <= 1; j++) {
+            if (x == 0 && j == -1)
+            {
+                n++; 
+                continue;;
             }
+            if (x == Board::FrameCountX-1 && j == 1)
+            {
+                n++;
+                continue;
+            }
+            neighbors[n] = board[x+j][y+i].isAlive;
+            n++;
         }
     }
     
