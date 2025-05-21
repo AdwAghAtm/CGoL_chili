@@ -46,7 +46,7 @@ void Display::ComposeFrame(const Cell* const* board)
 
 	gfx.BeginFrame();
 	//drw.DrawBackground(Colors::LightBackGround);
-	//drw.DrawBackground(Colors::DarkBackGround);
+	drw.DrawBackground(Colors::DarkBackGround);
 	//Draw board with net and squares
 	//can decide here what graphics to use: legacy/alt (netAlt + surroundings)
 	//drw.DrawNet(Colors::DarkGray2);
@@ -62,6 +62,7 @@ void Display::ComposeFrame(const Cell* const* board)
 				drw.DrawSquare(i, j, Colors::TransChan);
 				drw.DrawSurroundings(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan);
 				drw.DrawAllRoundedCorners(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan, Colors::DarkBackGround);//dont mix with legacy net
+				//drw.DrawAllRoundedCorners(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan, Colors::LightBackGround)
 			}
 		}
 	}
