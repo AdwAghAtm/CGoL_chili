@@ -20,6 +20,7 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Display.h"
+#include "GraphicMode.h"
 #include <array>
 
 
@@ -46,12 +47,14 @@ void Display::ComposeFrame(const Cell* const* board)
 
 	gfx.BeginFrame();
 	//drw.DrawBackground(Colors::LightBackGround);
-	drw.DrawBackground(Colors::DarkBackGround);
+	//drw.DrawBackground(Colors::DarkBackGround);
+	GraphicMode::DrawBackground(&drw);
+	
 	//Draw board with net and squares
 	//can decide here what graphics to use: legacy/alt (netAlt + surroundings)
 	//drw.DrawNet(Colors::DarkGray2);
 	//drw.DrawNetAlt(Colors::LightGray);
-	drw.DrawNetAlt(Colors::DarkGray2);
+	//drw.DrawNetAlt(Colors::DarkGray2);
 
 	for (int i = 0; i < Board::FrameCountX; i++)
 	{
@@ -59,6 +62,7 @@ void Display::ComposeFrame(const Cell* const* board)
 		{
 			if (board[i][j].isAlive)
 			{
+				GraphicMode::DrawForeground(&drw);
 				drw.DrawSquare(i, j, Colors::TransChan);
 				drw.DrawSurroundings(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan);
 				drw.DrawAllRoundedCorners(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan, Colors::DarkBackGround);//dont mix with legacy net

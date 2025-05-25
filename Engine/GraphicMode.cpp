@@ -1,10 +1,15 @@
 #include "GraphicMode.h"
+#include <array>
 
-void GraphicMode::DrawBackground(Drawin drw) {
+bool GraphicMode::darkmode = true;
+Color GraphicMode::bgColor = Colors::DarkBackGround;
 
+void GraphicMode::DrawBackground(Drawin* drw) {
+	drw->DrawBackground(bgColor);
+	drw->DrawNetAlt(Colors::DarkGray2);
 }
 
-void GraphicMode::DrawForeground(Drawin drw) {
+void GraphicMode::DrawForeground(std::array<bool, 9> neighbors, int x, int y, Drawin* drw) {
 
 }
 void GraphicMode::SwitchDarkMode() {
