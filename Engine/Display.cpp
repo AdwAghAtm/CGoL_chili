@@ -62,10 +62,10 @@ void Display::ComposeFrame(const Cell* const* board)
 		{
 			if (board[i][j].isAlive)
 			{
-				GraphicMode::DrawForeground(&drw);
-				drw.DrawSquare(i, j, Colors::TransChan);
-				drw.DrawSurroundings(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan);
-				drw.DrawAllRoundedCorners(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan, Colors::DarkBackGround);//dont mix with legacy net
+				GraphicMode::DrawForeground(Logic::GetNeighbors(board, i, j), i, j, &drw);
+				//drw.DrawSquare(i, j, Colors::TransChan);
+				//drw.DrawSurroundings(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan);
+				//drw.DrawAllRoundedCorners(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan, Colors::DarkBackGround);//dont mix with legacy net
 				//drw.DrawAllRoundedCorners(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan, Colors::LightBackGround)
 			}
 		}

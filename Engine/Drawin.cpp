@@ -225,6 +225,130 @@ void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cor
         DrawRectangle(tempx - Board::NetThickness / 2, tempy - Board::NetThickness / 2, tempx, tempy,  c);
 }
 
+void Drawin::DrawOuterCorners( int cord_x, int cord_y, Color c, Color bg) {
+	//Calculate the absolute pixel position for this cell
+	int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
+	int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
+	// Check if the square is in the visible area before drawing
+	if (tempx + Board::FrameLength < 0 ||
+		tempx >= Graphics::ScreenWidth ||
+		tempy + Board::FrameLength < 0 ||
+		tempy >= Graphics::ScreenHeight)
+	{
+		return; // Cell is outside the visible area, don't draw it
+	}
+    int x_c, y_c, radius;
+    if (Board::NetThickness < 2)
+        radius = 0;
+    else
+        radius = Board::NetThickness - 2;
+
+	//draw outer corners
+        x_c = tempx + Board::FrameLength - radius - 1;
+        y_c = tempy + radius;
+        DrawRoundedCorner(CornerPosition::BottomLeft, x_c, y_c, Board::NetThickness, bg);
+        x_c = tempx + Board::FrameLength - radius - 1;
+        y_c = tempy + Board::FrameLength - radius - 1;
+        DrawRoundedCorner(CornerPosition::TopLeft, x_c, y_c, Board::NetThickness, bg);
+        x_c = tempx + radius;
+        y_c = tempy + Board::FrameLength - radius - 1;
+        DrawRoundedCorner(CornerPosition::TopRight, x_c, y_c, Board::NetThickness, bg);
+        x_c = tempx + radius;
+        y_c = tempy + radius;
+        DrawRoundedCorner(CornerPosition::BottomRight, x_c, y_c, Board::NetThickness, bg);
+}
+
+void Drawin::DrawOuterCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c, Color bg) {
+    //Calculate the absolute pixel position for this cell
+    int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
+    int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
+    // Check if the square is in the visible area before drawing
+    if (tempx + Board::FrameLength < 0 ||
+        tempx >= Graphics::ScreenWidth ||
+        tempy + Board::FrameLength < 0 ||
+        tempy >= Graphics::ScreenHeight)
+    {
+        return; // Cell is outside the visible area, don't draw it
+    }
+    int x_c, y_c, radius;
+    if (Board::NetThickness < 2)
+        radius = 0;
+    else
+        radius = Board::NetThickness - 2;
+
+    //soften outer corners
+     //be carefull if background changes
+    if (!neighbors[1] && !neighbors[5])
+    {
+        x_c = tempx + Board::FrameLength - radius - 1;
+        y_c = tempy + radius;
+        DrawRoundedCorner(CornerPosition::BottomLeft, x_c, y_c, Board::NetThickness, bg);
+    }
+    if (!neighbors[5] && !neighbors[7])
+    {
+        x_c = tempx + Board::FrameLength - radius - 1;
+        y_c = tempy + Board::FrameLength - radius - 1;
+        DrawRoundedCorner(CornerPosition::TopLeft, x_c, y_c, Board::NetThickness, bg);
+    }
+    if (!neighbors[7] && !neighbors[3])
+    {
+        x_c = tempx + radius;
+        y_c = tempy + Board::FrameLength - radius - 1;
+        DrawRoundedCorner(CornerPosition::TopRight, x_c, y_c, Board::NetThickness, bg);
+    }
+    if (!neighbors[1] && !neighbors[3])
+    {
+        x_c = tempx + radius;
+        y_c = tempy + radius;
+        DrawRoundedCorner(CornerPosition::BottomRight, x_c, y_c, Board::NetThickness, bg);
+    }
+}
+
+void Drawin::DrawInnerCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c) {
+    //Calculate the absolute pixel position for this cell
+    int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
+    int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
+    // Check if the square is in the visible area before drawing
+    if (tempx + Board::FrameLength < 0 ||
+        tempx >= Graphics::ScreenWidth ||
+        tempy + Board::FrameLength < 0 ||
+        tempy >= Graphics::ScreenHeight)
+    {
+        return; // Cell is outside the visible area, don't draw it
+    }
+    //calculate circle criteria
+    int x_c, y_c, radius;
+    if (Board::NetThickness < 2)
+        radius = 0;
+    else
+        radius = Board::NetThickness - 2;
+    //draw inner corners
+    if (neighbors[1] && neighbors[5] && !neighbors[2])
+    {
+        x_c = tempx + Board::FrameLength + radius;
+        y_c = tempy - radius - 1;
+        DrawRoundedCorner(CornerPosition::TopRight, x_c, y_c, Board::NetThickness, c);
+    }
+    if (neighbors[5] && neighbors[7] && !neighbors[8])
+    {
+        x_c = tempx + Board::FrameLength + radius;
+        y_c = tempy + Board::FrameLength + radius;
+        DrawRoundedCorner(CornerPosition::BottomRight, x_c, y_c, Board::NetThickness, c);
+    }
+    if (neighbors[7] && neighbors[3] && !neighbors[6])
+    {
+        x_c = tempx - radius - 1;
+        y_c = tempy + Board::FrameLength + radius;
+        DrawRoundedCorner(CornerPosition::BottomLeft, x_c, y_c, Board::NetThickness, c);
+    }
+    if (neighbors[1] && neighbors[3] && !neighbors[0])
+    {
+        x_c = tempx - radius - 1;
+        y_c = tempy - radius - 1;
+        DrawRoundedCorner(CornerPosition::TopLeft, x_c, y_c, Board::NetThickness, c);
+    }
+}
+
 void Drawin::DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c, Color bg) {
     //Calculate the absolute pixel position for this cell
     int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);

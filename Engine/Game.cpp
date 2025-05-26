@@ -21,6 +21,7 @@
 #include <chrono>
 #include "MainWindow.h"
 #include "Game.h"
+#include "GraphicMode.h"
 
 int xStart, xEnd,
 	yStart, yEnd; // start/end coordinates of mouse cursor's click
@@ -29,6 +30,8 @@ bool tempClick; // bool if mouse is clicked
 int tempClickClick = 0;
 bool runGame = false;
 bool tempRunGame = false;
+bool tempDarkmode = false;
+bool tempVisuals = false;
 bool isPanning = false;
 int lastMouseX = 0;
 int lastMouseY = 0;
@@ -315,6 +318,48 @@ void Game::UpdateModel()
 		{
 			SetTargetFPS(GetTargetFPS() + 1);
 		}
+	}
+
+	//switch darkmode
+	if ((wnd.kbd.KeyIsPressed(VK_F1)))
+	{
+		if (!tempDarkmode)
+		{
+			GraphicMode::SwitchDarkMode();
+		}
+		tempDarkmode = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
+	}
+	else
+	{
+		tempDarkmode = false;
+	}
+
+	//switch graphic mode (roundness)
+	if ((wnd.kbd.KeyIsPressed(VK_F1)))
+	{
+		if (!tempDarkmode)
+		{
+			GraphicMode::SwitchDarkMode();
+		}
+		tempDarkmode = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
+	}
+	else
+	{
+		tempDarkmode = false;
+	}
+
+	//switch visuals
+	if ((wnd.kbd.KeyIsPressed(VK_F2)))
+	{
+		if (!tempVisuals)
+		{
+			GraphicMode::SwitchVisuals();
+		}
+		tempVisuals = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
+	}
+	else
+	{
+		tempVisuals = false;
 	}
 
 	auto frameDuration = std::chrono::milliseconds(1000 / targetFPS);
