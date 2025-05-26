@@ -47,6 +47,13 @@ void Board::CenterView()
 	
 	UpdateBoardBoundaries();
 }
+void Board::UpdateViewport() {
+	// Set up the viewport dimensions first
+	ViewportWidth = Graphics::ScreenWidth - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessLeft - Graphics::MenuThicknessRight - 2 * Graphics::WindowFrameWidth;
+	ViewportHeight = Graphics::ScreenHeight - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessTop - Graphics::MenuThicknessBottom - 2 * Graphics::WindowFrameWidth;
+	Pan(0, 0); // Reset offsets to recalculate boundaries
+	UpdateBoardBoundaries();
+}
 
 void Board::Pan(int deltaX, int deltaY)
 {

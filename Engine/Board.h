@@ -11,8 +11,9 @@ public:
 	Board();
 	void InitializeView();
 	void CenterView();
-	void Pan(int deltaX, int deltaY);
-	void UpdateBoardBoundaries();
+	static void Pan(int deltaX, int deltaY);
+	static void UpdateViewport();
+	static void UpdateBoardBoundaries();
 	
 	int GetCursorPositionOnBoard(int cursorX, int cursorY);
 

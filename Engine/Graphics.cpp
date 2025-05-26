@@ -22,6 +22,7 @@
 #include "Graphics.h"
 #include "DXErr.h"
 #include "ChiliException.h"
+#include "Board.h"
 #include <assert.h>
 #include <string>
 #include <array>
@@ -390,6 +391,8 @@ void Graphics::OnResize(int newWidth, int newHeight)
 
 	// Allocate new sysbuffer
 	pSysBuffer = reinterpret_cast<Color*>(_aligned_malloc(sizeof(Color) * newWidth * newHeight, 16u));
+
+	Board::UpdateViewport();
 }
 
 void Graphics::PutPixel(unsigned int x,unsigned int y,Color c )
