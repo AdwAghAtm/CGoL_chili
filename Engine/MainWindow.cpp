@@ -161,8 +161,8 @@ LRESULT MainWindow::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam )
 	case WM_KILLFOCUS:
 		kbd.ClearState();
 		break;
-	case WM_SIZING:
-		//UpdateScreenSize();
+	case SIZE_RESTORED:
+		UpdateScreenSize();
 		break;
 	case WM_SIZE:
 		UpdateScreenSize();

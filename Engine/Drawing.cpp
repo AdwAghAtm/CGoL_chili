@@ -225,7 +225,7 @@ void Drawing::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int co
         DrawRectangle(tempx - Board::NetThickness / 2, tempy - Board::NetThickness / 2, tempx, tempy,  c);
 }
 
-void Drawing::DrawOuterCorners( int cord_x, int cord_y, Color c, Color bg) {
+void Drawing::DrawOuterCorners(int cord_x, int cord_y, Color c, Color bg) {
 	//Calculate the absolute pixel position for this cell
 	int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
 	int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
@@ -238,23 +238,20 @@ void Drawing::DrawOuterCorners( int cord_x, int cord_y, Color c, Color bg) {
 		return; // Cell is outside the visible area, don't draw it
 	}
     int x_c, y_c, radius;
-    if (Board::NetThickness < 2)
-        radius = 0;
-    else
-        radius = Board::NetThickness - 2;
+    radius = Board::NetThickness - 2;
 
 	//draw outer corners
-        x_c = tempx + Board::FrameLength - radius - 1;
-        y_c = tempy + radius;
+        x_c = tempx + Board::FrameLength - radius - 3;  // Move left by 2
+        y_c = tempy + radius + 2;  // Move down by 2
         DrawRoundedCorner(CornerPosition::BottomLeft, x_c, y_c, Board::NetThickness, bg);
-        x_c = tempx + Board::FrameLength - radius - 1;
-        y_c = tempy + Board::FrameLength - radius - 1;
+        x_c = tempx + Board::FrameLength - radius - 3;  // Move left by 2
+        y_c = tempy + Board::FrameLength - radius - 3;  // Move up by 2
         DrawRoundedCorner(CornerPosition::TopLeft, x_c, y_c, Board::NetThickness, bg);
-        x_c = tempx + radius;
-        y_c = tempy + Board::FrameLength - radius - 1;
+        x_c = tempx + radius + 2;  // Move right by 2
+        y_c = tempy + Board::FrameLength - radius - 3;  // Move up by 2
         DrawRoundedCorner(CornerPosition::TopRight, x_c, y_c, Board::NetThickness, bg);
-        x_c = tempx + radius;
-        y_c = tempy + radius;
+        x_c = tempx + radius + 2;  // Move right by 2
+        y_c = tempy + radius + 2;  // Move down by 2
         DrawRoundedCorner(CornerPosition::BottomRight, x_c, y_c, Board::NetThickness, bg);
 }
 
@@ -271,35 +268,32 @@ void Drawing::DrawOuterCorners(std::array<bool, 9> neighbors, int cord_x, int co
         return; // Cell is outside the visible area, don't draw it
     }
     int x_c, y_c, radius;
-    if (Board::NetThickness < 2)
-        radius = 0;
-    else
-        radius = Board::NetThickness - 2;
+    radius = Board::NetThickness - 2;
 
     //soften outer corners
      //be carefull if background changes
     if (!neighbors[1] && !neighbors[5])
     {
-        x_c = tempx + Board::FrameLength - radius - 1;
-        y_c = tempy + radius;
+        x_c = tempx + Board::FrameLength - radius - 3;  // Move left by 2
+        y_c = tempy + radius + 2;  // Move down by 2
         DrawRoundedCorner(CornerPosition::BottomLeft, x_c, y_c, Board::NetThickness, bg);
     }
     if (!neighbors[5] && !neighbors[7])
     {
-        x_c = tempx + Board::FrameLength - radius - 1;
-        y_c = tempy + Board::FrameLength - radius - 1;
+        x_c = tempx + Board::FrameLength - radius - 3;  // Move left by 2
+        y_c = tempy + Board::FrameLength - radius - 3;  // Move up by 2
         DrawRoundedCorner(CornerPosition::TopLeft, x_c, y_c, Board::NetThickness, bg);
     }
     if (!neighbors[7] && !neighbors[3])
     {
-        x_c = tempx + radius;
-        y_c = tempy + Board::FrameLength - radius - 1;
+        x_c = tempx + radius + 2;  // Move right by 2
+        y_c = tempy + Board::FrameLength - radius - 3;  // Move up by 2
         DrawRoundedCorner(CornerPosition::TopRight, x_c, y_c, Board::NetThickness, bg);
     }
     if (!neighbors[1] && !neighbors[3])
     {
-        x_c = tempx + radius;
-        y_c = tempy + radius;
+        x_c = tempx + radius + 2;  // Move right by 2
+        y_c = tempy + radius + 2;  // Move down by 2
         DrawRoundedCorner(CornerPosition::BottomRight, x_c, y_c, Board::NetThickness, bg);
     }
 }
@@ -318,10 +312,8 @@ void Drawing::DrawInnerCorners(std::array<bool, 9> neighbors, int cord_x, int co
     }
     //calculate circle criteria
     int x_c, y_c, radius;
-    if (Board::NetThickness < 2)
-        radius = 0;
-    else
-        radius = Board::NetThickness - 2;
+    radius = Board::NetThickness - 2;
+        
     //draw inner corners
     if (neighbors[1] && neighbors[5] && !neighbors[2])
     {
@@ -365,10 +357,7 @@ void Drawing::DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, i
 
     //calculate circle criteria
     int x_c, y_c, radius;
-    if (Board::NetThickness < 2)
-        radius = 0;
-    else
-        radius = Board::NetThickness - 2;
+    radius = Board::NetThickness - 2;
 
     //soften inner corners
     if (neighbors[1] && neighbors[5] && !neighbors[2])
@@ -427,7 +416,7 @@ void Drawing::DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, i
 void Drawing::DrawRoundedCorner(CornerPosition position, int centerX, int centerY, int radius, Color c) {
     for (int y = 0; y <= radius; ++y) {
         for (int x = 0; x <= radius; ++x) {
-            if ((x * x + y * y) >= (radius * radius)) {
+            if ((x * x + y * y) > (radius * radius)) {
                 if (position == CornerPosition::TopLeft)
                     SafePutPixel(centerX + x, centerY + y, c); // Bottom-right quadrant
                 if (position == CornerPosition::TopRight)
