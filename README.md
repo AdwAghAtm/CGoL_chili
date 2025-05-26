@@ -6,7 +6,7 @@ Graphical engine is forked from Chili framework
 https://github.com/planetchili/chili_framework
 ```
 ---
-## Instruction
+## Instructions
 Draw squares by holding `shift` + `left mouse button`
 
 Erase squares by holding `shift` + `right mouse button`
