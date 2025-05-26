@@ -6,7 +6,7 @@ Color GraphicMode::bgColor = Colors::DarkBackGround;
 Color GraphicMode::netColor = Colors::DarkGray2;
 Visuals GraphicMode::currentVisual = Visuals::Alt4; //set default visual effect
 
-void GraphicMode::DrawBackground(Drawin* drw) {
+void GraphicMode::DrawBackground(Drawing* drw) {
 	drw->DrawBackground(bgColor);
 	
 	if (currentVisual>= Legacy1 && currentVisual <= Legacy4)
@@ -15,7 +15,7 @@ void GraphicMode::DrawBackground(Drawin* drw) {
 		drw->DrawNetAlt(netColor);
 }
 
-void GraphicMode::DrawForeground(std::array<bool, 9> neighbors, int x, int y, Drawin* drw) {
+void GraphicMode::DrawForeground(std::array<bool, 9> neighbors, int x, int y, Drawing* drw) {
 	drw->DrawSquare(x, y, Colors::CoalChan);
 
 	switch ((static_cast<int>(GraphicMode::currentVisual)) % 4 + 1) {

@@ -1,23 +1,23 @@
 #include <array>
 
-#include "Drawin.h"
+#include "Drawing.h"
 #include "Game.h"
 
 
-Drawin::Drawin( Graphics& key )
+Drawing::Drawing( Graphics& key )
 	:
 	gfx2( key )
 {
 }
 
 // Helper function to check if coordinates are within screen bounds
-bool Drawin::IsWithinScreenBounds(int x, int y) const
+bool Drawing::IsWithinScreenBounds(int x, int y) const
 {
 	return (x >= 0 && x < Graphics::ScreenWidth && y >= 0 && y < Graphics::ScreenHeight);
 }
 
 // Safe version of PutPixel that checks boundaries
-void Drawin::SafePutPixel(int x, int y, Color c)
+void Drawing::SafePutPixel(int x, int y, Color c)
 {
 	if (IsWithinScreenBounds(x, y))
 	{
@@ -25,7 +25,7 @@ void Drawin::SafePutPixel(int x, int y, Color c)
 	}
 }
 
-void Drawin::DrawBackground(Color c)
+void Drawing::DrawBackground(Color c)
 {
 	for (int i = 0; i < Graphics::ScreenWidth; i++)
 	{
@@ -36,7 +36,7 @@ void Drawin::DrawBackground(Color c)
 	}
 }
 
-void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) // Bresenham's algorithm
+void Drawing::DrawLine( int x0, int y0, int x1, int y1, Color c ) // Bresenham's algorithm
 {
 	// Clip the line to the screen boundaries
 	// This is a simple implementation - more advanced clipping algorithms exist
@@ -113,7 +113,7 @@ void Drawin::DrawLine( int x0, int y0, int x1, int y1, Color c ) // Bresenham's 
 	}
 }
 
-void Drawin::DrawCircle(int x0, int y0, int r, Color c) // Bresenham's algorithm
+void Drawing::DrawCircle(int x0, int y0, int r, Color c) // Bresenham's algorithm
 {
 	// Skip if circle is entirely off screen
 	if (x0 + r < 0 || x0 - r >= Graphics::ScreenWidth || 
@@ -146,7 +146,7 @@ void Drawin::DrawCircle(int x0, int y0, int r, Color c) // Bresenham's algorithm
 	}
 }
 
-void Drawin::DrawSquare( int cord, Color c )
+void Drawing::DrawSquare( int cord, Color c )
 {	
 	int tempx,tempy;
 	//top left coordinates
@@ -169,7 +169,7 @@ void Drawin::DrawSquare( int cord, Color c )
 		}
 }
 
-void Drawin::DrawSquare(int cord_x, int cord_y, Color c )
+void Drawing::DrawSquare(int cord_x, int cord_y, Color c )
 {	
     // Calculate the absolute pixel position for this cell
     int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
@@ -188,7 +188,7 @@ void Drawin::DrawSquare(int cord_x, int cord_y, Color c )
     DrawRectangle(tempx, tempy, tempx + Board::FrameLength - 1, tempy + Board::FrameLength - 1, c);
 }
 
-void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c) {
+void Drawing::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c) {
     //Calculate the absolute pixel position for this cell
     int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
     int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
@@ -225,7 +225,7 @@ void Drawin::DrawSurroundings(std::array<bool, 9> neighbors, int cord_x, int cor
         DrawRectangle(tempx - Board::NetThickness / 2, tempy - Board::NetThickness / 2, tempx, tempy,  c);
 }
 
-void Drawin::DrawOuterCorners( int cord_x, int cord_y, Color c, Color bg) {
+void Drawing::DrawOuterCorners( int cord_x, int cord_y, Color c, Color bg) {
 	//Calculate the absolute pixel position for this cell
 	int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
 	int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
@@ -258,7 +258,7 @@ void Drawin::DrawOuterCorners( int cord_x, int cord_y, Color c, Color bg) {
         DrawRoundedCorner(CornerPosition::BottomRight, x_c, y_c, Board::NetThickness, bg);
 }
 
-void Drawin::DrawOuterCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c, Color bg) {
+void Drawing::DrawOuterCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c, Color bg) {
     //Calculate the absolute pixel position for this cell
     int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
     int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
@@ -304,7 +304,7 @@ void Drawin::DrawOuterCorners(std::array<bool, 9> neighbors, int cord_x, int cor
     }
 }
 
-void Drawin::DrawInnerCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c) {
+void Drawing::DrawInnerCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c) {
     //Calculate the absolute pixel position for this cell
     int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
     int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
@@ -349,7 +349,7 @@ void Drawin::DrawInnerCorners(std::array<bool, 9> neighbors, int cord_x, int cor
     }
 }
 
-void Drawin::DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c, Color bg) {
+void Drawing::DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, int cord_y, Color c, Color bg) {
     //Calculate the absolute pixel position for this cell
     int tempx = Board::BoardStartX + cord_x * (Board::FrameLength + Board::NetThickness);
     int tempy = Board::BoardStartY + cord_y * (Board::FrameLength + Board::NetThickness);
@@ -424,7 +424,7 @@ void Drawin::DrawAllRoundedCorners(std::array<bool, 9> neighbors, int cord_x, in
     }
 }
 
-void Drawin::DrawRoundedCorner(CornerPosition position, int centerX, int centerY, int radius, Color c) {
+void Drawing::DrawRoundedCorner(CornerPosition position, int centerX, int centerY, int radius, Color c) {
     for (int y = 0; y <= radius; ++y) {
         for (int x = 0; x <= radius; ++x) {
             if ((x * x + y * y) >= (radius * radius)) {
@@ -441,7 +441,7 @@ void Drawin::DrawRoundedCorner(CornerPosition position, int centerX, int centerY
     }
 }
 
-void Drawin::DrawRectangle(int x0, int y0, int x1, int y1, Color c) {
+void Drawing::DrawRectangle(int x0, int y0, int x1, int y1, Color c) {
 	// Clip rectangle to screen bounds
 	x0 = std::max(0, x0);
 	y0 = std::max(0, y0);
@@ -460,7 +460,7 @@ void Drawin::DrawRectangle(int x0, int y0, int x1, int y1, Color c) {
 	}
 }
 
-void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX, int endY, int value, int minValue, int maxValue, Color c)
+void Drawing::DrawSlider(MenuPosition position, int startX, int startY, int endX, int endY, int value, int minValue, int maxValue, Color c)
 {
     // Calculate slider relative position 
     if (maxValue <= minValue) return;
@@ -514,7 +514,7 @@ void Drawin::DrawSlider(MenuPosition position, int startX, int startY, int endX,
     }
 }
 
-void Drawin::DrawNetAlt(Color c) {
+void Drawing::DrawNetAlt(Color c) {
     //calculate space between nets parts
     int padding = Board::FrameLength * 0.2;
 
@@ -592,7 +592,7 @@ void Drawin::DrawNetAlt(Color c) {
     }
 }
 
-void Drawin::DrawNet(Color c)
+void Drawing::DrawNet(Color c)
 {
     // Calculate visible area bounds
     int visibleStartX = std::max(0, Board::BoardStartX);
@@ -654,7 +654,7 @@ void Drawin::DrawNet(Color c)
     }
 }
 
-void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
+void Drawing::DrawMenu(MenuPosition position, Color backgroundColor)
 {
     // Menu positions and sizes are fixed constants based on Graphics settings
     // They are completely independent of Board position or zoom
@@ -760,7 +760,7 @@ void Drawin::DrawMenu(MenuPosition position, Color backgroundColor)
     //}
 }
 
-void Drawin::DrawBoardFrame(Color c)
+void Drawing::DrawBoardFrame(Color c)
 {
 	// Clip the frame coordinates to screen bounds
     int startX = std::max(Graphics::WindowFrameWidth, Board::BoardStartX);
@@ -812,7 +812,7 @@ void Drawin::DrawBoardFrame(Color c)
 	}
 }
 
-void Drawin::DrawWindowFrame(Color c)
+void Drawing::DrawWindowFrame(Color c)
 {
     // Clip to screen boundaries - this is almost always within bounds 
     // but better safe than sorry

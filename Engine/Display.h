@@ -24,7 +24,7 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "Board.h"
-#include "Drawin.h"
+#include "Drawing.h"
 #include "Logic.h"
 #include "Cell.h"
 
@@ -53,5 +53,5 @@ private:
 	/*  User Variables              */
 	/********************************/
 	Board brd;
-	Drawin drw;
+	Drawing drw;
 };

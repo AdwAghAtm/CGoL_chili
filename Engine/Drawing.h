@@ -21,12 +21,12 @@ enum class CornerPosition
 	TopLeft
 };
 
-class Drawin
+class Drawing
 {
 public:
-	Drawin(class Graphics& key);
-	Drawin( const Drawin& ) = delete;
-	Drawin& operator=( const Drawin& ) = delete;
+	Drawing(class Graphics& key);
+	Drawing( const Drawing& ) = delete;
+	Drawing& operator=( const Drawing& ) = delete;
 
 	void DrawBackground(Color c);
 	void DrawLine( int x0, int y0, int x1, int y1, Color c );

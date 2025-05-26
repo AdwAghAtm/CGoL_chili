@@ -1,5 +1,5 @@
 #pragma once
-#include "Drawin.h"
+#include "Drawing.h"
 
 enum Visuals {
 	Legacy1,
@@ -15,8 +15,8 @@ enum Visuals {
 class GraphicMode
 {
 public:
-	static void DrawBackground(Drawin* drw);
-	static void DrawForeground(std::array<bool, 9> neighbors, int x, int y, Drawin* drw);
+	static void DrawBackground(Drawing* drw);
+	static void DrawForeground(std::array<bool, 9> neighbors, int x, int y, Drawing* drw);
 	static void SwitchDarkMode();
 	static void SwitchVisuals();
 private:

@@ -142,7 +142,7 @@
     <ClInclude Include="Colors.h" />
     <ClInclude Include="COMInitializer.h" />
     <ClInclude Include="Display.h" />
-    <ClInclude Include="Drawin.h" />
+    <ClInclude Include="Drawing.h" />
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicMode.h" />
@@ -159,7 +159,7 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="COMInitializer.cpp" />
     <ClCompile Include="Display.cpp" />
-    <ClCompile Include="Drawin.cpp" />
+    <ClCompile Include="Drawing.cpp" />
     <ClCompile Include="DXErr.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GraphicMode.cpp" />

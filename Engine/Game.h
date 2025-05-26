@@ -25,7 +25,7 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "Board.h"
-#include "Drawin.h"
+#include "Drawing.h"
 #include "Display.h"
 #include "Logic.h"
 
