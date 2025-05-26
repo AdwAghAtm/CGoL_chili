@@ -4,7 +4,7 @@
 bool GraphicMode::darkmode = true;
 Color GraphicMode::bgColor = Colors::DarkBackGround;
 Color GraphicMode::netColor = Colors::DarkGray2;
-Visuals GraphicMode::currentVisual = Visuals::Legacy1;
+Visuals GraphicMode::currentVisual = Visuals::Alt4; //set default visual effect
 
 void GraphicMode::DrawBackground(Drawin* drw) {
 	drw->DrawBackground(bgColor);
