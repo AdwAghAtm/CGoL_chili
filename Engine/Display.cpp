@@ -43,31 +43,15 @@ Display::~Display()
 
 void Display::ComposeFrame(const Cell* const* board)
 {
-	//TODO make easy switch between dark/light mode
-
 	gfx.BeginFrame();
-	//drw.DrawBackground(Colors::LightBackGround);
-	//drw.DrawBackground(Colors::DarkBackGround);
 	GraphicMode::DrawBackground(&drw);
-	
-	//Draw board with net and squares
-	//can decide here what graphics to use: legacy/alt (netAlt + surroundings)
-	//drw.DrawNet(Colors::DarkGray2);
-	//drw.DrawNetAlt(Colors::LightGray);
-	//drw.DrawNetAlt(Colors::DarkGray2);
 
 	for (int i = 0; i < Board::FrameCountX; i++)
 	{
 		for (int j = 0; j < Board::FrameCountY; j++)
 		{
 			if (board[i][j].isAlive)
-			{
 				GraphicMode::DrawForeground(Logic::GetNeighbors(board, i, j), i, j, &drw);
-				//drw.DrawSquare(i, j, Colors::TransChan);
-				//drw.DrawSurroundings(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan);
-				//drw.DrawAllRoundedCorners(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan, Colors::DarkBackGround);//dont mix with legacy net
-				//drw.DrawAllRoundedCorners(Logic::GetNeighbors(board, i, j), i, j, Colors::TransChan, Colors::LightBackGround)
-			}
 		}
 	}
 	
