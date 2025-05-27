@@ -1,7 +1,7 @@
 #pragma once
 #include "Drawing.h"
 
-enum Visuals {
+enum GraphicMode {
 	Legacy1,
 	Legacy2,
 	Legacy3,
@@ -12,7 +12,7 @@ enum Visuals {
 	Alt4
 };
 
-class GraphicMode
+class Visuals
 {
 public:
 	static void DrawBackground(Drawing* drw);
@@ -23,5 +23,5 @@ private:
 	static bool darkmode;
 	static Color bgColor;
 	static Color netColor;
-	static Visuals currentVisual;
+	static GraphicMode currentVisual;
 };

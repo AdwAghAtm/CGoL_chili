@@ -20,7 +20,7 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Display.h"
-#include "GraphicMode.h"
+#include "Visuals.h"
 #include <array>
 
 
@@ -44,14 +44,14 @@ Display::~Display()
 void Display::ComposeFrame(const Cell* const* board)
 {
 	gfx.BeginFrame();
-	GraphicMode::DrawBackground(&drw);
+	Visuals::DrawBackground(&drw);
 
 	for (int i = 0; i < Board::FrameCountX; i++)
 	{
 		for (int j = 0; j < Board::FrameCountY; j++)
 		{
 			if (board[i][j].isAlive)
-				GraphicMode::DrawForeground(Logic::GetNeighbors(board, i, j), i, j, &drw);
+				Visuals::DrawForeground(Logic::GetNeighbors(board, i, j), i, j, &drw);
 		}
 	}
 	
