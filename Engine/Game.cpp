@@ -53,7 +53,9 @@ Game::Game(MainWindow& wnd)
 
 void Game::Pre()
 {
-	// Board initialization is now handled by Logic class	
+	// Initialize the board
+	brd.InitializeBoard();
+	brd.InitializeView();
 }
 
 Game::~Game()
@@ -63,10 +65,8 @@ Game::~Game()
 
 void Game::Go()
 {
-
-	// game mowi boardowi zeby sie zapytal logica o zasady zeby sie sam zupdatowal
-	// game daje displayowi fake mini-boarda do narysowania (taki fetch) ++
-	dspl.ComposeFrame(logic.GetCurrentBoard());
+	// Get board state from Board and pass it to Display
+	dspl.ComposeFrame(brd.GetBoardState());
 	UpdateModel();
 }
 
@@ -260,7 +260,7 @@ void Game::UpdateModel()
 			int x = mousePos % (Board::FrameCountX + 2);
 			int y = mousePos / (Board::FrameCountX + 2);
 			
-			logic.SetCell(x, y, true); // Draw
+			brd.SetCell(x, y, true); // Draw
 		}
 	}
 	
@@ -275,7 +275,7 @@ void Game::UpdateModel()
 			int x = mousePos % (Board::FrameCountX + 2);
 			int y = mousePos / (Board::FrameCountX + 2);
 			
-			logic.SetCell(x, y, false); // Erase
+			brd.SetCell(x, y, false); // Erase
 		}
 	}
 	
@@ -376,5 +376,5 @@ void Game::UpdateModel()
 
 void Game::NextGeneration()
 {
-	logic.NextGeneration();
+	brd.ApplyRules();
 }

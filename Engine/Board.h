@@ -4,11 +4,13 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "MainWindow.h"
+#include <array>
 
 class Board
 {
 public:
 	Board();
+	~Board();
 	void InitializeView();
 	void CenterView();
 	static void Pan(int deltaX, int deltaY);
@@ -16,6 +18,15 @@ public:
 	static void UpdateBoardBoundaries();
 	
 	int GetCursorPositionOnBoard(int cursorX, int cursorY);
+
+	// Board state management
+	void InitializeBoard();
+	void ClearBoard();
+	void SetCell(int x, int y, bool value);
+	bool GetCell(int x, int y) const;
+	void ApplyRules();
+	const uint8_t* GetBoardState() const { return boardState.data(); }
+	int GetBoardStateSize() const { return FrameCountX * FrameCountY; }
 
 	// Board info
 	static const int MinFrameLength = 4; //must be 2 at least
@@ -42,4 +53,5 @@ public:
 	bool IsCursorOnBoard(int cursorX, int cursorY);
 
 private:
+	std::array<uint8_t, FrameCountX * FrameCountY> boardState;
 };

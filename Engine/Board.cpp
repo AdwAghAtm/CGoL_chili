@@ -1,9 +1,10 @@
 #include "Board.h"
 #include <iostream>
+#include "Logic.h"
 
-// Static member initialization
-unsigned int Board::FrameLength = 50;
-unsigned int Board::NetThickness = Board::FrameLength / 5;
+// Initialize static members
+unsigned int Board::FrameLength = 20;
+unsigned int Board::NetThickness = 1;
 int Board::OffsetX = 0;
 int Board::OffsetY = 0;
 int Board::BoardStartX = 0;
@@ -15,15 +16,72 @@ int Board::ViewportHeight = 0;
 
 Board::Board()
 {
-	// Set up the viewport dimensions first
-	ViewportWidth = Graphics::ScreenWidth - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessLeft - Graphics::MenuThicknessRight - 2 * Graphics::WindowFrameWidth;
-	ViewportHeight = Graphics::ScreenHeight - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessTop - Graphics::MenuThicknessBottom - 2 * Graphics::WindowFrameWidth;
-	
-	// Initialize with centered view
-	InitializeView();
-	
-	// Make sure boundaries are up to date
-	UpdateBoardBoundaries();
+	InitializeBoard();
+}
+
+Board::~Board()
+{
+}
+
+void Board::InitializeBoard()
+{
+	boardState.fill(0);
+}
+
+void Board::ClearBoard()
+{
+	boardState.fill(0);
+}
+
+void Board::SetCell(int x, int y, bool value)
+{
+	if (x >= 0 && x < FrameCountX && y >= 0 && y < FrameCountY)
+	{
+		boardState[y * FrameCountX + x] = value ? 1 : 0;
+	}
+}
+
+bool Board::GetCell(int x, int y) const
+{
+	if (x >= 0 && x < FrameCountX && y >= 0 && y < FrameCountY)
+	{
+		return boardState[y * FrameCountX + x] != 0;
+	}
+	return false;
+}
+
+void Board::ApplyRules()
+{
+	// Create a temporary array to store the next generation
+	std::array<uint8_t, FrameCountX * FrameCountY> nextState;
+	nextState.fill(0);
+
+	// For each cell in the board
+	for (int y = 0; y < FrameCountY; y++)
+	{
+		for (int x = 0; x < FrameCountX; x++)
+		{
+			// Get neighbors using Logic
+			auto neighbors = Logic::GetNeighbors(boardState.data(), x, y);
+			
+			// Count live neighbors
+			int neighborCount = 0;
+			for (bool neighbor : neighbors)
+			{
+				if (neighbor) neighborCount++;
+			}
+			
+			// Apply rules to determine next state
+			bool isAlive = GetCell(x, y);
+			bool newState = Logic::ApplyRules(isAlive, neighborCount);
+			
+			// Store in next state
+			nextState[y * FrameCountX + x] = newState ? 1 : 0;
+		}
+	}
+
+	// Update the board state
+	boardState = nextState;
 }
 
 void Board::InitializeView()
@@ -47,6 +105,7 @@ void Board::CenterView()
 	
 	UpdateBoardBoundaries();
 }
+
 void Board::UpdateViewport() {
 	// Set up the viewport dimensions first
 	ViewportWidth = Graphics::ScreenWidth - 2 * Graphics::BoardFrameWidth - Graphics::MenuThicknessLeft - Graphics::MenuThicknessRight - 2 * Graphics::WindowFrameWidth;

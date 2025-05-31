@@ -41,7 +41,7 @@ Display::~Display()
 }
 
 
-void Display::ComposeFrame(const Cell* const* board)
+void Display::ComposeFrame(const uint8_t* board)
 {
 	gfx.BeginFrame();
 	Visuals::DrawBackground(&drw);
@@ -50,21 +50,24 @@ void Display::ComposeFrame(const Cell* const* board)
 	{
 		for (int j = 0; j < Board::FrameCountY; j++)
 		{
-			if (board[i][j].isAlive)
-				Visuals::DrawForeground(Logic::GetNeighbors(board, i, j), i, j, &drw);
+			if (board[j * Board::FrameCountX + i] != 0)
+			{
+				auto neighbors = Logic::GetNeighbors(board, i, j);
+				Visuals::DrawForeground(neighbors, i, j, &drw);
+			}
 		}
 	}
 	
-	//Draw board frame
+	// Draw board frame
 	drw.DrawBoardFrame(Colors::DarkGray);
 	
-	//Draw menus/sidebars (these should always be on top)
+	// Draw menus/sidebars (these should always be on top)
 	// Draw in specific order: left, top, right, bottom to handle corners correctly
 	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
 	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
 	drw.DrawMenu(MenuPosition::Right, Colors::DarkGreen);
 	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
-	//this should always be on top
+	// this should always be on top
 	drw.DrawWindowFrame(Colors::Gray);
 	
 	gfx.EndFrame();
