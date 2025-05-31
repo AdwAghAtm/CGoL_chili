@@ -20,7 +20,7 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Display.h"
-#include "GraphicMode.h"
+#include "Visuals.h"
 #include <array>
 
 
@@ -44,7 +44,7 @@ Display::~Display()
 void Display::ComposeFrame(const uint8_t* board)
 {
 	gfx.BeginFrame();
-	GraphicMode::DrawBackground(&drw);
+	Visuals::DrawBackground(&drw);
 
 	for (int i = 0; i < Board::FrameCountX; i++)
 	{
@@ -53,7 +53,7 @@ void Display::ComposeFrame(const uint8_t* board)
 			if (board[j * Board::FrameCountX + i] != 0)
 			{
 				auto neighbors = Logic::GetNeighbors(board, i, j);
-				GraphicMode::DrawForeground(neighbors, i, j, &drw);
+				Visuals::DrawForeground(neighbors, i, j, &drw);
 			}
 		}
 	}

@@ -21,7 +21,7 @@
 #include <chrono>
 #include "MainWindow.h"
 #include "Game.h"
-#include "GraphicMode.h"
+#include "Visuals.h"
 
 int xStart, xEnd,
 	yStart, yEnd; // start/end coordinates of mouse cursor's click
@@ -325,7 +325,7 @@ void Game::UpdateModel()
 	{
 		if (!tempDarkmode)
 		{
-			GraphicMode::SwitchDarkMode();
+			Visuals::SwitchDarkMode();
 		}
 		tempDarkmode = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
 	}
@@ -339,7 +339,7 @@ void Game::UpdateModel()
 	{
 		if (!tempDarkmode)
 		{
-			GraphicMode::SwitchDarkMode();
+			Visuals::SwitchDarkMode();
 		}
 		tempDarkmode = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
 	}
@@ -353,7 +353,7 @@ void Game::UpdateModel()
 	{
 		if (!tempVisuals)
 		{
-			GraphicMode::SwitchVisuals();
+			Visuals::SwitchVisuals();
 		}
 		tempVisuals = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
 	}
