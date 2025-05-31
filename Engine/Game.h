@@ -32,10 +32,10 @@
 class Game
 {
 public:
-	Game( class MainWindow& wnd );
-	Game( const Game& ) = delete;
+	Game(class MainWindow& wnd);
+	Game(const Game&) = delete;
 	~Game();
-	Game& operator=( const Game& ) = delete;
+	Game& operator=(const Game&) = delete;
 	void Go();
 	void Pre();
 	void SetTargetFPS(unsigned int fps);
