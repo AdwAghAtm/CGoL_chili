@@ -54,6 +54,8 @@ public:
 	MainWindow( const MainWindow& ) = delete;
 	MainWindow& operator=( const MainWindow& ) = delete;
 	~MainWindow();
+	void UpdateScreenSize();
+	void SetGraphics(Graphics* gfx);
 	bool IsActive() const;
 	bool IsMinimized() const;
 	void ShowMessageBox( const std::wstring& title,const std::wstring& message,UINT type = MB_OK ) const;

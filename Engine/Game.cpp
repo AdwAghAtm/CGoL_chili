@@ -18,213 +18,363 @@
  *	You should have received a copy of the GNU General Public License					  *
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
+#include <chrono>
 #include "MainWindow.h"
 #include "Game.h"
+#include "GraphicMode.h"
 
-int xStart,xEnd,
-		yStart,yEnd; // start/end coordinates of mouse cursor's click
+int xStart, xEnd,
+	yStart, yEnd; // start/end coordinates of mouse cursor's click
 
 bool tempClick; // bool if mouse is clicked
 int tempClickClick = 0;
+bool runGame = false;
+bool tempRunGame = false;
+bool tempDarkmode = false;
+bool tempVisuals = false;
+bool isPanning = false;
+int lastMouseX = 0;
+int lastMouseY = 0;
+unsigned int Game::targetFPS = 10;
 
 int mousePos; // id of square at mouse's position
-int*** board; // 3D array of board
 
-Mouse::Event mouseEvent; // neccessary for scrolling
+Mouse::Event mouseEvent; // necessary for scrolling
 
-void free_data(int ***data, size_t xlen, size_t ylen)
-{
-	size_t i, j;
-
-	for (i=0; i < xlen; ++i) {
-		if (data[i] != NULL) {
-			for (j=0; j < ylen; ++j)
-				free(data[i][j]);
-			free(data[i]);
-		}
-	}
-	free(data);
-}
-
-int ***alloc_data(size_t xlen, size_t ylen)
-{
-	int ***p;
-	size_t i, j;
-
-	if( (p = (int***)malloc( xlen * sizeof *p ) ) == NULL) 
-	{
-		perror("malloc 1");
-		return NULL;
-	}
-
-	for (i=0; i < xlen; ++i)
-		p[i] = NULL;
-
-	for (i=0; i < xlen; ++i)
-		if ((p[i] = (int**)malloc(ylen * sizeof *p[i])) == NULL) {
-			perror("malloc 2");
-			free_data(p, xlen, ylen);
-			return NULL;
-		}
-
-	for (i=0; i < xlen; ++i)
-		for (j=0; j < ylen; ++j)
-			p[i][j] = NULL;
-
-	for (i=0; i < xlen; ++i)
-		for (j=0; j < ylen; ++j)
-			if ((p[i][j] = (int*)malloc( 5 * sizeof *p[i][j])) == NULL) {
-				perror("malloc 3");
-				free_data(p, xlen, ylen);
-				return NULL;
-			}
-
-	return p;
-}
-
-
-Game::Game( MainWindow& wnd )
+Game::Game(MainWindow& wnd)
 	:
-	wnd( wnd ),
-	gfx( wnd ),
-	drw( gfx )
+	dspl(wnd),
+	wnd(wnd)
 {
+	// Initialize the board view (centers the board)
+	brd.InitializeView();
+
 }
 
 void Game::Pre()
 {
-	//allocating memory
-	board = alloc_data(Board::FrameCountX + 2, Board::FrameCountY + 2);
-	//setting initial board to 0's	 
-	for (int i = 0; i < Board::FrameCountX + 2; i++)	for (int j = 0; j < Board::FrameCountY + 2; j++)	board[i][j][0] = 0;
+	// Initialize the board
+	brd.InitializeBoard();
+	brd.InitializeView();
 }
+
 Game::~Game()
 {
-	//freeing memory
-	free_data(board, Board::FrameCountX + 2, Board::FrameCountY + 2);
+	// Memory cleanup is now handled by Logic class
 }
 
 void Game::Go()
 {
-	gfx.BeginFrame();	
-
-	ComposeFrame();
+	// Get board state from Board and pass it to Display
+	dspl.ComposeFrame(brd.GetBoardState());
 	UpdateModel();
-
-	gfx.EndFrame();
 }
+
+void Game::SetTargetFPS(unsigned int fps) {
+	Game::targetFPS = fps;
+}
+
+int Game::GetTargetFPS(){
+	return Game::targetFPS;
+}
+
+std::chrono::milliseconds Game::GetFrameDuration(){
+	return std::chrono::milliseconds(1000 / Game::targetFPS);
+}
+
 
 void Game::UpdateModel()
 {
+	using clock = std::chrono::steady_clock;
+	auto now = clock::now();
+	
 
 	mouseEvent = wnd.mouse.Read();
 
-	if (wnd.kbd.KeyIsPressed(VK_UP) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp ) 
-	{		//resize board with up and down arrows or mouse scrolling
-		if (Board::FrameLength < Board::MaxFrameLength)
-			Board::FrameLength += 2;
+	//toggle game running (must hold spacebar for longer than 0.0000001ms to pause)
+	if (wnd.kbd.KeyIsPressed(VK_SPACE))
+	{
+		if (!tempRunGame)
+		{
+			runGame = !runGame;
+		}
+		tempRunGame = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
 	}
-	else if (wnd.kbd.KeyIsPressed(VK_DOWN) || mouseEvent.GetType() == Mouse::Event::Type::WheelDown )
+	else
+	{
+		tempRunGame = false;
+	}
+
+	// Handle zooming with mouse wheel or plus/minus keys
+	int oldFrameLength = Board::FrameLength;
+	bool zoomChanged = false;
+	
+	if ((wnd.kbd.KeyIsPressed(VK_OEM_PLUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp) && 
+		!wnd.kbd.KeyIsPressed(VK_SHIFT)) 
+	{
+		if (Board::FrameLength < Board::MaxFrameLength)
+		{
+			// Get mouse position before zoom
+			int mouseX = wnd.mouse.GetPosX();
+			int mouseY = wnd.mouse.GetPosY();
+			
+			// Calculate board coordinates of mouse before zoom
+			int mouseBoardX = mouseX - Board::BoardStartX;
+			int mouseBoardY = mouseY - Board::BoardStartY;
+			
+			// Calculate board coordinates as a fraction of total size
+			float relativeX = (float)mouseBoardX / (Board::FrameCountX * (oldFrameLength + Board::NetThickness));
+			float relativeY = (float)mouseBoardY / (Board::FrameCountY * (oldFrameLength + Board::NetThickness));
+			
+			// Update zoom level
+			Board::FrameLength += 2;
+			zoomChanged = true;
+			
+			// Calculate new total board size
+			int newBoardWidth = Board::FrameCountX * (Board::FrameLength + Board::NetThickness);
+			int newBoardHeight = Board::FrameCountY * (Board::FrameLength + Board::NetThickness);
+			
+			// Calculate new offsets to keep the mouse point in the same relative position
+			int newOffsetX = mouseX - (int)(relativeX * newBoardWidth);
+			int newOffsetY = mouseY - (int)(relativeY * newBoardHeight);
+			
+			// Apply the new offset
+			Board::OffsetX = newOffsetX - Graphics::BoardFrameWidth - Graphics::MenuThicknessLeft - Graphics::WindowFrameWidth;
+			Board::OffsetY = newOffsetY - Graphics::BoardFrameWidth - Graphics::MenuThicknessTop - Graphics::WindowFrameWidth;
+		}
+	}
+	else if ((wnd.kbd.KeyIsPressed(VK_OEM_MINUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelDown) && 
+			 !wnd.kbd.KeyIsPressed(VK_SHIFT))
 	{
 		if (Board::FrameLength > Board::MinFrameLength)
+		{
+			// Get mouse position before zoom
+			int mouseX = wnd.mouse.GetPosX();
+			int mouseY = wnd.mouse.GetPosY();
+			
+			// Calculate board coordinates of mouse before zoom
+			int mouseBoardX = mouseX - Board::BoardStartX;
+			int mouseBoardY = mouseY - Board::BoardStartY;
+			
+			// Calculate board coordinates as a fraction of total size
+			float relativeX = (float)mouseBoardX / (Board::FrameCountX * (oldFrameLength + Board::NetThickness));
+			float relativeY = (float)mouseBoardY / (Board::FrameCountY * (oldFrameLength + Board::NetThickness));
+			
+			// Update zoom level
 			Board::FrameLength -= 2;
+			zoomChanged = true;
+			
+			// Calculate new total board size
+			int newBoardWidth = Board::FrameCountX * (Board::FrameLength + Board::NetThickness);
+			int newBoardHeight = Board::FrameCountY * (Board::FrameLength + Board::NetThickness);
+			
+			// Calculate new offsets to keep the mouse point in the same relative position
+			int newOffsetX = mouseX - (int)(relativeX * newBoardWidth);
+			int newOffsetY = mouseY - (int)(relativeY * newBoardHeight);
+			
+			// Apply the new offset
+			Board::OffsetX = newOffsetX - Graphics::BoardFrameWidth - Graphics::MenuThicknessLeft - Graphics::WindowFrameWidth;
+			Board::OffsetY = newOffsetY - Graphics::BoardFrameWidth - Graphics::MenuThicknessTop - Graphics::WindowFrameWidth;
+		}
+	}
+	
+	// If zoom changed, update boundaries and apply limits
+	if (zoomChanged)
+	{
+		brd.UpdateBoardBoundaries();
+		
+		// Apply additional bounds checks to ensure board stays visible
+		int boardPixelWidth = Board::FrameCountX * (Board::FrameLength + Board::NetThickness);
+		int boardPixelHeight = Board::FrameCountY * (Board::FrameLength + Board::NetThickness);
+		int minOffsetX = Board::ViewportWidth - boardPixelWidth;
+		int minOffsetY = Board::ViewportHeight - boardPixelHeight;
+		
+		if (Board::OffsetX > 0) Board::OffsetX = 0;
+		if (Board::OffsetY > 0) Board::OffsetY = 0;
+		if (Board::OffsetX < minOffsetX) Board::OffsetX = minOffsetX;
+		if (Board::OffsetY < minOffsetY) Board::OffsetY = minOffsetY;
+		
+		// Final update of board boundaries after corrections
+		brd.UpdateBoardBoundaries();
 	}
 
-	if( wnd.mouse.LeftIsPressed() && !tempClick )
+	// Handle panning with arrow keys
+	const int panSpeed = 10;
+	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
 	{
+		brd.Pan(-panSpeed, 0);
+	}
+	if (wnd.kbd.KeyIsPressed(VK_LEFT))
+	{
+		brd.Pan(panSpeed, 0);
+	}
+	if (wnd.kbd.KeyIsPressed(VK_DOWN))
+	{
+		brd.Pan(0, -panSpeed);
+	}
+	if (wnd.kbd.KeyIsPressed(VK_UP))
+	{
+		brd.Pan(0, panSpeed);
+	}
+
+	// Handle mouse input for panning and cell toggling
+	if (wnd.mouse.LeftIsPressed() && !tempClick)
+	{
+		// Start of left-click
 		xStart = wnd.mouse.GetPosX();
 		yStart = wnd.mouse.GetPosY();
+		lastMouseX = xStart;
+		lastMouseY = yStart;
+		
+		// Decide if we're panning or toggling cells - reverse the logic
+		// Now default is panning, shift+click to toggle cells
+		isPanning = !wnd.kbd.KeyIsPressed(VK_SHIFT);
 	}
-
-	if( tempClick  && brd.IsCursorOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY() )  ) 
+	
+	if (wnd.mouse.LeftIsPressed() && isPanning)
 	{
-		xEnd = wnd.mouse.GetPosX();
-		yEnd = wnd.mouse.GetPosY();
+		// Handle drag panning (now the default action)
+		int currentX = wnd.mouse.GetPosX();
+		int currentY = wnd.mouse.GetPosY();
+		
+		// Calculate the delta since last update and apply pan
+		int deltaX = currentX - lastMouseX;
+		int deltaY = currentY - lastMouseY;
+		
+		if (deltaX != 0 || deltaY != 0)
+		{
+			brd.Pan(deltaX, deltaY);
+			
+			// Update last position
+			lastMouseX = currentX;
+			lastMouseY = currentY;
+		}
+	}
+	else if (wnd.mouse.LeftIsPressed() && !isPanning && brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		// Handle cell toggling (now requires shift key)
+		mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
+		
+		if (mousePos > -1)
+		{
+			int x = mousePos % (Board::FrameCountX + 2);
+			int y = mousePos / (Board::FrameCountX + 2);
+			
+			brd.SetCell(x, y, true); // Draw
+		}
+	}
+	
+	// Handle right-click for erasing cells (also now requires shift key)
+	if (wnd.mouse.RightIsPressed() && wnd.kbd.KeyIsPressed(VK_SHIFT) && 
+		brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
+		
+		if (mousePos > -1)
+		{
+			int x = mousePos % (Board::FrameCountX + 2);
+			int y = mousePos / (Board::FrameCountX + 2);
+			
+			brd.SetCell(x, y, false); // Erase
+		}
+	}
+	
+	// Add visual cue for the mouse cursor style - use the custom Windows cursor API
+	if (wnd.kbd.KeyIsPressed(VK_SHIFT) && brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		// Would set cursor to "pen/crosshair" style if we had direct access to the Windows API
+		// For now we can just log that we would change cursor here
+	}
+	else if (wnd.mouse.LeftIsPressed() && isPanning)
+	{
+		// Would set cursor to "grabbing/closed hand" style if we had direct access to the Windows API
+	}
+	else if (brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		// Would set cursor to "grab/open hand" style if we had direct access to the Windows API
+	}
+	
+	// Reset flags when mouse is released
+	if (!wnd.mouse.LeftIsPressed())
+	{
+		isPanning = false;
+	}
+	
+	tempClick = wnd.mouse.LeftIsPressed();
 
-		if(	brd.GetCursorPositionOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY() ) > -1 )
-			mousePos = brd.GetCursorPositionOnBoard( wnd.mouse.GetPosX(),wnd.mouse.GetPosY());
 
-		drw.DrawSquare(mousePos, Colors::Lime);
-		//board[mousePos][0][0] = 1;
-		/*drw.DrawCircle( xStart, yStart, 14, Colors::Gray );
-		drw.DrawLine( xStart, yStart, xEnd, yEnd, Colors::Yellow );
-		drw.DrawCircle( xEnd, yEnd, 14, Colors::Gray );*/
+	if ((wnd.kbd.KeyIsPressed(VK_OEM_MINUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelDown) && wnd.kbd.KeyIsPressed(VK_SHIFT) &&
+		brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		if (GetTargetFPS()>1)
+		{
+			SetTargetFPS(GetTargetFPS() - 1);
+		}
+	}
+	if ((wnd.kbd.KeyIsPressed(VK_OEM_PLUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp) && wnd.kbd.KeyIsPressed(VK_SHIFT) &&
+		brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		if (GetTargetFPS() < 30)
+		{
+			SetTargetFPS(GetTargetFPS() + 1);
+		}
 	}
 
-if ( brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
-{
-	mousePos = brd.GetCursorPositionOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY());
+	//switch darkmode
+	if ((wnd.kbd.KeyIsPressed(VK_F1)))
+	{
+		if (!tempDarkmode)
+		{
+			GraphicMode::SwitchDarkMode();
+		}
+		tempDarkmode = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
+	}
+	else
+	{
+		tempDarkmode = false;
+	}
 
-	int x = mousePos % (Board::FrameCountX + 2);
-	int y = mousePos / (Board::FrameCountX + 2);
+	//switch graphic mode (roundness)
+	if ((wnd.kbd.KeyIsPressed(VK_F1)))
+	{
+		if (!tempDarkmode)
+		{
+			GraphicMode::SwitchDarkMode();
+		}
+		tempDarkmode = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
+	}
+	else
+	{
+		tempDarkmode = false;
+	}
 
-	if (wnd.mouse.LeftIsPressed() )
-		board[x][y][0] = 1; // draw
+	//switch visuals
+	if ((wnd.kbd.KeyIsPressed(VK_F2)))
+	{
+		if (!tempVisuals)
+		{
+			GraphicMode::SwitchVisuals();
+		}
+		tempVisuals = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
+	}
+	else
+	{
+		tempVisuals = false;
+	}
 
-	if (wnd.mouse.RightIsPressed())
-		board[x][y][0] = 0; // erase
-}
-
-	if( wnd.mouse.IsInWindow() )
-		tempClick = wnd.mouse.LeftIsPressed();
-
-	if (wnd.kbd.KeyIsPressed(VK_SPACE))
-		NextGeneration();
+	auto frameDuration = std::chrono::milliseconds(1000 / targetFPS);
+	// Run the game simulation if active
+	if (now >= nextFrameTime)
+	{
+		//nested if to keep track on fps even if game paused
+		if (runGame)
+			NextGeneration();
+		nextFrameTime += Game::GetFrameDuration();
+	}
 
 }
 
 void Game::NextGeneration()
 {
-	auto newBoard = alloc_data(Board::FrameCountX + 2, Board::FrameCountY + 2);
-
-	for (int x = 1; x < Board::FrameCountX + 1; x++)
-	{
-		for (int y = 1; y < Board::FrameCountY + 1; y++)
-		{
-			int liveNeighbors = 0;
-
-			for (int dx = -1; dx <= 1; dx++)
-				for (int dy = -1; dy <= 1; dy++)
-				{
-					if (dx == 0 && dy == 0) continue;
-					if (board[x + dx][y + dy][0] == 1)
-						liveNeighbors++;
-				}
-
-			if (board[x][y][0] == 1)
-			{
-				newBoard[x][y][0] = (liveNeighbors == 2 || liveNeighbors == 3) ? 1 : 0;
-			}
-			else
-			{
-				newBoard[x][y][0] = (liveNeighbors == 3) ? 1 : 0;
-			}
-		}
-	}
-
-	free_data(board, Board::FrameCountX + 2, Board::FrameCountY + 2);
-	board = newBoard;
-}
-
-
-void Game::ComposeFrame()
-{	
-	//draw board, net and squares
-	drw.DrawNet( Colors::DarkGray2 );
-	for (int i = 0; i < Board::FrameCountX + 2; i++)
-	{
-		for (int j = 0; j < Board::FrameCountY + 2; j++)
-		{
-			if (board[i][j][0] == 1)drw.DrawSquare(i, j, Colors::CoalChan);
-		}
-	}
-	//draw menus and buttons etc
-	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
-	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
-	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
-	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
-
-	//draw visuals like frames
-	drw.DrawBoardFrame(Colors::DarkGray);
-	drw.DrawWindowFrame(Colors::Gray);
+	brd.ApplyRules();
 }

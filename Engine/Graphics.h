@@ -52,11 +52,13 @@ public:
 	Graphics& operator=( const Graphics& ) = delete;
 	void EndFrame();
 	void BeginFrame();
+	void OnResize(int newWidth, int newHeight);
+
 	void PutPixel( int x,int y,int r,int g,int b )
 	{
 		PutPixel( x,y,{ unsigned char( r ),unsigned char( g ),unsigned char( b ) } );
 	}
-	void PutPixel( int x,int y,Color c );
+	void PutPixel(unsigned int x,unsigned int y,Color c );
 	~Graphics();
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;
@@ -73,13 +75,13 @@ private:
 	D3D11_MAPPED_SUBRESOURCE							mappedSysBufferTexture;
 	Color*                                              pSysBuffer = nullptr;
 public:
-	static constexpr int ScreenWidth = 1300;
-	static constexpr int ScreenHeight = 800;
+	static int ScreenWidth;
+	static int ScreenHeight;
 	static constexpr int BoardFrameWidth = 20;
-	static constexpr int WindowFrameWidth = 5;
+	static constexpr int WindowFrameWidth = 3;
 	//menus with brushes, colors, buttons and sliders
 	static constexpr int MenuThicknessLeft = 15; 
-	static constexpr int MenuThicknessRight = 250;
-	static constexpr int MenuThicknessTop = 15;
-	static constexpr int MenuThicknessBottom = 100;
+	static constexpr int MenuThicknessRight = 15;
+	static constexpr int MenuThicknessTop = 0;
+	static constexpr int MenuThicknessBottom = 0;
 };
