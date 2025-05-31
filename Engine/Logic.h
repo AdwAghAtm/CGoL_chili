@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Board.h"
-#include "Cell.h"
+#include <array>
 
 class Logic
 {
@@ -11,23 +11,15 @@ public:
     Logic(const Logic&) = delete;
     Logic& operator=(const Logic&) = delete;
 
-    // Board state management
-    void InitializeBoard();
-    void ClearBoard();
-    void SetCell(int x, int y, bool value);
-    bool GetCell(int x, int y) const;
-    void NextGeneration();
-    const Cell* const* GetBoard() const { return board; }
-    //The innermost const prevents modifying the Cell values
-    //The middle const prevents modifying the pointers to Cells
-    //The outer const prevents modifying the pointers to pointers
-
-    // Memory management
-    static Cell** AllocateBoard(int xSize, int ySize);
-    static void FreeBoard(Cell** board, int xSize);
+    // Game rules
+    static std::array<bool, 9> GetNeighbors(const uint8_t* board, int x, int y);
+    static bool ApplyRules(bool isAlive, int neighbors);
+    static bool ConwayRules(bool isAlive, int neighbors);
 
 private:
-    Cell** currentBoard;
-    Cell** nextBoard;
-    bool isCurrentBoardFirst;
+    // Game rules function type
+    using RuleFunction = bool(*)(bool isAlive, int neighbors);
+    
+    // Current rule set
+    RuleFunction currentRules;
 }; 

@@ -18,6 +18,7 @@
 *	You should have received a copy of the GNU General Public License					  *
 *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
 ******************************************************************************************/
+#include <chrono>
 #include "MainWindow.h"
 #include "Game.h"
 #include "ChiliException.h"
@@ -29,13 +30,14 @@ int WINAPI wWinMain( HINSTANCE hInst,HINSTANCE,LPWSTR pArgs,INT )
 		MainWindow wnd( hInst,pArgs );		
 		try
 		{
+
 			Game theGame( wnd );
 
 			theGame.Pre();
 
 			while( wnd.ProcessMessage() )
 			{
-				theGame.Go();
+					theGame.Go();
 			}
 		}
 		catch( const ChiliException& e )

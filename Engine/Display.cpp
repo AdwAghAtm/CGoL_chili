@@ -20,7 +20,8 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Display.h"
-
+#include "GraphicMode.h"
+#include <array>
 
 
 Display::Display(MainWindow& wnd)
@@ -30,6 +31,7 @@ Display::Display(MainWindow& wnd)
 	drw(gfx)
 
 {
+	wnd.SetGraphics(&gfx);
 }
 
 Display::~Display()
@@ -39,35 +41,34 @@ Display::~Display()
 }
 
 
-void Display::ComposeFrame(const Cell* const* board)
+void Display::ComposeFrame(const uint8_t* board)
 {
 	gfx.BeginFrame();
-	
-	// 1. First draw the window frame
-	drw.DrawWindowFrame(Colors::Gray);
-	
-	// 2. Draw board with net and squares
-	drw.DrawNet(Colors::DarkGray2);
+	GraphicMode::DrawBackground(&drw);
+
 	for (int i = 0; i < Board::FrameCountX; i++)
 	{
 		for (int j = 0; j < Board::FrameCountY; j++)
 		{
-			if (board[i][j].isAlive)
+			if (board[j * Board::FrameCountX + i] != 0)
 			{
-				drw.DrawSquare(i, j, Colors::TransChan);
+				auto neighbors = Logic::GetNeighbors(board, i, j);
+				GraphicMode::DrawForeground(neighbors, i, j, &drw);
 			}
 		}
 	}
 	
-	// 3. Draw board frame
+	// Draw board frame
 	drw.DrawBoardFrame(Colors::DarkGray);
 	
-	// 4. LAST: Draw menus/sidebars (these should always be on top)
+	// Draw menus/sidebars (these should always be on top)
 	// Draw in specific order: left, top, right, bottom to handle corners correctly
 	drw.DrawMenu(MenuPosition::Left, Colors::CocoaBean);
 	drw.DrawMenu(MenuPosition::Top, Colors::DarkGreen);
-	drw.DrawMenu(MenuPosition::Right, Colors::DarkGray2);
+	drw.DrawMenu(MenuPosition::Right, Colors::DarkGreen);
 	drw.DrawMenu(MenuPosition::Bottom, Colors::DarkLightGray);
+	// this should always be on top
+	drw.DrawWindowFrame(Colors::Gray);
 	
 	gfx.EndFrame();
 }

@@ -18,8 +18,10 @@
  *	You should have received a copy of the GNU General Public License					  *
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
+#include <chrono>
 #include "MainWindow.h"
 #include "Game.h"
+#include "GraphicMode.h"
 
 int xStart, xEnd,
 	yStart, yEnd; // start/end coordinates of mouse cursor's click
@@ -28,9 +30,12 @@ bool tempClick; // bool if mouse is clicked
 int tempClickClick = 0;
 bool runGame = false;
 bool tempRunGame = false;
+bool tempDarkmode = false;
+bool tempVisuals = false;
 bool isPanning = false;
 int lastMouseX = 0;
 int lastMouseY = 0;
+unsigned int Game::targetFPS = 10;
 
 int mousePos; // id of square at mouse's position
 
@@ -43,11 +48,14 @@ Game::Game(MainWindow& wnd)
 {
 	// Initialize the board view (centers the board)
 	brd.InitializeView();
+
 }
 
 void Game::Pre()
 {
-	// Board initialization is now handled by Logic class
+	// Initialize the board
+	brd.InitializeBoard();
+	brd.InitializeView();
 }
 
 Game::~Game()
@@ -57,11 +65,30 @@ Game::~Game()
 
 void Game::Go()
 {
-	dspl.ComposeFrame(logic.GetBoard());
+	// Get board state from Board and pass it to Display
+	dspl.ComposeFrame(brd.GetBoardState());
 	UpdateModel();
 }
+
+void Game::SetTargetFPS(unsigned int fps) {
+	Game::targetFPS = fps;
+}
+
+int Game::GetTargetFPS(){
+	return Game::targetFPS;
+}
+
+std::chrono::milliseconds Game::GetFrameDuration(){
+	return std::chrono::milliseconds(1000 / Game::targetFPS);
+}
+
+
 void Game::UpdateModel()
 {
+	using clock = std::chrono::steady_clock;
+	auto now = clock::now();
+	
+
 	mouseEvent = wnd.mouse.Read();
 
 	//toggle game running (must hold spacebar for longer than 0.0000001ms to pause)
@@ -96,17 +123,16 @@ void Game::UpdateModel()
 			int mouseBoardY = mouseY - Board::BoardStartY;
 			
 			// Calculate board coordinates as a fraction of total size
-			float relativeX = (float)mouseBoardX / (Board::FrameCountX * (oldFrameLength + Board::BetweenFrameMarginLength));
-			float relativeY = (float)mouseBoardY / (Board::FrameCountY * (oldFrameLength + Board::BetweenFrameMarginLength));
+			float relativeX = (float)mouseBoardX / (Board::FrameCountX * (oldFrameLength + Board::NetThickness));
+			float relativeY = (float)mouseBoardY / (Board::FrameCountY * (oldFrameLength + Board::NetThickness));
 			
 			// Update zoom level
 			Board::FrameLength += 2;
-			Board::BetweenFrameMarginLength = Board::FrameLength / 10;
 			zoomChanged = true;
 			
 			// Calculate new total board size
-			int newBoardWidth = Board::FrameCountX * (Board::FrameLength + Board::BetweenFrameMarginLength);
-			int newBoardHeight = Board::FrameCountY * (Board::FrameLength + Board::BetweenFrameMarginLength);
+			int newBoardWidth = Board::FrameCountX * (Board::FrameLength + Board::NetThickness);
+			int newBoardHeight = Board::FrameCountY * (Board::FrameLength + Board::NetThickness);
 			
 			// Calculate new offsets to keep the mouse point in the same relative position
 			int newOffsetX = mouseX - (int)(relativeX * newBoardWidth);
@@ -131,17 +157,16 @@ void Game::UpdateModel()
 			int mouseBoardY = mouseY - Board::BoardStartY;
 			
 			// Calculate board coordinates as a fraction of total size
-			float relativeX = (float)mouseBoardX / (Board::FrameCountX * (oldFrameLength + Board::BetweenFrameMarginLength));
-			float relativeY = (float)mouseBoardY / (Board::FrameCountY * (oldFrameLength + Board::BetweenFrameMarginLength));
+			float relativeX = (float)mouseBoardX / (Board::FrameCountX * (oldFrameLength + Board::NetThickness));
+			float relativeY = (float)mouseBoardY / (Board::FrameCountY * (oldFrameLength + Board::NetThickness));
 			
 			// Update zoom level
 			Board::FrameLength -= 2;
-			Board::BetweenFrameMarginLength = Board::FrameLength / 10;
 			zoomChanged = true;
 			
 			// Calculate new total board size
-			int newBoardWidth = Board::FrameCountX * (Board::FrameLength + Board::BetweenFrameMarginLength);
-			int newBoardHeight = Board::FrameCountY * (Board::FrameLength + Board::BetweenFrameMarginLength);
+			int newBoardWidth = Board::FrameCountX * (Board::FrameLength + Board::NetThickness);
+			int newBoardHeight = Board::FrameCountY * (Board::FrameLength + Board::NetThickness);
 			
 			// Calculate new offsets to keep the mouse point in the same relative position
 			int newOffsetX = mouseX - (int)(relativeX * newBoardWidth);
@@ -159,8 +184,8 @@ void Game::UpdateModel()
 		brd.UpdateBoardBoundaries();
 		
 		// Apply additional bounds checks to ensure board stays visible
-		int boardPixelWidth = Board::FrameCountX * (Board::FrameLength + Board::BetweenFrameMarginLength);
-		int boardPixelHeight = Board::FrameCountY * (Board::FrameLength + Board::BetweenFrameMarginLength);
+		int boardPixelWidth = Board::FrameCountX * (Board::FrameLength + Board::NetThickness);
+		int boardPixelHeight = Board::FrameCountY * (Board::FrameLength + Board::NetThickness);
 		int minOffsetX = Board::ViewportWidth - boardPixelWidth;
 		int minOffsetY = Board::ViewportHeight - boardPixelHeight;
 		
@@ -235,7 +260,7 @@ void Game::UpdateModel()
 			int x = mousePos % (Board::FrameCountX + 2);
 			int y = mousePos / (Board::FrameCountX + 2);
 			
-			logic.SetCell(x, y, true); // Draw
+			brd.SetCell(x, y, true); // Draw
 		}
 	}
 	
@@ -250,7 +275,7 @@ void Game::UpdateModel()
 			int x = mousePos % (Board::FrameCountX + 2);
 			int y = mousePos / (Board::FrameCountX + 2);
 			
-			logic.SetCell(x, y, false); // Erase
+			brd.SetCell(x, y, false); // Erase
 		}
 	}
 	
@@ -277,14 +302,79 @@ void Game::UpdateModel()
 	
 	tempClick = wnd.mouse.LeftIsPressed();
 
-	// Run the game simulation if active
-	if (runGame)
+
+	if ((wnd.kbd.KeyIsPressed(VK_OEM_MINUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelDown) && wnd.kbd.KeyIsPressed(VK_SHIFT) &&
+		brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
 	{
-		NextGeneration();
+		if (GetTargetFPS()>1)
+		{
+			SetTargetFPS(GetTargetFPS() - 1);
+		}
 	}
+	if ((wnd.kbd.KeyIsPressed(VK_OEM_PLUS) || mouseEvent.GetType() == Mouse::Event::Type::WheelUp) && wnd.kbd.KeyIsPressed(VK_SHIFT) &&
+		brd.IsCursorOnBoard(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()))
+	{
+		if (GetTargetFPS() < 30)
+		{
+			SetTargetFPS(GetTargetFPS() + 1);
+		}
+	}
+
+	//switch darkmode
+	if ((wnd.kbd.KeyIsPressed(VK_F1)))
+	{
+		if (!tempDarkmode)
+		{
+			GraphicMode::SwitchDarkMode();
+		}
+		tempDarkmode = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
+	}
+	else
+	{
+		tempDarkmode = false;
+	}
+
+	//switch graphic mode (roundness)
+	if ((wnd.kbd.KeyIsPressed(VK_F1)))
+	{
+		if (!tempDarkmode)
+		{
+			GraphicMode::SwitchDarkMode();
+		}
+		tempDarkmode = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
+	}
+	else
+	{
+		tempDarkmode = false;
+	}
+
+	//switch visuals
+	if ((wnd.kbd.KeyIsPressed(VK_F2)))
+	{
+		if (!tempVisuals)
+		{
+			GraphicMode::SwitchVisuals();
+		}
+		tempVisuals = true; //prevent runGame from changing simultaneously while spacebar pressed/hold
+	}
+	else
+	{
+		tempVisuals = false;
+	}
+
+	auto frameDuration = std::chrono::milliseconds(1000 / targetFPS);
+	// Run the game simulation if active
+	if (now >= nextFrameTime)
+	{
+		//nested if to keep track on fps even if game paused
+		if (runGame)
+			NextGeneration();
+		nextFrameTime += Game::GetFrameDuration();
+	}
+
 }
 
 void Game::NextGeneration()
 {
-	logic.NextGeneration();
+	brd.ApplyRules();
 }

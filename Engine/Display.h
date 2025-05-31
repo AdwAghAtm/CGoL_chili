@@ -24,9 +24,8 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "Board.h"
-#include "Drawin.h"
+#include "Drawing.h"
 #include "Logic.h"
-#include "Cell.h"
 
 class Display
 {
@@ -36,7 +35,7 @@ public:
 	~Display();
 	Display& operator=(const Display&) = delete;
 
-	void ComposeFrame(const Cell* const* board);
+	void ComposeFrame(const uint8_t* board);
 
 //private:
 	//void UpdateModel();
@@ -48,9 +47,10 @@ public:
 private:
 	MainWindow& wnd;
 	Graphics gfx;
+
 	/********************************/
 	/*  User Variables              */
 	/********************************/
 	Board brd;
-	Drawin drw;
+	Drawing drw;
 };

@@ -19,25 +19,29 @@
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 #pragma once
+#include <chrono>
 
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics.h"
 #include "Board.h"
-#include "Drawin.h"
+#include "Drawing.h"
 #include "Display.h"
 #include "Logic.h"
 
 class Game
 {
 public:
-	Game( class MainWindow& wnd );
-	Game( const Game& ) = delete;
+	Game(class MainWindow& wnd);
+	Game(const Game&) = delete;
 	~Game();
-	Game& operator=( const Game& ) = delete;
+	Game& operator=(const Game&) = delete;
 	void Go();
 	void Pre();
-
+	void SetTargetFPS(unsigned int fps);
+	static int GetTargetFPS();
+	static std::chrono::milliseconds GetFrameDuration();
+	std::chrono::steady_clock::time_point nextFrameTime = std::chrono::steady_clock::now();
 
 private:
 	void UpdateModel();
@@ -54,4 +58,5 @@ private:
 	Board brd;
 	Display dspl;
 	Logic logic;
+	static unsigned int targetFPS;
 };

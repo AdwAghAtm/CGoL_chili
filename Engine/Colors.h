@@ -128,5 +128,7 @@ namespace Colors
 	static constexpr Color Magenta = MakeRGB( 164u,123u,219u );
 	static constexpr Color Orange = MakeRGB( 255u,154u,21u );
 	static constexpr Color CoalChan = MakeRGB( 213u, 153u, 155u);
+	static constexpr Color LightBackGround = MakeRGB(250u, 250u, 250u);
+	static constexpr Color DarkBackGround = MakeRGB(0u, 0u, 0u);
 	static constexpr Color TransChan = MakeARGB(128u ,213u, 153u, 155u);//baby shark TODODODO
 }

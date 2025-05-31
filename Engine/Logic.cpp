@@ -1,124 +1,66 @@
 #include "Logic.h"
 #include <cassert>
+#include <array>
 
 Logic::Logic()
-    : currentBoard(nullptr), nextBoard(nullptr), isCurrentBoardFirst(true)
 {
-    InitializeBoard();
 }
 
 Logic::~Logic()
 {
-    ClearBoard();
 }
 
-void Logic::InitializeBoard()
+std::array<bool, 9> Logic::GetNeighbors(const uint8_t* board, int x, int y)
 {
-    ClearBoard();
-    currentBoard = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
-    nextBoard = AllocateBoard(Board::FrameCountX, Board::FrameCountY);
-}
-
-void Logic::ClearBoard()
-{
-    if (currentBoard)
+    std::array<bool, 9> neighbors;
+    int index = 0;
+    
+    // Check all 8 surrounding cells
+    for (int dy = -1; dy <= 1; dy++)
     {
-        FreeBoard(currentBoard, Board::FrameCountX);
-        currentBoard = nullptr;
-    }
-    if (nextBoard)
-    {
-        FreeBoard(nextBoard, Board::FrameCountX);
-        nextBoard = nullptr;
-    }
-}
-
-void Logic::SetCell(int x, int y, bool value)
-{
-    assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);//TODO
-    board[x][y].isAlive = value;
-    if (!value)
-    {
-        currentBoard[x][y].age = 0;
-    }
-}
-
-bool Logic::GetCell(int x, int y) const
-{
-    assert(x >= 0 && x < Board::FrameCountX && y >= 0 && y < Board::FrameCountY);
-    return currentBoard[x][y].isAlive;
-}
-
-void Logic::NextGeneration()
-{
-    // Calculate next generation
-    for (int x = 0; x < Board::FrameCountX; x++)
-    {
-        for (int y = 0; y < Board::FrameCountY; y++)
+        for (int dx = -1; dx <= 1; dx++)
         {
-            int neighbors = 0;
-            
-            // Count live neighbors
-            for (int dx = -1; dx <= 1; dx++)
+            if (dx == 0 && dy == 0)
             {
-                for (int dy = -1; dy <= 1; dy++)
-                {
-                    if (dx == 0 && dy == 0) continue;
-
-                    int nx = (x + dx + Board::FrameCountX) % Board::FrameCountX;
-                    int ny = (y + dy + Board::FrameCountY) % Board::FrameCountY;
-
-                    if (currentBoard[nx][ny].isAlive)
-                    {
-                        neighbors++;
-                    }
-                }
+                neighbors[index++] = false; // Skip the center cell
+                continue;
             }
-
-            // Apply Conway's Game of Life rules
-            bool isAlive = currentBoard[x][y].isAlive;
-            if (isAlive)
+            
+            int nx = x + dx;
+            int ny = y + dy;
+            
+            // Check bounds
+            if (nx >= 0 && nx < Board::FrameCountX && ny >= 0 && ny < Board::FrameCountY)
             {
-                nextBoard[x][y].isAlive = (neighbors == 2 || neighbors == 3);
-                if (nextBoard[x][y].isAlive)
-                {
-                    nextBoard[x][y].age = currentBoard[x][y].age + 1;
-                }
+                neighbors[index++] = board[ny * Board::FrameCountX + nx] != 0;
             }
             else
             {
-                nextBoard[x][y].isAlive = (neighbors == 3);
-                if (nextBoard[x][y].isAlive)
-                {
-                    nextBoard[x][y].age = 1;
-                }
+                neighbors[index++] = false;
             }
         }
     }
-
-    // Free old board and update to new generation
-    FreeBoard(board, Board::FrameCountX); //todo nie ususwac co klatke tylko robic drugiego boarda
-    board = nextBoard;
+    
+    return neighbors;
 }
 
-Cell** Logic::AllocateBoard(int xSize, int ySize)
+bool Logic::ApplyRules(bool isAlive, int neighbors)
 {
-    Cell** newBoard = new Cell*[xSize];
-    for (int x = 0; x < xSize; x++)
+    return ConwayRules(isAlive, neighbors);
+}
+
+bool Logic::ConwayRules(bool isAlive, int neighbors)
+{
+    // Conway's Game of Life rules
+    if (isAlive)
     {
-        newBoard[x] = new Cell[ySize];
+        // Any live cell with fewer than two live neighbors dies (underpopulation)
+        // Any live cell with more than three live neighbors dies (overpopulation)
+        return neighbors == 2 || neighbors == 3;
     }
-    return newBoard;
-}
-
-void Logic::FreeBoard(Cell** board, int xSize)
-{
-    if (board)
+    else
     {
-        for (int x = 0; x < xSize; x++)
-        {
-            delete[] board[x];
-        }
-        delete[] board;
+        // Any dead cell with exactly three live neighbors becomes alive (reproduction)
+        return neighbors == 3;
     }
 } 

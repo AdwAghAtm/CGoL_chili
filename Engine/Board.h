@@ -4,27 +4,39 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "MainWindow.h"
+#include <array>
 
 class Board
 {
 public:
 	Board();
+	~Board();
 	void InitializeView();
 	void CenterView();
-	void Pan(int deltaX, int deltaY);
-	void UpdateBoardBoundaries();
+	static void Pan(int deltaX, int deltaY);
+	static void UpdateViewport();
+	static void UpdateBoardBoundaries();
 	
 	int GetCursorPositionOnBoard(int cursorX, int cursorY);
-	
+
+	// Board state management
+	void InitializeBoard();
+	void ClearBoard();
+	void SetCell(int x, int y, bool value);
+	bool GetCell(int x, int y) const;
+	void ApplyRules();
+	const uint8_t* GetBoardState() const { return boardState.data(); }
+	int GetBoardStateSize() const { return FrameCountX * FrameCountY; }
+
 	// Board info
 	static const int MinFrameLength = 4; //must be 2 at least
 	static const int MaxFrameLength = 100;
 	static unsigned int FrameLength; //made it variable so we can change size
-	static unsigned int BetweenFrameMarginLength; //net's width
+	static unsigned int NetThickness; //net's width
 	
 	// Board dimensions in cells
-	static const int FrameCountX = 1000;
-	static const int FrameCountY = 1000;
+	static const int FrameCountX = 500;
+	static const int FrameCountY = 309;
 	
 	// Board position and view
 	static int OffsetX; // Horizontal pan offset
@@ -41,4 +53,5 @@ public:
 	bool IsCursorOnBoard(int cursorX, int cursorY);
 
 private:
+	std::array<uint8_t, FrameCountX * FrameCountY> boardState;
 };
