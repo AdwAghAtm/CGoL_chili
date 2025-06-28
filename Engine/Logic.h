@@ -13,8 +13,10 @@ public:
 
     // Game rules
     static std::array<bool, 9> GetNeighbors(const uint8_t* board, int x, int y);
+    static std::array<bool, 9> GetNeighbors2(const uint8_t* board, int x, int y);
     static bool ApplyRules(bool isAlive, int neighbors);
     static bool ConwayRules(bool isAlive, int neighbors);
+    static bool ConwayRules2(bool isAlive, int neighbors);
 
 private:
     // Game rules function type

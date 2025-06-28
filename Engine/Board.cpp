@@ -62,7 +62,9 @@ void Board::ApplyRules()
 		for (int x = 0; x < FrameCountX; x++)
 		{
 			// Get neighbors using Logic
-			auto neighbors = Logic::GetNeighbors(boardState.data(), x, y);
+			//auto neighbors = Logic::GetNeighbors(boardState.data(), x, y);
+			auto neighbors = Logic::GetNeighbors2(boardState.data(), x, y);
+
 			
 			// Count live neighbors
 			int neighborCount = 0;
